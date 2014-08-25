@@ -35,7 +35,7 @@ namespace iCSharp.Kernel.Heartbeat
 
         public void Start()
         {
-            ThreadPool.QueueUserWorkItem(() => { this.StartServerLoop(); });
+            ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
         }
 
         public void Stop()
@@ -43,18 +43,18 @@ namespace iCSharp.Kernel.Heartbeat
             this.stopEvent.Set();
         }
 
-        private void StartServerLoop()
+        private void StartServerLoop(object state)
         {
             this.server.Bind(this.GetAddress());
 
-            while(!this.stopEvent.Wait(0))
+            while (!this.stopEvent.Wait(0))
             {
                 byte[] data = this.server.Receive();
 
                 // Echoing back whatever was received
                 this.server.Send(data);
             }
-            
+
         }
 
         private string GetAddress()
@@ -69,11 +69,11 @@ namespace iCSharp.Kernel.Heartbeat
 
         protected void Dispose(bool dispose)
         {
-            if(!this.disposed)
+            if (!this.disposed)
             {
-                if(dispose)
+                if (dispose)
                 {
-                    if(this.server != null)
+                    if (this.server != null)
                     {
                         this.server.Dispose();
                     }
@@ -81,12 +81,6 @@ namespace iCSharp.Kernel.Heartbeat
                     this.disposed = true;
                 }
             }
-        }
-
-
-        public void Stop()
-        {
-            throw new NotImplementedException();
         }
     }
 }
