@@ -3,10 +3,6 @@
 namespace iCSharp.Kernel.Shell
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using iCSharp.Kernel.IOPub;
     using NetMQ;
     using NetMQ.Sockets;
@@ -41,7 +37,7 @@ namespace iCSharp.Kernel.Shell
 
         public void Stop()
         {
-
+            this.stopEvent.Set();
         }
 
         public void Dispose()
