@@ -7,6 +7,12 @@ namespace iCSharp.Messages
 
     public class Message
     {
+        [JsonProperty("uuid")]
+        public string UUID { get; set; }
+
+        [JsonProperty("hmac")]
+        public string HMac { get; set; }
+
         [JsonProperty("header")]
         public Header Header { get; set; }
 
@@ -14,9 +20,9 @@ namespace iCSharp.Messages
         public Header ParentHeader { get; set; }
 
         [JsonProperty("metadata")]
-        public Dictionary<string, string> MetaData { get; set; }
+        public Dictionary<string, object> MetaData { get; set; }
 
         [JsonProperty("content")]
-        public Dictionary<string, string> Content { get; set; }
+        public Dictionary<string, object> Content { get; set; }
     }
 }

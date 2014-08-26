@@ -1,5 +1,9 @@
 ﻿
 
+using System.Collections.Generic;
+using Common.Serializer;
+using iCSharp.Messages;
+
 namespace iCSharp.Kernel.Shell
 {
     using iCSharp.Kernel.IOPub;
@@ -19,6 +23,7 @@ namespace iCSharp.Kernel.Shell
 
         private ManualResetEventSlim stopEvent;
 
+        private Thread thread;
         private bool disposed;
 
         public Shell(ILog logger,string address, IOPub ioPub, NetMQContext context)
@@ -34,20 +39,69 @@ namespace iCSharp.Kernel.Shell
 
         public void Start()
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
+            this.thread = new Thread(this.StartServerLoop);
+            this.thread.Start();
+
+            this.logger.Info("Shell Started");
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
         }
 
         private void StartServerLoop(object state)
         {
             this.server.Bind(this.address);
 
-            while (this.stopEvent.Wait(0))
-            {
-                string data = this.server.ReceiveString();
+            this.logger.Info(string.Format("Binded the Shell server to address {0}", this.address));
 
-                this.logger.Info(data);
+            while (!this.stopEvent.Wait(0))
+            {
+                Message message = this.GetMessage();
+
+                this.logger.Info(JsonSerializer.Serizlize(message));
             }
         }
+
+        private Message GetMessage()
+        {
+            Message message = new Message();
+
+            // Getting UUID
+            message.UUID = this.server.ReceiveString();
+            this.logger.Info(message.UUID);
+
+            // Getting Delimeter "<IDS|MSG>"
+            this.server.ReceiveString();
+
+            // Getting Hmac
+            message.HMac = this.server.ReceiveString();
+            this.logger.Info(message.HMac);
+
+            // Getting Header
+            string header = this.server.ReceiveString();
+            this.logger.Info(header);
+
+            message.Header = JsonSerializer.Deserialize<Header>(header);
+
+            // Getting parent header
+            string parentHeader = this.server.ReceiveString();
+            this.logger.Info(parentHeader);
+
+            message.ParentHeader = JsonSerializer.Deserialize<Header>(parentHeader);
+
+            // Getting metadata
+            string metadata = this.server.ReceiveString();
+            this.logger.Info(metadata);
+
+            message.MetaData = JsonSerializer.Deserialize<Dictionary<string, object>>(metadata);
+
+            // Getting content
+            string content = this.server.ReceiveString();
+            this.logger.Info(content);
+
+            message.Content = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
+
+            return message;
+        }
+
 
         public void Stop()
         {

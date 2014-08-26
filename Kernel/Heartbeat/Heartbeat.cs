@@ -18,6 +18,8 @@ namespace iCSharp.Kernel.Heartbeat
 
         private ManualResetEventSlim stopEvent;
 
+        private Thread thread;
+
         private bool disposed;
 
         public Heartbeat(ILog logger,  string address, NetMQContext context)
@@ -32,7 +34,9 @@ namespace iCSharp.Kernel.Heartbeat
 
         public void Start()
         {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
+            this.thread = new Thread(this.StartServerLoop);
+            this.thread.Start();
+            //ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
         }
 
         public void Stop()

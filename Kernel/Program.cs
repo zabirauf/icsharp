@@ -29,11 +29,11 @@ namespace iCSharp
 
             KernelCreator creator = new KernelCreator(connectionInformation);
 
-            IServer heartBeatServer = creator.HeartBeatServer;
-            heartBeatServer.Start();
-
             IServer shellServer = creator.ShellServer;
             shellServer.Start();
+
+            IServer heartBeatServer = creator.HeartBeatServer;
+            heartBeatServer.Start();
 
             shellServer.GetWaitEvent().Wait();
             heartBeatServer.GetWaitEvent().Wait();
