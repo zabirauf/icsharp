@@ -2,15 +2,16 @@
 
 namespace iCSharp.Kernel.Shell
 {
-    using System;
     using iCSharp.Kernel.IOPub;
     using NetMQ;
     using NetMQ.Sockets;
     using System.Threading;
+    using Common.Logging;
 
     public class Shell : IServer
     {
-        private int port;
+        private ILog logger;
+        private string address;
         private IOPub ioPub;
 
         private NetMQContext context;
@@ -20,9 +21,10 @@ namespace iCSharp.Kernel.Shell
 
         private bool disposed;
 
-        public Shell(int port, IOPub ioPub, NetMQContext context)
+        public Shell(ILog logger,string address, IOPub ioPub, NetMQContext context)
         {
-            this.port = port;
+            this.logger = logger;
+            this.address = address;
             this.ioPub = ioPub;
 
             this.context = context;
@@ -32,12 +34,29 @@ namespace iCSharp.Kernel.Shell
 
         public void Start()
         {
-            throw new NotImplementedException();
+            ThreadPool.QueueUserWorkItem(new WaitCallback(StartServerLoop));
+        }
+
+        private void StartServerLoop(object state)
+        {
+            this.server.Bind(this.address);
+
+            while (this.stopEvent.Wait(0))
+            {
+                string data = this.server.ReceiveString();
+
+                this.logger.Info(data);
+            }
         }
 
         public void Stop()
         {
             this.stopEvent.Set();
+        }
+
+        public ManualResetEventSlim GetWaitEvent()
+        {
+            return this.stopEvent;
         }
 
         public void Dispose()

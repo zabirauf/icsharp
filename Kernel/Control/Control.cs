@@ -1,5 +1,7 @@
 ﻿
 
+using System.Threading;
+
 namespace iCSharp.Kernel.Control
 {
     using System;
@@ -31,6 +33,11 @@ namespace iCSharp.Kernel.Control
         public void Stop()
         {
 
+        }
+
+        public ManualResetEventSlim GetWaitEvent()
+        {
+            throw new NotImplementedException();
         }
 
         public void Dispose()

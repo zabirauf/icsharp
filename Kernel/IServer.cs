@@ -1,4 +1,6 @@
 ﻿
+using System.Threading;
+
 namespace iCSharp.Kernel
 {
     using System;
@@ -8,5 +10,7 @@ namespace iCSharp.Kernel
         void Start();
 
         void Stop();
+
+        ManualResetEventSlim GetWaitEvent();
     }
 }

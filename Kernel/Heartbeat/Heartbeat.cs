@@ -1,5 +1,7 @@
 ﻿
 
+using Common.Logging;
+
 namespace iCSharp.Kernel.Heartbeat
 {
     using NetMQ;
@@ -8,8 +10,8 @@ namespace iCSharp.Kernel.Heartbeat
 
     public class Heartbeat : IServer
     {
-        private string ip;
-        private int port;
+        private ILog logger;
+        private string address;
 
         private NetMQContext context;
         private ResponseSocket server;
@@ -18,10 +20,10 @@ namespace iCSharp.Kernel.Heartbeat
 
         private bool disposed;
 
-        public Heartbeat(string ip, int port, NetMQContext context)
+        public Heartbeat(ILog logger,  string address, NetMQContext context)
         {
-            this.ip = ip;
-            this.port = port;
+            this.logger = logger;
+            this.address = address;
             this.context = context;
 
             this.server = context.CreateResponseSocket();
@@ -38,23 +40,24 @@ namespace iCSharp.Kernel.Heartbeat
             this.stopEvent.Set();
         }
 
+        public ManualResetEventSlim GetWaitEvent()
+        {
+            return this.stopEvent;
+        }
+
         private void StartServerLoop(object state)
         {
-            this.server.Bind(this.GetAddress());
+            this.server.Bind(this.address);
 
             while (!this.stopEvent.Wait(0))
             {
                 byte[] data = this.server.Receive();
 
+                this.logger.Info(System.Text.Encoding.Default.GetString(data));
                 // Echoing back whatever was received
                 this.server.Send(data);
             }
 
-        }
-
-        private string GetAddress()
-        {
-            return string.Format("{0}:{1}", this.ip, this.port);
         }
 
         public void Dispose()
