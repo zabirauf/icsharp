@@ -57,9 +57,9 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Heartbeat\Heartbeat.cs" />
-    <Compile Include="IOPub\IOPub.cs" />
     <Compile Include="IServer.cs" />
     <Compile Include="KernelCreator.cs" />
+    <Compile Include="MessageBuilder.cs" />
     <Compile Include="MessageSender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

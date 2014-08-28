@@ -42,8 +42,12 @@ namespace iCSharp.Kernel
             {
                 if (this._shellServer == null)
                 {
-                    
-                    this._shellServer = new Shell.Shell(this._logger, this.GetAddress(this._connectionInformation.ShellPort), null, this._context, this.MessageHandler);
+
+                    this._shellServer = new Shell.Shell(this._logger,
+                        this.GetAddress(this._connectionInformation.ShellPort),
+                        this.GetAddress(this._connectionInformation.IOPubPort), 
+                        this._context, 
+                        this.MessageHandler);
                 }
 
                 return this._shellServer;

@@ -6,7 +6,6 @@ using iCSharp.Messages;
 
 namespace iCSharp.Kernel.Shell
 {
-    using iCSharp.Kernel.IOPub;
     using NetMQ;
     using NetMQ.Sockets;
     using System.Threading;
@@ -15,11 +14,12 @@ namespace iCSharp.Kernel.Shell
     public class Shell : IServer
     {
         private ILog logger;
-        private string address;
-        private IOPub ioPub;
+        private string addressShell;
+        private string addressIOPub;
 
         private NetMQContext context;
         private RouterSocket server;
+        private PublisherSocket ioPubSocket;
 
         private ManualResetEventSlim stopEvent;
 
@@ -28,15 +28,16 @@ namespace iCSharp.Kernel.Shell
 
         private Dictionary<string, IShellMessageHandler> messageHandlers; 
 
-        public Shell(ILog logger,string address, IOPub ioPub, NetMQContext context, Dictionary<string, IShellMessageHandler> messageHandlers)
+        public Shell(ILog logger,string addressShell, string addressIOPub, NetMQContext context, Dictionary<string, IShellMessageHandler> messageHandlers)
         {
             this.logger = logger;
-            this.address = address;
-            this.ioPub = ioPub;
+            this.addressShell = addressShell;
+            this.addressIOPub = addressIOPub;
             this.context = context;
             this.messageHandlers = messageHandlers;
 
             this.server = this.context.CreateRouterSocket();
+            this.ioPubSocket = this.context.CreatePublisherSocket();
             this.stopEvent = new ManualResetEventSlim();
         }
 
@@ -51,9 +52,11 @@ namespace iCSharp.Kernel.Shell
 
         private void StartServerLoop(object state)
         {
-            this.server.Bind(this.address);
+            this.server.Bind(this.addressShell);
+            this.logger.Info(string.Format("Binded the Shell server to address {0}", this.addressShell));
 
-            this.logger.Info(string.Format("Binded the Shell server to address {0}", this.address));
+            this.ioPubSocket.Bind(this.addressIOPub);
+            this.logger.Info(string.Format("Binded the  IOPub to address {0}", this.addressIOPub));
 
             while (!this.stopEvent.Wait(0))
             {
@@ -65,7 +68,7 @@ namespace iCSharp.Kernel.Shell
                 if (this.messageHandlers.TryGetValue(message.Header.MessageType, out handler))
                 {
                     this.logger.Info(string.Format("Sending message to handler {0}", message.Header.MessageType));
-                    handler.HandleMessage(message, this.server, this.ioPub);
+                    handler.HandleMessage(message, this.server, this.ioPubSocket);
                     this.logger.Info("Message handling complete");
                 }
                 else
@@ -143,6 +146,11 @@ namespace iCSharp.Kernel.Shell
                     if(this.server != null)
                     {
                         this.server.Dispose();
+                    }
+
+                    if (this.ioPubSocket != null)
+                    {
+                        this.ioPubSocket.Dispose();
                     }
 
                     this.disposed = true;

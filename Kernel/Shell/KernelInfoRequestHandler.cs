@@ -1,14 +1,11 @@
 ﻿
-
-using System;
-using Common;
-using Common.Logging;
-using Common.Serializer;
-using iCSharp.Messages;
-using NetMQ.Sockets;
-
 namespace iCSharp.Kernel.Shell
 {
+    using Common.Logging;
+    using Common.Serializer;
+    using iCSharp.Messages;
+    using NetMQ.Sockets;
+
     public class KernelInfoRequestHandler : IShellMessageHandler
     {
         private ILog logger;
@@ -18,7 +15,7 @@ namespace iCSharp.Kernel.Shell
             this.logger = logger;
         }
 
-        public void HandleMessage(Message message, RouterSocket serverSocket, IOPub.IOPub ioPub)
+        public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
             KernelInfoRequest kernelInfoRequest = JsonSerializer.Deserialize<KernelInfoRequest>(message.Content);
 
@@ -26,26 +23,12 @@ namespace iCSharp.Kernel.Shell
             {
                 UUID = message.Header.Session,
                 ParentHeader = message.Header,
-                Header = this.CreateHeader(message),
+                Header = MessageBuilder.CreateHeader(MessageTypeValues.KernelInfoReply, message.Header.Session),
                 Content = JsonSerializer.Serialize(this.CreateKernelInfoReply())
             };
 
             this.logger.Info("Sending kernel_info_reply");
             MessageSender.Send(replyMessage, serverSocket);
-        }
-
-        private Header CreateHeader(Message message)
-        {
-            Header newHeader = new Header()
-            {
-                Username = Constants.USERNAME,
-                Session = message.Header.Session,
-                MessageId = Guid.NewGuid().ToString(),
-                MessageType = MessageTypeValues.KernelInfoReply,
-                Version = Constants.VERSION
-            };
-
-            return newHeader;
         }
 
         private KernelInfoReply CreateKernelInfoReply()

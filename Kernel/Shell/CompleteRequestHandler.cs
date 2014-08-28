@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Logging;
-using Common.Serializer;
-using iCSharp.Messages;
-using NetMQ.Sockets;
+﻿
 
 namespace iCSharp.Kernel.Shell
 {
+    using Common.Logging;
+    using Common.Serializer;
+    using iCSharp.Messages;
+    using NetMQ.Sockets;
+
     public class CompleteRequestHandler : IShellMessageHandler
     {
         private ILog logger;
@@ -19,7 +16,7 @@ namespace iCSharp.Kernel.Shell
             this.logger = logger;
         }
 
-        public void HandleMessage(Message message, RouterSocket serverSocket, IOPub.IOPub ioPub)
+        public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 

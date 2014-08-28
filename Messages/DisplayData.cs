@@ -7,6 +7,13 @@ namespace iCSharp.Messages
 
     public class DisplayData
     {
+        public DisplayData()
+        {
+            this.Source = string.Empty;
+            this.Data = new Dictionary<string, string>();
+            this.MetaData = new Dictionary<string, string>();
+        }
+
         [JsonProperty("source")]
         public string Source { get; set; }
 
