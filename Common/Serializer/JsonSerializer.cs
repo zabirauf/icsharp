@@ -13,7 +13,7 @@ namespace Common.Serializer
             return JsonConvert.DeserializeObject<T>(value);
         }
 
-        public static string Serizlize<T>(T obj)
+        public static string Serialize<T>(T obj)
         {
             return JsonConvert.SerializeObject(obj);
         }

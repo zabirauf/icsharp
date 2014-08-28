@@ -26,13 +26,16 @@ namespace iCSharp.Kernel.Shell
         private Thread thread;
         private bool disposed;
 
-        public Shell(ILog logger,string address, IOPub ioPub, NetMQContext context)
+        private Dictionary<string, IShellMessageHandler> messageHandlers; 
+
+        public Shell(ILog logger,string address, IOPub ioPub, NetMQContext context, Dictionary<string, IShellMessageHandler> messageHandlers)
         {
             this.logger = logger;
             this.address = address;
             this.ioPub = ioPub;
-
             this.context = context;
+            this.messageHandlers = messageHandlers;
+
             this.server = this.context.CreateRouterSocket();
             this.stopEvent = new ManualResetEventSlim();
         }
@@ -56,7 +59,20 @@ namespace iCSharp.Kernel.Shell
             {
                 Message message = this.GetMessage();
 
-                this.logger.Info(JsonSerializer.Serizlize(message));
+                this.logger.Info(JsonSerializer.Serialize(message));
+
+                IShellMessageHandler handler;
+                if (this.messageHandlers.TryGetValue(message.Header.MessageType, out handler))
+                {
+                    this.logger.Info(string.Format("Sending message to handler {0}", message.Header.MessageType));
+                    handler.HandleMessage(message, this.server, this.ioPub);
+                    this.logger.Info("Message handling complete");
+                }
+                else
+                {
+                    this.logger.Error(string.Format("No message handler found for message type {0}",
+                        message.Header.MessageType));
+                }
             }
         }
 
@@ -97,7 +113,7 @@ namespace iCSharp.Kernel.Shell
             string content = this.server.ReceiveString();
             this.logger.Info(content);
 
-            message.Content = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
+            message.Content = content;
 
             return message;
         }

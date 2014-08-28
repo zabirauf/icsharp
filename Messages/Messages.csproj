@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompleteReply.cs" />
+    <Compile Include="CompleteRequest.cs" />
     <Compile Include="ConnectionInformation.cs" />
     <Compile Include="DisplayData.cs" />
     <Compile Include="ExecuteInput.cs" />
@@ -55,6 +57,7 @@
     <Compile Include="KernelInfoReply.cs" />
     <Compile Include="KernelInfoRequest.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="MessageTypeValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="StatusValues.cs" />

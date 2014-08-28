@@ -7,6 +7,14 @@ namespace iCSharp.Messages
 
     public class Message
     {
+        public Message()
+        {
+            this.UUID = string.Empty;
+            this.HMac = string.Empty;
+            this.MetaData = new Dictionary<string, object>();
+            this.Content = string.Empty;
+        }
+
         [JsonProperty("uuid")]
         public string UUID { get; set; }
 
@@ -23,6 +31,6 @@ namespace iCSharp.Messages
         public Dictionary<string, object> MetaData { get; set; }
 
         [JsonProperty("content")]
-        public Dictionary<string, object> Content { get; set; }
+        public string Content { get; set; }
     }
 }

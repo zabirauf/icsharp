@@ -20,7 +20,7 @@ namespace iCSharp.Messages
         public Dictionary<string,string> UserExpressions { get; set; }
 
         [JsonProperty("user_variables")]
-        public Dictionary<string, string> UserVariables { get; set; }
+        public List<string> UserVariables { get; set; }
 
         [JsonProperty("allow_stdin")]
         public bool AllowStdin { get; set; }
