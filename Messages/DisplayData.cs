@@ -10,7 +10,7 @@ namespace iCSharp.Messages
         public DisplayData()
         {
             this.Source = string.Empty;
-            this.Data = new Dictionary<string, string>();
+            this.Data = new Dictionary<string, object>();
             this.MetaData = new Dictionary<string, string>();
         }
 
@@ -18,7 +18,7 @@ namespace iCSharp.Messages
         public string Source { get; set; }
 
         [JsonProperty("data")]
-        public Dictionary<string,string> Data { get; set; }
+        public Dictionary<string,object> Data { get; set; }
 
         [JsonProperty("metadata")]
         public Dictionary<string,string> MetaData { get; set; }

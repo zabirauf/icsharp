@@ -22,5 +22,8 @@ namespace iCSharp.Messages
 
         [JsonProperty("banner")]
         public string Banner { get; set; }
+
+        [JsonProperty("ipython_version")]
+        public string IPythonVersion { get; set; }
     }
 }

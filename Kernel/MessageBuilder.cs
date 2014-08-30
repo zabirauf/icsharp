@@ -29,7 +29,7 @@ namespace iCSharp.Kernel
             {
                 UUID = session,
                 ParentHeader = parentHeader,
-                Header = MessageBuilder.CreateHeader(MessageTypeValues.Status, session),
+                Header = MessageBuilder.CreateHeader(messageType, session),
                 Content = content
             };
 

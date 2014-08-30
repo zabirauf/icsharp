@@ -19,5 +19,9 @@ namespace iCSharp.Messages
 
         public const string Status = "status";
 
+        public const string Output = "pyout";
+
+        public const string Input = "pyin";
+
     }
 }
