@@ -1,10 +1,17 @@
 ﻿
 
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Common.Logging;
 using Common.Logging.Simple;
 using iCSharp.Kernel;
+using iCSharp.Kernel.ScriptEngine;
+using NetMQ.zmq;
+using ScriptCs;
+using ScriptCs.Contracts;
+using ScriptCs.Engine.Roslyn;
+using LogLevel = Common.Logging.LogLevel;
 
 namespace iCSharp
 {
@@ -37,7 +44,7 @@ namespace iCSharp
 
             shellServer.GetWaitEvent().Wait();
             heartBeatServer.GetWaitEvent().Wait();
-            //Thread.Sleep(60000);
+            Thread.Sleep(60000);
         }
 
         private static ConnectionInformation GetConnectionInformation(string filename)

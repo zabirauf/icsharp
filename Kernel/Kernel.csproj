@@ -34,11 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.2.0\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.2.2.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    <Reference Include="Common.Logging, Version=2.1.2.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.10\lib\net40\NetMQ.dll</HintPath>
@@ -65,6 +63,11 @@
     <Compile Include="MessageSender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReplEngineFactory.cs" />
+    <Compile Include="ScriptEngine\ExecutionResult.cs" />
+    <Compile Include="ScriptEngine\IReplEngine.cs" />
+    <Compile Include="ScriptEngine\MemoryBufferConsole.cs" />
+    <Compile Include="ScriptEngine\ReplEngineWrapper.cs" />
     <Compile Include="Shell\CompleteRequestHandler.cs" />
     <Compile Include="Shell\ExecuteRequestHandler.cs" />
     <Compile Include="Shell\IShellMessageHandler.cs" />
@@ -82,6 +85,30 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{0330b333-d8b9-451e-b3b7-20daf7a2fcd4}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs.Contracts\ScriptCs.Contracts.csproj">
+      <Project>{6049e205-8b5f-4080-b023-70600e51fd64}</Project>
+      <Name>ScriptCs.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs.Core\ScriptCs.Core.csproj">
+      <Project>{e590e710-e159-48e6-a3e6-1a83d3fe732c}</Project>
+      <Name>ScriptCs.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs.Engine.Mono\ScriptCs.Engine.Mono.csproj">
+      <Project>{e4adcfee-ff3b-4ef5-8298-2b31f407f58b}</Project>
+      <Name>ScriptCs.Engine.Mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs.Engine.Roslyn\ScriptCs.Engine.Roslyn.csproj">
+      <Project>{e79ec231-e27d-4057-91c9-2d001a3a8c3b}</Project>
+      <Name>ScriptCs.Engine.Roslyn</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs.Hosting\ScriptCs.Hosting.csproj">
+      <Project>{9aef2d95-87fb-4829-b384-34bfe076d531}</Project>
+      <Name>ScriptCs.Hosting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\src\ScriptCs\ScriptCs.csproj">
+      <Project>{25080671-1a80-4041-b9c7-260578ff4849}</Project>
+      <Name>ScriptCs</Name>
     </ProjectReference>
     <ProjectReference Include="..\Messages\Messages.csproj">
       <Project>{1dc4bcd0-8e6b-4657-ad7c-2e1e01e3eb34}</Project>
