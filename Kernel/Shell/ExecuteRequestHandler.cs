@@ -2,7 +2,9 @@
 
 
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
+using iCSharp.Kernel.ScriptEngine;
 
 namespace iCSharp.Kernel.Shell
 {
@@ -17,9 +19,12 @@ namespace iCSharp.Kernel.Shell
 
         private int executionCount = 1;
 
-        public ExecuteRequestHandler(ILog logger)
+        private IReplEngine replEngine; 
+
+        public ExecuteRequestHandler(ILog logger, IReplEngine replEngine)
         {
             this.logger = logger;
+            this.replEngine = replEngine;
         }
 
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
@@ -36,8 +41,10 @@ namespace iCSharp.Kernel.Shell
             this.SendInputMessageToIOPub(message, ioPub, executeRequest.Code);
 
             // 3: Evaluate the C# code
-            // TODO: Compile message
-            string codeOutput = "Hello World";
+            string code = executeRequest.Code;
+            ExecutionResult results = this.replEngine.Execute(code);
+            string codeOutput = this.GetCodeOutput(results);
+            
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
                 {"text/plain", codeOutput},
@@ -60,6 +67,18 @@ namespace iCSharp.Kernel.Shell
 
             this.executionCount += 1;
 
+        }
+
+        private string GetCodeOutput(ExecutionResult executionResult)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (string result in executionResult.OutputResults)
+            {
+                sb.Append(result);
+            }
+
+            return sb.ToString();
         }
 
         public void SendMessageToIOPub(Message message, PublisherSocket ioPub, string statusValue)

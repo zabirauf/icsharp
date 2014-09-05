@@ -2,6 +2,7 @@
 
 
 using System.Collections.Generic;
+using iCSharp.Kernel.ScriptEngine;
 using iCSharp.Kernel.Shell;
 
 namespace iCSharp.Kernel
@@ -18,6 +19,7 @@ namespace iCSharp.Kernel
 
         private ConnectionInformation _connectionInformation;
         private NetMQContext _context;
+        private ReplEngineFactory _replEngineFactory;
 
         private IServer _shellServer;
         //private IOPub _ioPub;
@@ -25,6 +27,7 @@ namespace iCSharp.Kernel
         private IShellMessageHandler _kernelInfoRequestHandler;
         private IShellMessageHandler _completeRequestHandler;
         private IShellMessageHandler _executeRequestHandler;
+        private IReplEngine _replEngine;
 
         private Dictionary<string, IShellMessageHandler> _messageHandlerMap; 
 
@@ -34,6 +37,7 @@ namespace iCSharp.Kernel
             this._logger = new ConsoleOutLogger("kernel", LogLevel.All, true, true, false, "yyyy/MM/dd HH:mm:ss:fff");
             this._connectionInformation = connectionInformation;
             this._context = NetMQContext.Create();
+            this._replEngineFactory = new ReplEngineFactory(this._logger, new string[] {});
         }
 
         public IServer ShellServer
@@ -65,6 +69,19 @@ namespace iCSharp.Kernel
                 }
 
                 return this._heartBeatServer;
+            }
+        }
+
+        private IReplEngine ReplEngine
+        {
+            get
+            {
+                if (this._replEngine == null)
+                {
+                    this._replEngine = this._replEngineFactory.ReplEngine;
+                }
+
+                return this._replEngine;
             }
         }
 
@@ -100,7 +117,7 @@ namespace iCSharp.Kernel
             {
                 if (this._executeRequestHandler == null)
                 {
-                    this._executeRequestHandler = new ExecuteRequestHandler(this._logger);
+                    this._executeRequestHandler = new ExecuteRequestHandler(this._logger, this.ReplEngine);
                 }
 
                 return this._executeRequestHandler;

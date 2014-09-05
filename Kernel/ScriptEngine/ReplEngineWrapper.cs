@@ -29,6 +29,7 @@ namespace iCSharp.Kernel.ScriptEngine
 
         public ExecutionResult Execute(string script)
         {
+            this.logger.Debug(string.Format("Executing: {0}", script));
             this.console.Clear();
 
             ScriptResult scriptResult = this.repl.Execute(script);
