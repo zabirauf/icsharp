@@ -1,6 +1,7 @@
 ﻿
 
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -44,11 +45,12 @@ namespace iCSharp.Kernel.Shell
             string code = executeRequest.Code;
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
+            string codeHtmlOutput = this.GetCodeHtmlOutput(results);
             
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
                 {"text/plain", codeOutput},
-                {"text/html", codeOutput}
+                {"text/html", codeHtmlOutput}
             };
 
             DisplayData displayData = new DisplayData()
@@ -76,6 +78,17 @@ namespace iCSharp.Kernel.Shell
             foreach (string result in executionResult.OutputResults)
             {
                 sb.Append(result);
+            }
+
+            return sb.ToString();
+        }
+
+        private string GetCodeHtmlOutput(ExecutionResult executionResult)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
+            {
+                sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", tuple.Item2.ToString(), tuple.Item1));
             }
 
             return sb.ToString();

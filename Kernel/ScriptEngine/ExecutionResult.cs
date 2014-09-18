@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Linq;
+
 namespace iCSharp.Kernel.ScriptEngine
 {
     using System.Collections;
@@ -6,6 +9,14 @@ namespace iCSharp.Kernel.ScriptEngine
 
     public class ExecutionResult
     {
-        public IEnumerable<string> OutputResults { get; set; }
+        public IEnumerable<string> OutputResults
+        {
+            get
+            {
+                return this.OutputResultWithColorInformation.Select(tuple => tuple.Item1).ToArray();
+            }
+        }
+
+        public IEnumerable<Tuple<string, ConsoleColor>> OutputResultWithColorInformation { get; set; }
     }
 }

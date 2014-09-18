@@ -30,18 +30,13 @@ namespace iCSharp.Kernel.ScriptEngine
         public ExecutionResult Execute(string script)
         {
             this.logger.Debug(string.Format("Executing: {0}", script));
-            this.console.Clear();
+            this.console.ClearAllInBuffer();
 
             ScriptResult scriptResult = this.repl.Execute(script);
 
-            if (this.IsCompleteResult(scriptResult))
-            {
-                this.console.WriteLine(scriptResult.ReturnValue.ToString());
-            }
-
             ExecutionResult executionResult = new ExecutionResult()
             {
-                OutputResults = this.console.GetAllInBuffer()
+                OutputResultWithColorInformation = this.console.GetAllInBuffer()
             };
 
             return executionResult;
