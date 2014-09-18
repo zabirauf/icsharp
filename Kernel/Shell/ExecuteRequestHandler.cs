@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using iCSharp.Kernel.ScriptEngine;
+using System.Web;
 
 namespace iCSharp.Kernel.Shell
 {
@@ -88,7 +89,8 @@ namespace iCSharp.Kernel.Shell
             StringBuilder sb = new StringBuilder();
             foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
             {
-                sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", tuple.Item2.ToString(), tuple.Item1));
+                string encoded = HttpUtility.HtmlEncode(tuple.Item1);
+                sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", tuple.Item2.ToString(), encoded));
             }
 
             return sb.ToString();
