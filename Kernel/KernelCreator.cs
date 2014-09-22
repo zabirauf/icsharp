@@ -34,7 +34,13 @@ namespace iCSharp.Kernel
 
         public KernelCreator(ConnectionInformation connectionInformation)
         {
+
+        #if DEBUG
             this._logger = new ConsoleOutLogger("kernel", LogLevel.All, true, true, false, "yyyy/MM/dd HH:mm:ss:fff");
+        #else
+            this._logger = new NoOpLogger();
+        #endif
+
             this._connectionInformation = connectionInformation;
             this._context = NetMQContext.Create();
             this._replEngineFactory = new ReplEngineFactory(this._logger, new string[] {});
