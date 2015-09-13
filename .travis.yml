@@ -1,0 +1,11 @@
+language: csharp
+solution: iCSharp.sln
+
+install:
+  - nuget restore ./iCSharp.sln
+
+script:
+  - cd ./Engine
+  - ./build.sh
+  - cd ../
+  - xbuild ./iCSharp.sln /property:Configuration=Release /nologo /verbosity:normal
