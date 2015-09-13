@@ -15,7 +15,7 @@ namespace iCSharp.Kernel
                 Session = session,
                 MessageId = Guid.NewGuid().ToString(),
                 MessageType = messageType,
-                Version = Constants.VERSION
+                Version = "4.0"
             };
 
             return newHeader;

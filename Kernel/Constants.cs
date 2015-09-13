@@ -6,6 +6,6 @@ namespace iCSharp.Kernel
     {
         public const string USERNAME = "icsharp_kernel";
 
-        public const string VERSION = "";
+        public const string VERSION = "4.0";
     }
 }
