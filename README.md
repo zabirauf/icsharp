@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/zabirauf/icsharp.svg)](https://travis-ci.org/zabirauf/icsharp)
+
 #Interactive C# Notebook
 ICSharp is an C# language kernel for [IPython.](http://ipython.org) It allows users
 to use IPython's Notebook frontend, except where IPython executes python code, ICSharp
