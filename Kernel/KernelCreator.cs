@@ -1,21 +1,21 @@
 ﻿
-
-
-using System.Collections.Generic;
-using iCSharp.Kernel.ScriptEngine;
-using iCSharp.Kernel.Shell;
-
 namespace iCSharp.Kernel
 {
+    using System.Collections.Generic;
     using Common.Logging;
     using Common.Logging.Simple;
-    using iCSharp.Messages;
-    using NetMQ;
+    using iCSharp.Kernel.Helpers;
+	using iCSharp.Kernel.ScriptEngine;
+	using iCSharp.Kernel.Shell;
+	using iCSharp.Messages;
+	using NetMQ;
 
 
     public class KernelCreator
     {
         private ILog _logger;
+		private ISignatureValidator _signatureValidator;
+		private IMessageSender _messageSender;
 
         private ConnectionInformation _connectionInformation;
         private NetMQContext _context;
@@ -46,6 +46,33 @@ namespace iCSharp.Kernel
             this._replEngineFactory = new ReplEngineFactory(this._logger, new string[] {});
         }
 
+		public ISignatureValidator SignatureValidator
+		{
+			get 
+			{
+				if (this._signatureValidator == null) 
+				{
+					string signatureAlgorithm = this._connectionInformation.SignatureScheme.Replace ("-", "").ToUpperInvariant ();
+					this._signatureValidator = new SignatureValidator (this._logger, this._connectionInformation.Key, signatureAlgorithm);
+				}
+
+				return this._signatureValidator;
+			}
+		}
+
+		public IMessageSender MessageSender
+		{
+			get 
+			{
+				if (this._messageSender == null) 
+				{
+					this._messageSender = new MessageSender (this.SignatureValidator);
+				}
+
+				return this._messageSender;
+			}
+		}
+
         public IServer ShellServer
         {
             get
@@ -57,6 +84,7 @@ namespace iCSharp.Kernel
                         this.GetAddress(this._connectionInformation.ShellPort),
                         this.GetAddress(this._connectionInformation.IOPubPort), 
                         this._context, 
+						this.SignatureValidator,
                         this.MessageHandler);
                 }
 
@@ -97,7 +125,7 @@ namespace iCSharp.Kernel
             {
                 if (this._kernelInfoRequestHandler == null)
                 {
-                    this._kernelInfoRequestHandler = new KernelInfoRequestHandler(this._logger);
+					this._kernelInfoRequestHandler = new KernelInfoRequestHandler(this._logger, this.MessageSender);
                 }
 
                 return this._kernelInfoRequestHandler;
@@ -123,7 +151,7 @@ namespace iCSharp.Kernel
             {
                 if (this._executeRequestHandler == null)
                 {
-                    this._executeRequestHandler = new ExecuteRequestHandler(this._logger, this.ReplEngine);
+					this._executeRequestHandler = new ExecuteRequestHandler(this._logger, this.ReplEngine, this.MessageSender);
                 }
 
                 return this._executeRequestHandler;

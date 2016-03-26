@@ -1,6 +1,6 @@
 ﻿
 
-namespace iCSharp.Kernel
+namespace iCSharp.Kernel.Helpers
 {
     using System;
     using iCSharp.Messages;

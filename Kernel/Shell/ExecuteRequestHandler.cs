@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using iCSharp.Kernel.ScriptEngine;
 using System.Web;
+using iCSharp.Kernel.Helpers;
 
 namespace iCSharp.Kernel.Shell
 {
@@ -17,16 +18,19 @@ namespace iCSharp.Kernel.Shell
 
     public class ExecuteRequestHandler : IShellMessageHandler
     {
-        private ILog logger;
+        private readonly ILog logger;
 
-        private int executionCount = 1;
+        private readonly IReplEngine replEngine; 
 
-        private IReplEngine replEngine; 
+		private readonly IMessageSender messageSender;
 
-        public ExecuteRequestHandler(ILog logger, IReplEngine replEngine)
+		private int executionCount = 1;
+
+        public ExecuteRequestHandler(ILog logger, IReplEngine replEngine, IMessageSender messageSender)
         {
             this.logger = logger;
             this.replEngine = replEngine;
+			this.messageSender = messageSender;
         }
 
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
@@ -104,7 +108,7 @@ namespace iCSharp.Kernel.Shell
                 JsonSerializer.Serialize(content), message.Header);
 
             this.logger.Info(string.Format("Sending message to IOPub {0}", JsonSerializer.Serialize(ioPubMessage)));
-            MessageSender.Send(ioPubMessage, ioPub);
+			this.messageSender.Send(ioPubMessage, ioPub);
             this.logger.Info("Message Sent");
         }
 
@@ -119,7 +123,7 @@ namespace iCSharp.Kernel.Shell
                 JsonSerializer.Serialize(content), message.Header);
 
             this.logger.Info(string.Format("Sending message to IOPub {0}", JsonSerializer.Serialize(outputMessage)));
-            MessageSender.Send(outputMessage, ioPub);
+			this.messageSender.Send(outputMessage, ioPub);
         }
 
         public void SendInputMessageToIOPub(Message message, PublisherSocket ioPub, string code)
@@ -132,7 +136,7 @@ namespace iCSharp.Kernel.Shell
                 message.Header);
 
             this.logger.Info(string.Format("Sending message to IOPub {0}", JsonSerializer.Serialize(executeInputMessage)));
-            MessageSender.Send(executeInputMessage, ioPub);
+			this.messageSender.Send(executeInputMessage, ioPub);
         }
 
         public void SendExecuteReplyMessage(Message message, RouterSocket shellSocket)
@@ -148,7 +152,7 @@ namespace iCSharp.Kernel.Shell
                 JsonSerializer.Serialize(executeReply), message.Header);
 
             this.logger.Info(string.Format("Sending message to Shell {0}", JsonSerializer.Serialize(executeReplyMessage)));
-            MessageSender.Send(executeReplyMessage, shellSocket);
+			this.messageSender.Send(executeReplyMessage, shellSocket);
         }
     }
 }

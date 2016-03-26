@@ -16,7 +16,6 @@
     {
         public static void Main(string[] args)
         {
-            //Console.WriteLine(File.ReadAllText("C:\Users\Zohaib\.ipython\profile_icsharp\security\kernel-7064.json"));
             PrintAllArgs(args);
             if (args.Length <= 0)
             {
