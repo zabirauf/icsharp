@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,16 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging, Version=2.1.2.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.10\lib\net40\NetMQ.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,6 +45,12 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
@@ -60,8 +58,6 @@
     <Compile Include="Heartbeat\Heartbeat.cs" />
     <Compile Include="IServer.cs" />
     <Compile Include="KernelCreator.cs" />
-    <Compile Include="MessageBuilder.cs" />
-    <Compile Include="MessageSender.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplEngineFactory.cs" />
@@ -75,6 +71,11 @@
     <Compile Include="Shell\KernelInfoRequestHandler.cs" />
     <Compile Include="Shell\Shell.cs" />
     <Compile Include="Stdin\Stdin.cs" />
+    <Compile Include="Helpers\MessageBuilder.cs" />
+    <Compile Include="Helpers\MessageSender.cs" />
+    <Compile Include="Helpers\ISignatureValidator.cs" />
+    <Compile Include="Helpers\IMessageSender.cs" />
+    <Compile Include="Helpers\SignatureValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -84,35 +85,35 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{0330b333-d8b9-451e-b3b7-20daf7a2fcd4}</Project>
+      <Project>{0330B333-D8B9-451E-B3B7-20DAF7A2FCD4}</Project>
       <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs.Contracts\ScriptCs.Contracts.csproj">
-      <Project>{6049e205-8b5f-4080-b023-70600e51fd64}</Project>
+      <Project>{6049E205-8B5F-4080-B023-70600E51FD64}</Project>
       <Name>ScriptCs.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs.Core\ScriptCs.Core.csproj">
-      <Project>{e590e710-e159-48e6-a3e6-1a83d3fe732c}</Project>
+      <Project>{E590E710-E159-48E6-A3E6-1A83D3FE732C}</Project>
       <Name>ScriptCs.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs.Engine.Mono\ScriptCs.Engine.Mono.csproj">
-      <Project>{e4adcfee-ff3b-4ef5-8298-2b31f407f58b}</Project>
+      <Project>{E4ADCFEE-FF3B-4EF5-8298-2B31F407F58B}</Project>
       <Name>ScriptCs.Engine.Mono</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs.Engine.Roslyn\ScriptCs.Engine.Roslyn.csproj">
-      <Project>{e79ec231-e27d-4057-91c9-2d001a3a8c3b}</Project>
+      <Project>{E79EC231-E27D-4057-91C9-2D001A3A8C3B}</Project>
       <Name>ScriptCs.Engine.Roslyn</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs.Hosting\ScriptCs.Hosting.csproj">
-      <Project>{9aef2d95-87fb-4829-b384-34bfe076d531}</Project>
+      <Project>{9AEF2D95-87FB-4829-B384-34BFE076D531}</Project>
       <Name>ScriptCs.Hosting</Name>
     </ProjectReference>
     <ProjectReference Include="..\Engine\src\ScriptCs\ScriptCs.csproj">
-      <Project>{25080671-1a80-4041-b9c7-260578ff4849}</Project>
+      <Project>{25080671-1A80-4041-B9C7-260578FF4849}</Project>
       <Name>ScriptCs</Name>
     </ProjectReference>
     <ProjectReference Include="..\Messages\Messages.csproj">
-      <Project>{1dc4bcd0-8e6b-4657-ad7c-2e1e01e3eb34}</Project>
+      <Project>{1DC4BCD0-8E6B-4657-AD7C-2E1E01E3EB34}</Project>
       <Name>Messages</Name>
     </ProjectReference>
   </ItemGroup>
@@ -131,4 +132,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
 </Project>

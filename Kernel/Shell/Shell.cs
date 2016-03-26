@@ -1,15 +1,14 @@
 ﻿
-
-using System.Collections.Generic;
-using Common.Serializer;
-using iCSharp.Messages;
-
 namespace iCSharp.Kernel.Shell
 {
-    using NetMQ;
-    using NetMQ.Sockets;
+    using System.Collections.Generic;
     using System.Threading;
     using Common.Logging;
+    using Common.Serializer;
+	using iCSharp.Kernel.Helpers;
+	using iCSharp.Messages;
+	using NetMQ;
+	using NetMQ.Sockets;
 
     public class Shell : IServer
     {
@@ -18,6 +17,7 @@ namespace iCSharp.Kernel.Shell
         private string addressIOPub;
 
         private NetMQContext context;
+		private ISignatureValidator signatureValidator;
         private RouterSocket server;
         private PublisherSocket ioPubSocket;
 
@@ -28,11 +28,18 @@ namespace iCSharp.Kernel.Shell
 
         private Dictionary<string, IShellMessageHandler> messageHandlers; 
 
-        public Shell(ILog logger,string addressShell, string addressIOPub, NetMQContext context, Dictionary<string, IShellMessageHandler> messageHandlers)
+        public Shell(
+			ILog logger,
+			string addressShell, 
+			string addressIOPub, 
+			NetMQContext context, 
+			ISignatureValidator signatureValidator,
+			Dictionary<string, IShellMessageHandler> messageHandlers)
         {
             this.logger = logger;
             this.addressShell = addressShell;
             this.addressIOPub = addressIOPub;
+			this.signatureValidator = signatureValidator;
             this.context = context;
             this.messageHandlers = messageHandlers;
 

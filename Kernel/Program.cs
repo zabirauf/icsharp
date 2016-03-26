@@ -1,30 +1,21 @@
-﻿
-
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Common.Logging;
-using Common.Logging.Simple;
-using iCSharp.Kernel;
-using iCSharp.Kernel.ScriptEngine;
-using NetMQ.zmq;
-using ScriptCs;
-using ScriptCs.Contracts;
-using ScriptCs.Engine.Roslyn;
-using LogLevel = Common.Logging.LogLevel;
-
-namespace iCSharp
+﻿namespace iCSharp
 {
     using System;
-    using System.Collections.Generic;
+	using System.IO;
+	using System.Threading;
+	using Common.Logging;
+	using Common.Logging.Simple;
+	using iCSharp.Kernel;
+	using iCSharp.Messages;
     using Newtonsoft.Json;
-    using iCSharp.Messages;
+    
+	using LogLevel = Common.Logging.LogLevel;
+	using ILog = Common.Logging.ILog;
 
     public class Program
     {
         public static void Main(string[] args)
         {
-            //Console.WriteLine(File.ReadAllText("C:\Users\Zohaib\.ipython\profile_icsharp\security\kernel-7064.json"));
             PrintAllArgs(args);
             if (args.Length <= 0)
             {

@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Common.Logging;
 using iCSharp.Kernel.ScriptEngine;
 using ScriptCs;
-using ScriptCs.Argument;
 using ScriptCs.Contracts;
 using ScriptCs.Hosting;
+
+using IReplEngine = iCSharp.Kernel.ScriptEngine.IReplEngine;
+using ILog = Common.Logging.ILog;
 
 namespace iCSharp.Kernel
 {
@@ -67,8 +69,8 @@ namespace iCSharp.Kernel
         private Repl GetRepl(string[] args, out MemoryBufferConsole memoryBufferConsole)
         {
             SetProfile();
-            var arguments = ParseArguments(args);
-            var scriptServicesBuilder = ScriptServicesBuilderFactory.Create(arguments.CommandArguments, arguments.ScriptArguments);
+			ScriptCsArgs arguments = ParseArguments(args);
+			var scriptServicesBuilder = ScriptServicesBuilderFactory.Create(Config.Create(arguments), args);
             IInitializationServices _initializationServices = scriptServicesBuilder.InitializationServices;
             IFileSystem _fileSystem = _initializationServices.GetFileSystem();
 
@@ -84,9 +86,16 @@ namespace iCSharp.Kernel
 
             ScriptServices scriptServices = scriptServicesBuilder.Build();
             memoryBufferConsole = new MemoryBufferConsole();
-            Repl repl = new Repl(arguments.ScriptArguments, _fileSystem, scriptServices.Engine,
-                scriptServices.ObjectSerializer, scriptServices.Logger, memoryBufferConsole,
-                scriptServices.FilePreProcessor, scriptServices.ReplCommands);
+            Repl repl = new Repl(
+				args, 
+				_fileSystem, 
+				scriptServices.Engine,
+                scriptServices.ObjectSerializer, 
+				scriptServices.LogProvider,
+				scriptServices.ScriptLibraryComposer,
+				memoryBufferConsole,
+                scriptServices.FilePreProcessor, 
+				scriptServices.ReplCommands);
 
             var workingDirectory = _fileSystem.CurrentDirectory;
             var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(workingDirectory);
@@ -98,18 +107,9 @@ namespace iCSharp.Kernel
 
         }
 
-        private static ArgumentParseResult ParseArguments(string[] args)
+		private static ScriptCsArgs ParseArguments(string[] args)
         {
-            var console = new ScriptConsole();
-            try
-            {
-                var parser = new ArgumentHandler(new ArgumentParser(console), new ConfigFileParser(console), new FileSystem());
-                return parser.Parse(args);
-            }
-            finally
-            {
-                console.Exit();
-            }
+			return ScriptCsArgs.Parse (args);
         }
 
         private static void SetProfile()

@@ -4,15 +4,19 @@ namespace iCSharp.Kernel.Shell
     using Common.Logging;
     using Common.Serializer;
     using iCSharp.Messages;
+	using iCSharp.Kernel.Helpers;
     using NetMQ.Sockets;
 
     public class KernelInfoRequestHandler : IShellMessageHandler
     {
-        private ILog logger;
+        private readonly ILog logger;
 
-        public KernelInfoRequestHandler(ILog logger)
+		private readonly IMessageSender messageSender;
+
+        public KernelInfoRequestHandler(ILog logger, IMessageSender messageSender)
         {
             this.logger = logger;
+			this.messageSender = messageSender;
         }
 
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
@@ -28,7 +32,7 @@ namespace iCSharp.Kernel.Shell
             };
 
             this.logger.Info("Sending kernel_info_reply");
-            MessageSender.Send(replyMessage, serverSocket);
+			this.messageSender.Send(replyMessage, serverSocket);
         }
 
         private KernelInfoReply CreateKernelInfoReply()

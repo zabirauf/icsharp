@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Common.Logging;
+﻿using Common.Logging;
 using ScriptCs;
-using ScriptCs.Argument;
-using ScriptCs.Command;
 using ScriptCs.Contracts;
-using ScriptCs.Hosting;
+
+using ILog = Common.Logging.ILog;
 
 namespace iCSharp.Kernel.ScriptEngine
 {
