@@ -16,9 +16,9 @@ This is Alpha. Take with a large pinch of salt :)
 
 ###Installation
 
-#### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-for-Mac-OS-X)
+#### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-on-Mac-OS-X)
 
-#### [Linux] (https://github.com/zabirauf/icsharp/wiki/Install-for-Unix-(Debian-7.8))
+#### [Linux] (https://github.com/zabirauf/icsharp/wiki/Install-on-Unix-(Debian-7.8))
 
 #### Windows
 
