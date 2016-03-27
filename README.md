@@ -15,6 +15,13 @@ The development of this language kernel for C# is at it's very early stages.
 This is Alpha. Take with a large pinch of salt :)
 
 ###Installation
+
+#### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-for-Mac-OS-X)
+
+#### [Linux] (https://github.com/zabirauf/icsharp/wiki/Install-for-Unix-(Debian-7.8))
+
+#### Windows
+
 1. Install [chocolatey](https://chocolatey.org)
 2. Install [python \(2.x\)](https://chocolatey.org/packages/python2) and [pip](https://chocolatey.org/packages/pip) using chocolatey
 3. Install [ipython](http://ipython.org/install.html) using pip
@@ -31,4 +38,10 @@ some thoughts on how to improve ICSharp.
 
 ##[Demo](http://nbviewer.ipython.org/urls/gist.githubusercontent.com/zabirauf/a0d4aa22b383afaa1e23/raw/65e539dc98b2cf3e38cc26faf3575e50f4ac9108/iCSharp%20Sample.ipynb)
 
-##[Twitter](http://twitter.com/zabirauf)
+## Contributors
+Thanks to contributors (in alphabetic order).
+* [awb99](https://github.com/awb99)
+* [denfromufa](https://github.com/denfromufa)
+* [gwenzek](https://github.com/gwenzek)
+
+## [Twitter](http://twitter.com/zabirauf)
