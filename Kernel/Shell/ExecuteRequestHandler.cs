@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using iCSharp.Kernel.ScriptEngine;
@@ -67,7 +68,10 @@ namespace iCSharp.Kernel.Shell
             this.SendExecuteReplyMessage(message, serverSocket);
 
             // 5: Send execute result message to IOPub
-            this.SendOutputMessageToIOPub(message, ioPub, displayData);
+            if (results.OutputResultWithColorInformation.Any())
+            {
+                this.SendOutputMessageToIOPub(message, ioPub, displayData);
+            }
 
             // 6: Send IDLE status message to IOPub
             this.SendMessageToIOPub(message, ioPub, StatusValues.Idle);
