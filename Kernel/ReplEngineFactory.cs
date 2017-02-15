@@ -95,7 +95,9 @@ namespace iCSharp.Kernel
 				scriptServices.ScriptLibraryComposer,
 				memoryBufferConsole,
                 scriptServices.FilePreProcessor, 
-				scriptServices.ReplCommands);
+				scriptServices.ReplCommands,
+                new Printers(new ObjectSerializer()), 
+                new ScriptInfo());
 
             var workingDirectory = _fileSystem.CurrentDirectory;
             var assemblies = scriptServices.AssemblyResolver.GetAssemblyPaths(workingDirectory);

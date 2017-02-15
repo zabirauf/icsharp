@@ -9,10 +9,22 @@ mono ./.nuget/NuGet.exe restore ./iCSharp.sln
 
 # Build scriptcs
 cd ./Engine
-./build.sh
+
+# If brew is given as parameter, use the brew build-script
+if [ "$1" == "brew" ]
+then
+	./build_brew.sh
+else
+	./build.sh
+fi
+
 cd ../
 
 # Build iCSharp
 mkdir -p build/Release/bin
 xbuild ./iCSharp.sln /property:Configuration=Release /nologo /verbosity:normal
-cp $(find ./*/bin/Release/*) ./build/Release/bin
+
+# Copy files safely
+for line in $(find ./*/bin/Release/*); do 
+	 cp $line ./build/Release/bin
+done

@@ -76,5 +76,12 @@ namespace iCSharp.Kernel.ScriptEngine
 
             set { this.foregroundColor = value; }
         }
+
+        public string ReadLine(string prompt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Width { get; }
     }
 }
