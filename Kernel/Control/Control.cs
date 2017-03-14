@@ -19,7 +19,7 @@ namespace iCSharp.Kernel.Control
         public Control(int port)
         {
             this.port = port;
-			this.server = new RouterSocket();
+            this.server = new RouterSocket();
         }
 
         public void Start()

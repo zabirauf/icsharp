@@ -155,7 +155,8 @@ namespace iCSharp.Kernel.Shell
             Message executeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.ExecuteReply,
                 JsonSerializer.Serialize(executeReply), message.Header);
 
-            // Stick the original identifiers on the message
+            // Stick the original identifiers on the message so they'll be sent first
+            // Necessary since the shell socket is a ROUTER socket
             executeReplyMessage.identifiers = message.identifiers;
 
             this.logger.Info(string.Format("Sending message to Shell {0}", JsonSerializer.Serialize(executeReplyMessage)));

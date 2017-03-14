@@ -14,7 +14,7 @@ namespace iCSharp.Kernel.Stdin
 
         private bool disposed;
 
-		public Stdin(int port)
+        public Stdin(int port)
         {
             this.port = port;
 

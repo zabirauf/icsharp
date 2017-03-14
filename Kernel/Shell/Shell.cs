@@ -94,36 +94,36 @@ namespace iCSharp.Kernel.Shell
             byte[] delimAsBytes = Encoding.ASCII.GetBytes("<IDS|MSG>");
             byte[] delim;
             while (true) {
-				delim = this.server.ReceiveFrameBytes();
+                delim = this.server.ReceiveFrameBytes();
                 if (delim.SequenceEqual(delimAsBytes)) break;
 
                 message.identifiers.Add(delim);
             }
 
             // Getting Hmac
-			message.HMac = this.server.ReceiveFrameString();
+            message.HMac = this.server.ReceiveFrameString();
             this.logger.Info(message.HMac);
 
             // Getting Header
-			string header = this.server.ReceiveFrameString();
+            string header = this.server.ReceiveFrameString();
             this.logger.Info(header);
 
             message.Header = JsonSerializer.Deserialize<Header>(header);
 
             // Getting parent header
-			string parentHeader = this.server.ReceiveFrameString();
+            string parentHeader = this.server.ReceiveFrameString();
             this.logger.Info(parentHeader);
 
             message.ParentHeader = JsonSerializer.Deserialize<Header>(parentHeader);
 
             // Getting metadata
-			string metadata = this.server.ReceiveFrameString();
+            string metadata = this.server.ReceiveFrameString();
             this.logger.Info(metadata);
 
             message.MetaData = JsonSerializer.Deserialize<Dictionary<string, object>>(metadata);
 
             // Getting content
-			string content = this.server.ReceiveFrameString();
+            string content = this.server.ReceiveFrameString();
             this.logger.Info(content);
 
             message.Content = content;

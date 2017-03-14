@@ -44,7 +44,7 @@ namespace iCSharp.Kernel.Helpers
 
         private void Send(string message, NetMQSocket socket, bool sendMore = true)
         {
-			socket.SendFrame(message, sendMore);
+            socket.SendFrame(message, sendMore);
         }
     }
 }
