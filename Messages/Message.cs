@@ -9,7 +9,7 @@ namespace iCSharp.Messages
     {
         public Message()
         {
-            this.identifiers = new List<byte[]>();
+            this.Identifiers = new List<byte[]>();
             this.UUID = string.Empty;
             this.HMac = string.Empty;
             this.MetaData = new Dictionary<string, object>();
@@ -17,7 +17,7 @@ namespace iCSharp.Messages
         }
 
         [JsonProperty("identifiers")]
-        public List<byte[]> identifiers { get; set; }
+        public List<byte[]> Identifiers { get; set; }
 
         [JsonProperty("uuid")]
         public string UUID { get; set; }

@@ -97,7 +97,7 @@ namespace iCSharp.Kernel.Shell
                 delim = this.server.ReceiveFrameBytes();
                 if (delim.SequenceEqual(delimAsBytes)) break;
 
-                message.identifiers.Add(delim);
+                message.Identifiers.Add(delim);
             }
 
             // Getting Hmac

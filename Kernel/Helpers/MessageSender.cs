@@ -20,11 +20,11 @@ namespace iCSharp.Kernel.Helpers
         {
 			string hmac = this._signatureValidator.CreateSignature (message);
 
-            if (message.identifiers.Count > 0) {
+            if (message.Identifiers.Count > 0) {
                 // Send ZMQ identifiers from the message we're responding to.
                 // This is important when we're dealing with ROUTER sockets, like the shell socket,
                 // because the message won't be sent unless we manually include these.
-                foreach (var ident in message.identifiers) {
+                foreach (var ident in message.Identifiers) {
                     socket.TrySendFrame(ident, true);
                 }
             } else {
