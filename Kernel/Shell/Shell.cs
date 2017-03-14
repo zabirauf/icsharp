@@ -2,12 +2,14 @@
 namespace iCSharp.Kernel.Shell
 {
     using System.Collections.Generic;
+    using System.Text;
+    using System.Linq;
     using System.Threading;
     using Common.Logging;
     using Common.Serializer;
-	using iCSharp.Kernel.Helpers;
-	using iCSharp.Messages;
-	using NetMQ;
+    using iCSharp.Kernel.Helpers;
+    using iCSharp.Messages;
+    using NetMQ;
 	using NetMQ.Sockets;
 
     public class Shell : IServer
@@ -16,8 +18,7 @@ namespace iCSharp.Kernel.Shell
         private string addressShell;
         private string addressIOPub;
 
-        private NetMQContext context;
-		private ISignatureValidator signatureValidator;
+        private ISignatureValidator signatureValidator;
         private RouterSocket server;
         private PublisherSocket ioPubSocket;
 
@@ -26,25 +27,22 @@ namespace iCSharp.Kernel.Shell
         private Thread thread;
         private bool disposed;
 
-        private Dictionary<string, IShellMessageHandler> messageHandlers; 
+        private Dictionary<string, IShellMessageHandler> messageHandlers;
 
-        public Shell(
-			ILog logger,
-			string addressShell, 
-			string addressIOPub, 
-			NetMQContext context, 
-			ISignatureValidator signatureValidator,
-			Dictionary<string, IShellMessageHandler> messageHandlers)
+        public Shell(ILog logger,
+                     string addressShell,
+                     string addressIOPub,
+                     ISignatureValidator signatureValidator,
+                     Dictionary<string, IShellMessageHandler> messageHandlers)
         {
             this.logger = logger;
             this.addressShell = addressShell;
             this.addressIOPub = addressIOPub;
-			this.signatureValidator = signatureValidator;
-            this.context = context;
+            this.signatureValidator = signatureValidator;
             this.messageHandlers = messageHandlers;
 
-            this.server = this.context.CreateRouterSocket();
-            this.ioPubSocket = this.context.CreatePublisherSocket();
+            this.server = new RouterSocket();
+            this.ioPubSocket = new PublisherSocket();
             this.stopEvent = new ManualResetEventSlim();
         }
 
@@ -81,7 +79,7 @@ namespace iCSharp.Kernel.Shell
                 else
                 {
                     this.logger.Error(string.Format("No message handler found for message type {0}",
-                        message.Header.MessageType));
+                                                    message.Header.MessageType));
                 }
             }
         }
@@ -94,33 +92,32 @@ namespace iCSharp.Kernel.Shell
             message.UUID = this.server.ReceiveString();
             this.logger.Info(message.UUID);
 
-            // Getting Delimeter "<IDS|MSG>"
-            this.server.ReceiveString();
+            this.logger.Info("DONE ADDING DELIMITERS!");
 
             // Getting Hmac
-            message.HMac = this.server.ReceiveString();
+			message.HMac = this.server.ReceiveFrameString();
             this.logger.Info(message.HMac);
 
             // Getting Header
-            string header = this.server.ReceiveString();
+			string header = this.server.ReceiveFrameString();
             this.logger.Info(header);
 
             message.Header = JsonSerializer.Deserialize<Header>(header);
 
             // Getting parent header
-            string parentHeader = this.server.ReceiveString();
+			string parentHeader = this.server.ReceiveFrameString();
             this.logger.Info(parentHeader);
 
             message.ParentHeader = JsonSerializer.Deserialize<Header>(parentHeader);
 
             // Getting metadata
-            string metadata = this.server.ReceiveString();
+			string metadata = this.server.ReceiveFrameString();
             this.logger.Info(metadata);
 
             message.MetaData = JsonSerializer.Deserialize<Dictionary<string, object>>(metadata);
 
             // Getting content
-            string content = this.server.ReceiveString();
+			string content = this.server.ReceiveFrameString();
             this.logger.Info(content);
 
             message.Content = content;

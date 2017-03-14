@@ -13,7 +13,6 @@ namespace iCSharp.Kernel.Heartbeat
         private ILog logger;
         private string address;
 
-        private NetMQContext context;
         private ResponseSocket server;
 
         private ManualResetEventSlim stopEvent;
@@ -22,13 +21,12 @@ namespace iCSharp.Kernel.Heartbeat
 
         private bool disposed;
 
-        public Heartbeat(ILog logger,  string address, NetMQContext context)
+        public Heartbeat(ILog logger,  string address)
         {
             this.logger = logger;
             this.address = address;
-            this.context = context;
 
-            this.server = context.CreateResponseSocket();
+            this.server = new ResponseSocket();
             this.stopEvent = new ManualResetEventSlim();
         }
 
@@ -55,11 +53,11 @@ namespace iCSharp.Kernel.Heartbeat
 
             while (!this.stopEvent.Wait(0))
             {
-                byte[] data = this.server.Receive();
+                byte[] data = this.server.ReceiveFrameBytes();
 
                 this.logger.Info(System.Text.Encoding.Default.GetString(data));
                 // Echoing back whatever was received
-                this.server.Send(data);
+                this.server.TrySendFrame(data);
             }
 
         }

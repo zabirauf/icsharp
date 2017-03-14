@@ -21,7 +21,7 @@ namespace iCSharp.Kernel.Shell
     {
         private readonly ILog logger;
 
-        private readonly IReplEngine replEngine; 
+        private readonly IReplEngine replEngine;
 
 		private readonly IMessageSender messageSender;
 
@@ -52,7 +52,7 @@ namespace iCSharp.Kernel.Shell
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
             string codeHtmlOutput = this.GetCodeHtmlOutput(results);
-            
+
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
                 {"text/plain", codeOutput},

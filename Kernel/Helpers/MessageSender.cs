@@ -33,7 +33,7 @@ namespace iCSharp.Kernel.Helpers
 
         private void Send(string message, NetMQSocket socket, bool sendMore = true)
         {
-            socket.Send(message, false, sendMore);
+			socket.SendFrame(message, sendMore);
         }
     }
 }

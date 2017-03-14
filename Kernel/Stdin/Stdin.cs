@@ -10,17 +10,15 @@ namespace iCSharp.Kernel.Stdin
     {
         private int port;
 
-        private NetMQContext context;
         private RouterSocket server;
 
         private bool disposed;
 
-        public Stdin(int port, NetMQContext context)
+		public Stdin(int port)
         {
             this.port = port;
-            this.context = context;
 
-            this.server = this.context.CreateRouterSocket();
+            this.server = new RouterSocket();
         }
 
         public void Dispose()
