@@ -88,11 +88,17 @@ namespace iCSharp.Kernel.Shell
         {
             Message message = new Message();
 
-            // Getting UUID
-            message.UUID = this.server.ReceiveString();
-            this.logger.Info(message.UUID);
+            // There may be additional ZMQ identities attached; read until the delimiter <IDS|MSG>"
+            // and store them in message.identifiers
+            // http://ipython.org/ipython-doc/dev/development/messaging.html#the-wire-protocol
+            byte[] delimAsBytes = Encoding.ASCII.GetBytes("<IDS|MSG>");
+            byte[] delim;
+            while (true) {
+				delim = this.server.ReceiveFrameBytes();
+                if (delim.SequenceEqual(delimAsBytes)) break;
 
-            this.logger.Info("DONE ADDING DELIMITERS!");
+                message.identifiers.Add(delim);
+            }
 
             // Getting Hmac
 			message.HMac = this.server.ReceiveFrameString();

@@ -155,8 +155,11 @@ namespace iCSharp.Kernel.Shell
             Message executeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.ExecuteReply,
                 JsonSerializer.Serialize(executeReply), message.Header);
 
+            // Stick the original identifiers on the message
+            executeReplyMessage.identifiers = message.identifiers;
+
             this.logger.Info(string.Format("Sending message to Shell {0}", JsonSerializer.Serialize(executeReplyMessage)));
-			this.messageSender.Send(executeReplyMessage, shellSocket);
+            this.messageSender.Send(executeReplyMessage, shellSocket);
         }
     }
 }

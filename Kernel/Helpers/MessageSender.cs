@@ -7,7 +7,7 @@ namespace iCSharp.Kernel.Helpers
 
 	public class MessageSender : IMessageSender
     {
-        private const string Delimeter = "<IDS|MSG>";
+        private const string Delimiter = "<IDS|MSG>";
 
 		private readonly ISignatureValidator _signatureValidator;
 
@@ -20,8 +20,19 @@ namespace iCSharp.Kernel.Helpers
         {
 			string hmac = this._signatureValidator.CreateSignature (message);
 
-            Send(message.UUID, socket);
-            Send(Delimeter, socket);
+            if (message.identifiers.Count > 0) {
+                // Send ZMQ identifiers from the message we're responding to.
+                // This is important when we're dealing with ROUTER sockets, like the shell socket,
+                // because the message won't be sent unless we manually include these.
+                foreach (var ident in message.identifiers) {
+                    socket.TrySendFrame(ident, true);
+                }
+            } else {
+                // This is just a normal message so send the UUID
+                Send(message.UUID, socket);
+            }
+
+            Send(Delimiter, socket);
 			Send(hmac, socket);
             Send(JsonSerializer.Serialize(message.Header), socket);
             Send(JsonSerializer.Serialize(message.ParentHeader), socket);
