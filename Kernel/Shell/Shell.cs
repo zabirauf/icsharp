@@ -91,7 +91,7 @@ namespace iCSharp.Kernel.Shell
             // There may be additional ZMQ identities attached; read until the delimiter <IDS|MSG>"
             // and store them in message.identifiers
             // http://ipython.org/ipython-doc/dev/development/messaging.html#the-wire-protocol
-            byte[] delimAsBytes = Encoding.ASCII.GetBytes("<IDS|MSG>");
+            byte[] delimAsBytes = Encoding.ASCII.GetBytes(Constants.DELIMITER);
             byte[] delim;
             while (true) {
                 delim = this.server.ReceiveFrameBytes();

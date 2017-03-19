@@ -7,8 +7,6 @@ namespace iCSharp.Kernel.Helpers
 
 	public class MessageSender : IMessageSender
     {
-        private const string Delimiter = "<IDS|MSG>";
-
 		private readonly ISignatureValidator _signatureValidator;
 
 		public MessageSender(ISignatureValidator signatureValidator)
@@ -32,7 +30,7 @@ namespace iCSharp.Kernel.Helpers
                 Send(message.UUID, socket);
             }
 
-            Send(Delimiter, socket);
+            Send(Constants.DELIMITER, socket);
 			Send(hmac, socket);
             Send(JsonSerializer.Serialize(message.Header), socket);
             Send(JsonSerializer.Serialize(message.ParentHeader), socket);
