@@ -8,21 +8,18 @@ namespace iCSharp.Kernel.Control
     using NetMQ;
     using NetMQ.Sockets;
 
-    public class Control : IServer
+	public class Control : IServer
     {
         private int port;
 
-        private NetMQContext context;
         private RouterSocket server;
 
         private bool disposed;
 
-        public Control(int port, NetMQContext context)
+        public Control(int port)
         {
             this.port = port;
-            this.context = context;
-
-            this.server = this.context.CreateRouterSocket();
+            this.server = new RouterSocket();
         }
 
         public void Start()

@@ -21,7 +21,7 @@ namespace iCSharp.Kernel.Shell
     {
         private readonly ILog logger;
 
-        private readonly IReplEngine replEngine; 
+        private readonly IReplEngine replEngine;
 
 		private readonly IMessageSender messageSender;
 
@@ -52,7 +52,7 @@ namespace iCSharp.Kernel.Shell
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
             string codeHtmlOutput = this.GetCodeHtmlOutput(results);
-            
+
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
                 {"text/plain", codeOutput},
@@ -155,8 +155,12 @@ namespace iCSharp.Kernel.Shell
             Message executeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.ExecuteReply,
                 JsonSerializer.Serialize(executeReply), message.Header);
 
+            // Stick the original identifiers on the message so they'll be sent first
+            // Necessary since the shell socket is a ROUTER socket
+            executeReplyMessage.Identifiers = message.Identifiers;
+
             this.logger.Info(string.Format("Sending message to Shell {0}", JsonSerializer.Serialize(executeReplyMessage)));
-			this.messageSender.Send(executeReplyMessage, shellSocket);
+            this.messageSender.Send(executeReplyMessage, shellSocket);
         }
     }
 }

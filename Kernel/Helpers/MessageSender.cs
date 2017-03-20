@@ -7,8 +7,6 @@ namespace iCSharp.Kernel.Helpers
 
 	public class MessageSender : IMessageSender
     {
-        private const string Delimeter = "<IDS|MSG>";
-
 		private readonly ISignatureValidator _signatureValidator;
 
 		public MessageSender(ISignatureValidator signatureValidator)
@@ -20,8 +18,19 @@ namespace iCSharp.Kernel.Helpers
         {
 			string hmac = this._signatureValidator.CreateSignature (message);
 
-            Send(message.UUID, socket);
-            Send(Delimeter, socket);
+            if (message.Identifiers.Count > 0) {
+                // Send ZMQ identifiers from the message we're responding to.
+                // This is important when we're dealing with ROUTER sockets, like the shell socket,
+                // because the message won't be sent unless we manually include these.
+                foreach (var ident in message.Identifiers) {
+                    socket.TrySendFrame(ident, true);
+                }
+            } else {
+                // This is just a normal message so send the UUID
+                Send(message.UUID, socket);
+            }
+
+            Send(Constants.DELIMITER, socket);
 			Send(hmac, socket);
             Send(JsonSerializer.Serialize(message.Header), socket);
             Send(JsonSerializer.Serialize(message.ParentHeader), socket);
@@ -33,7 +42,7 @@ namespace iCSharp.Kernel.Helpers
 
         private void Send(string message, NetMQSocket socket, bool sendMore = true)
         {
-            socket.Send(message, false, sendMore);
+            socket.SendFrame(message, sendMore);
         }
     }
 }

@@ -18,7 +18,6 @@ namespace iCSharp.Kernel
 		private IMessageSender _messageSender;
 
         private ConnectionInformation _connectionInformation;
-        private NetMQContext _context;
         private ReplEngineFactory _replEngineFactory;
 
         private IServer _shellServer;
@@ -42,7 +41,6 @@ namespace iCSharp.Kernel
         #endif
 
             this._connectionInformation = connectionInformation;
-            this._context = NetMQContext.Create();
             this._replEngineFactory = new ReplEngineFactory(this._logger, new string[] {});
         }
 
@@ -83,7 +81,6 @@ namespace iCSharp.Kernel
                     this._shellServer = new Shell.Shell(this._logger,
                         this.GetAddress(this._connectionInformation.ShellPort),
                         this.GetAddress(this._connectionInformation.IOPubPort), 
-                        this._context, 
 						this.SignatureValidator,
                         this.MessageHandler);
                 }
@@ -99,7 +96,7 @@ namespace iCSharp.Kernel
                 if (this._heartBeatServer == null)
                 {
                     this._heartBeatServer = new Heartbeat.Heartbeat(this._logger,
-                        this.GetAddress(this._connectionInformation.HBPort), this._context);
+                        this.GetAddress(this._connectionInformation.HBPort));
                 }
 
                 return this._heartBeatServer;
