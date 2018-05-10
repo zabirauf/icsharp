@@ -1,5 +1,5 @@
 {
-    "argv": ["<INSTALL_PATH>/icsharp/Kernel/bin/Release/iCSharp.Kernel.exe", "{connection_file}"],
+    "argv": ["C:/Users/Mohamed/source/repos/icsharp/Kernel/bin/Debug/iCSharp.Kernel.exe", "{connection_file}"],
     "display_name": "C#",
     "language": "csharp"
 }
