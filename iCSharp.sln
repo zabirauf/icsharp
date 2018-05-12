@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel.csproj", "{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}"
 EndProject
@@ -29,6 +29,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCs.Engine.Mono", "Engine\src\ScriptCs.Engine.Mono\ScriptCs.Engine.Mono.csproj", "{E4ADCFEE-FF3B-4EF5-8298-2B31F407F58B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCs.Hosting", "Engine\src\ScriptCs.Hosting\ScriptCs.Hosting.csproj", "{9AEF2D95-87FB-4829-B384-34BFE076D531}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2AD7E017-5ED8-48F2-B83C-9ACA856C3974}"
+	ProjectSection(SolutionItems) = preProject
+		custom.js = custom.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,5 +88,8 @@ Global
 		{E590E710-E159-48E6-A3E6-1A83D3FE732C} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
 		{E4ADCFEE-FF3B-4EF5-8298-2B31F407F58B} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
 		{9AEF2D95-87FB-4829-B384-34BFE076D531} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {89A1AC95-C4E4-46BF-BB51-FA440EB76B9A}
 	EndGlobalSection
 EndGlobal
