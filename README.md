@@ -49,10 +49,17 @@ some thoughts on how to improve ICSharp.
 
 ## [Demo](http://nbviewer.jupyter.org/urls/gist.githubusercontent.com/zabirauf/a0d4aa22b383afaa1e23/raw/65e539dc98b2cf3e38cc26faf3575e50f4ac9108/iCSharp%20Sample.ipynb)
 
-## Contributors
-Thanks to contributors (in alphabetic order).
-* [awb99](https://github.com/awb99)
-* [denfromufa](https://github.com/denfromufa)
-* [gwenzek](https://github.com/gwenzek)
+## TODO
 
-## [Twitter](http://twitter.com/zabirauf)
+### Code to write
+
+- [ ] Intellisense Support
+- [ ] YellowBook addition
+
+### Current
+- [ ] Syntax Highlighting - Mohamed
+- [ ] Jupyter Notebook Fix - Mostafa
+
+
+### Done
+
