@@ -16,6 +16,23 @@ This is Alpha. Take with a large pinch of salt :)
 
 ### Installation
 
+### BUILD ISSUE FIX AND INSTALLATION (Windows confirmed working for now)
+Clone the respository and make sure that the submodule engine has been cloned by using this command:
+
+`git clone --recurse-submodules -j8 git://github.com/MohamedEihab/icsharp`
+  
+Update and restore the nuget dependencies using the following commands
+
+```
+nuget\Nuget.exe update -self
+.nuget\Nuget.exe restore
+cd Engine
+.nuget\Nuget.exe update -self
+.nuget\Nuget.exe restore
+```
+
+Open the project on Visual Studio and attempt to build, follow the remaining instructions below after successful build to launch Jupyter Notebooks with the newly installed C# Kernel.
+
 #### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-on-Mac-OS-X)
 
 #### [Linux](https://github.com/zabirauf/icsharp/wiki/Install-on-Unix-(Debian-7.8))
