@@ -136,7 +136,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Helpers\" />
+    <Content Include="custom.js" />
   </ItemGroup>
 </Project>
