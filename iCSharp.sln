@@ -39,6 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{079DE519-9270-4CF1-BFEB-952A0062CDD8}"
 	ProjectSection(SolutionItems) = preProject
+		ipython-profile\static\custom.css = ipython-profile\static\custom.css
 		Kernel\custom.js = Kernel\custom.js
 		webintellisense-codemirror.js = webintellisense-codemirror.js
 		webintellisense.js = webintellisense.js
