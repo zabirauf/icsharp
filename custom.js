@@ -2,6 +2,7 @@
 // Using CodeMirror for Syntax Completion
 
 // Per page refresh execution
+/*
 $([IPython.events]).on("app_initialized.NotebookApp", function () {
     $('head').append('<link rel="stylesheet" type="text/css" href="custom.css">');
 
@@ -21,3 +22,5 @@ $([IPython.events]).on("app_initialized.NotebookApp", function () {
 
 
 });
+*/
+

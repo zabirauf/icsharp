@@ -35,6 +35,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		custom.js = custom.js
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ipython-profile", "ipython-profile", "{D22AFA78-EA6D-4D1C-94B6-16484353C3F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "static", "static", "{079DE519-9270-4CF1-BFEB-952A0062CDD8}"
+	ProjectSection(SolutionItems) = preProject
+		Kernel\custom.js = Kernel\custom.js
+		webintellisense-codemirror.js = webintellisense-codemirror.js
+		webintellisense.js = webintellisense.js
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +97,7 @@ Global
 		{E590E710-E159-48E6-A3E6-1A83D3FE732C} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
 		{E4ADCFEE-FF3B-4EF5-8298-2B31F407F58B} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
 		{9AEF2D95-87FB-4829-B384-34BFE076D531} = {0264C8C2-C7DC-4F76-95AB-939DD1688268}
+		{079DE519-9270-4CF1-BFEB-952A0062CDD8} = {D22AFA78-EA6D-4D1C-94B6-16484353C3F4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {89A1AC95-C4E4-46BF-BB51-FA440EB76B9A}
