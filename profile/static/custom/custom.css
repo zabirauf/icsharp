@@ -2,6 +2,10 @@ th {
 	background-color: #ececec;
 }
 
+body {
+    background-color: red;
+}
+
 .br-intellisense {
     min-width: 220px;
     max-height: 176px;
