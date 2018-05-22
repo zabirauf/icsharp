@@ -23,16 +23,25 @@ namespace iCSharp.Kernel.Shell
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
+
             List<string> matches_ = new List<string>();
-            matches_.Add("first_one");
-            matches_.Add("second_one");
+             matches_.Add("first_one");
+             matches_.Add("second_one");
+
+            /* CompleteReply completeReply = new CompleteReply()
+             {
+                 CursorEnd = 10,
+                 Matches = matches_,
+                 Status = "ok",
+                 CursorStart = 5
+             };*/
 
             CompleteReply completeReply = new CompleteReply()
             {
-                CursorEnd = 10,
+                MatchedText = "Matched_Text",
                 Matches = matches_,
                 Status = "ok",
-                CursorStart = 5
+                FilterStartIndex = 0,
             };
 
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
