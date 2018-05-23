@@ -152,12 +152,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Content Include="profile\static\custom\custom.css" />
-    <Content Include="profile\static\custom\custom.js" />
-    <Content Include="profile\static\custom\webintellisense-codemirror.js" />
-    <Content Include="profile\static\custom\webintellisense.js" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>

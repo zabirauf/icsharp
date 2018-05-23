@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace iCSharp.Messages
 {
-    class BlockType
+    public class BlockType
     {
         public int selectedIndex { get; set; }
         public int ch { get; set; }
