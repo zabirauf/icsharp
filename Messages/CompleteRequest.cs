@@ -9,13 +9,13 @@ namespace iCSharp.Messages
 {
     public class CompleteRequest
     {
-        /* [JsonProperty("code")]
+         [JsonProperty("code")]
          public string Code { get; set; }
 
          [JsonProperty("cursor_pos")]
-         public int CursorPosition { get; set; }*/
+         public int CursorPosition { get; set; }
 
-        [JsonProperty("text")]
+        /*[JsonProperty("text")]
         public string Text { get; set; }
 
         [JsonProperty("cursor_pos")]
@@ -25,6 +25,6 @@ namespace iCSharp.Messages
         public string Line { get; set; }
 
         [JsonProperty("block")]
-        public string Block { get; set; }
+        public string Block { get; set; }*/
     }
 }

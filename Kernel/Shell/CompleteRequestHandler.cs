@@ -23,21 +23,25 @@ namespace iCSharp.Kernel.Shell
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
-
-            string txt = completeRequest.Text;
-            string line = completeRequest.Line;
+            string code = completeRequest.Code;
             int cur_pos = completeRequest.CursorPosition;
-            BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
+
+           // string txt = completeRequest.Text;
+           // string line = completeRequest.Line;
+           // int cur_pos = completeRequest.CursorPosition;
+           // BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
 
 
             // Need to know whats inside completeRequest
             // Temporary message to the shell for debugging purposes
 
 
-            List<string> matches_ = new List<string>();
+             List<string> matches_ = new List<string>();
              matches_.Add("first_one");
              matches_.Add("second_one");
-             matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
+             matches_.Add("code " + code + " cur_pos " + cur_pos);
+
+            // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
 
 
             /* CompleteReply completeReply = new CompleteReply()
@@ -50,10 +54,12 @@ namespace iCSharp.Kernel.Shell
 
             CompleteReply completeReply = new CompleteReply()
             {
-                MatchedText = txt,
+                //  MatchedText = txt,
                 Matches = matches_,
                 Status = "ok",
-                FilterStartIndex = 0,
+                CursorStart = 0,
+                CursorEnd = 0,
+               // FilterStartIndex = 0,
             };
 
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
