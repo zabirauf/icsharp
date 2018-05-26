@@ -1,6 +1,7 @@
 CodeMirror.defineMode('csharp', function () {
     var words = {
         'abstract': 'keyword',
+        'mohamed': 'keyword',
         'and': 'keyword',
         'as': 'keyword',
         'assert': 'keyword',

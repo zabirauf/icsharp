@@ -22,7 +22,7 @@ define(function () {
         }
         else {
             md.language = 'csharp';
-            console.log('add metadata hint that language is fsharp...');
+            console.log('add metadata hint that language is csharp...');
         }
 
         IPython.CodeCell.options_default.cm_config.mode = 'csharp';
@@ -73,28 +73,6 @@ define(function () {
             var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
             var callbacks = { shell: {}, iopub: {} };
 
-            if (editor != null) {
-                var line = editor.getLine(cursor.line);
-                var isSlash = item.keyCode === 191 || item.keyCode === 220;
-                var isQuote = item.keyCode === 222;
-
-                var isLoadOrRef = line.indexOf('#load') === 0
-                    || line.indexOf('#r') === 0;
-
-                var isStartLoadOrRef = line === '#load "'
-                    || line === '#r "'
-                    || line === '#load @"'
-                    || line === '#r @"';
-
-                if (isSlash && !isLoadOrRef) {
-                    return;
-                }
-
-                if (isQuote && !isStartLoadOrRef) {
-                    return;
-                }
-            }
-
             callbacks.shell.reply = function (msg) {
                 if (editor != null && item.keyCode !== 0) {
                     editor.intellisense.setDeclarations(msg.content.matches);
@@ -135,16 +113,16 @@ define(function () {
                                 changedRecently = true;
                             });
 
-                            intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
-                            intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
-                            intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
-                            intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
-                            intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`
-                            intellisense.addDeclarationTrigger({ keyCode: 222, shiftKey: true }); // `"`
-                            intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
-                            intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
-                            intellisense.onMethod(function (item) { });
-                            intellisense.onDeclaration(intellisenseRequest);
+                            // intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
+                            // intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
+                            // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
+                            // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
+                            // intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`
+                            // intellisense.addDeclarationTrigger({ keyCode: 222, shiftKey: true }); // `"`
+                            // intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
+                            // intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
+                         //   intellisense.onMethod(function (item) { });
+                          //  intellisense.onDeclaration(intellisenseRequest);
                         }
                     }
 
