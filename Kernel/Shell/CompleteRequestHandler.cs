@@ -60,6 +60,22 @@ namespace iCSharp.Kernel.Shell
             string code = completeRequest.Code;
             int cur_pos = completeRequest.CursorPosition;
 
+            List<string> matches_ = new List<string>();
+
+            string catchPattern = @"(\w+)";
+
+            Regex p = new Regex(pattern);
+
+            List<string> matches_ = new List<string>();
+
+
+            foreach(Match m in p.Matches(code)){
+
+            matches_.Add(m);
+                
+            }
+
+
            
 
            // string txt = completeRequest.Text;
@@ -72,7 +88,7 @@ namespace iCSharp.Kernel.Shell
             // Temporary message to the shell for debugging purposes
 
 
-             List<string> matches_ = new List<string>();
+             
              matches_.Add("first_one");
              matches_.Add("second_one");
              matches_.Add("code " + code + " cur_pos " + cur_pos);
