@@ -107,10 +107,10 @@ define(function () {
             };
 
             var content = {
-                text: JSON.stringify(cells.codes),
-                line: '',
-                block: JSON.stringify({ selectedIndex: cells.selectedIndex, ch: cursor.ch, line: cursor.line }),
-                cursor_pos: cursor.ch
+                Code: JSON.stringify(cells.codes),
+                
+                
+                CursorPosition: cursor.ch
             };
 
             IPython.notebook.kernel.send_shell_message("complete_request", content, callbacks, null, null);
