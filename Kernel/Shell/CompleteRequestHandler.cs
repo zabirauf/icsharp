@@ -70,7 +70,7 @@ namespace iCSharp.Kernel.Shell
                 matches_.Add(m.ToString());    
             }
 
-
+    
            
 
            // string txt = completeRequest.Text;
@@ -84,12 +84,13 @@ namespace iCSharp.Kernel.Shell
 
 
              
-             matches_.Add("first_one");
-             matches_.Add("second_one");
-             matches_.Add("code " + code + " cur_pos " + cur_pos);
+          //   matches_.Add("first_one");
+          //   matches_.Add("second_one");
+          //   matches_.Add("code " + code + " cur_pos " + cur_pos);
 
-            // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
+          // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
 
+          // New PROTOCOL
 
             /* CompleteReply completeReply = new CompleteReply()
              {
@@ -98,15 +99,14 @@ namespace iCSharp.Kernel.Shell
                  Status = "ok",
                  CursorStart = 5
              };*/
-
+         
+        // OLD PROCOTOL
             CompleteReply completeReply = new CompleteReply()
             {
-                //  MatchedText = txt,
+                MatchedText = "something_matched",
                 Matches = matches_,
                 Status = "ok",
-                CursorStart = 0,
-                CursorEnd = 0,
-               // FilterStartIndex = 0,
+                FilterStartIndex = 0,
             };
 
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
