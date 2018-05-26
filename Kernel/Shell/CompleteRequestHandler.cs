@@ -8,7 +8,7 @@ namespace iCSharp.Kernel.Shell
     using iCSharp.Messages;
     using NetMQ.Sockets;
     using iCSharp.Kernel.Helpers;
-
+    using System.Text.RegularExpressions;
     public class CompleteRequestHandler : IShellMessageHandler
     {
         private ILog logger;
@@ -64,15 +64,10 @@ namespace iCSharp.Kernel.Shell
 
             string catchPattern = @"(\w+)";
 
-            Regex p = new Regex(pattern);
-
-            List<string> matches_ = new List<string>();
-
+            Regex p = new Regex(catchPattern);
 
             foreach(Match m in p.Matches(code)){
-
-            matches_.Add(m);
-                
+                matches_.Add(m.ToString());    
             }
 
 
