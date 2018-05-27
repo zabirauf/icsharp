@@ -78,17 +78,16 @@ define(function () {
             console.log(callbacks);
             callbacks.shell.reply = function (msg) {
                 console.log('callback!');
-                console.log(msg);
+                //console.log(msg);
 
                 if (editor != null && item.keyCode !== 0) {
                     console.log('callback!');
                         var data = [
-        {name: 'CompareTo', documentation: 'Converts to object to another object' },
-        {name: 'ToString', documentation: 'Converts to object to a string' }
-    ];                 
-                    editor.intellisense.setDeclarations(data);
-
-              //      editor.intellisense.setStartColumnIndex(msg.content.cursor_start);
+        {name: 'CompareTo', documentation: 'Converts to object to another object'},
+        {name: 'ToString', documentation: 'Converts to object to a string'}
+    ];              console.log(msg);
+                    console.log(data);
+                    editor.intellisense.setDeclarations(msg.content.matches);
                 }
             };
 
@@ -98,11 +97,11 @@ define(function () {
 
             var content = {
                 Code: JSON.stringify(cells.codes),
-                CursorPosition: cursor.ch
+                cursor_pos: cursor.ch
             };
 
             console.log('intellisenseRequest!');
-            console.log('IQ:' + content);
+            console.log(content);
 
             IPython.notebook.kernel.send_shell_message("complete_request", content, callbacks, null, null);
         }
@@ -127,7 +126,7 @@ define(function () {
                             });
 
                              intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
-                            // intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
+                             intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
                             // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
                             // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
                             // intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`

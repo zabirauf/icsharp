@@ -25,7 +25,7 @@ namespace iCSharp.Messages
           public string Status { get; set; }*/
 
        [JsonProperty("matches")]
-        public List<string> Matches { get; set; }
+        public List<CompleteReplyMatch> Matches { get; set; }
 
         [JsonProperty("matched_text")]
         public string MatchedText { get; set; }

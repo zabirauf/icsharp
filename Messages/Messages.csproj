@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="BlockType.cs" />
     <Compile Include="CompleteReply.cs" />
+    <Compile Include="CompleteReplyMatch.cs" />
     <Compile Include="CompleteRequest.cs" />
     <Compile Include="ConnectionInformation.cs" />
     <Compile Include="DisplayData.cs" />

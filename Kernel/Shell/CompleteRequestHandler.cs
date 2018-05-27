@@ -61,10 +61,21 @@ namespace iCSharp.Kernel.Shell
 
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
             string code = completeRequest.Code;
+
+            this.logger.Info("oringal code:" + code);
+
             int cur_pos = completeRequest.CursorPosition;
 
+            this.logger.Info("cur_pos " + cur_pos);
+
+            code = code.Substring(2, code.Length - 2);
+
+            this.logger.Info("fixed code" + code);
+
             string newCode = code.Substring(0, cur_pos); //get substring of code from start to cursor position
-            
+
+            this.logger.Info("newcode " + newCode);
+
             string[] arrayOfKeywords = {"team", "tech", "te", "term", "tame", "tata"};
 
             List<string> listOfKeywords = new List<string>();
@@ -82,9 +93,9 @@ namespace iCSharp.Kernel.Shell
 
               CompleteReplyMatch crm = new CompleteReplyMatch(){
 
-                crm.Name = m.ToString(),
-                crm.Documentation = "",
-                crm.Value = "",
+                Name = m.ToString(),
+                Documentation = "",
+                Value = "",
 
               };
                 matches_.Add(crm);    
@@ -94,9 +105,9 @@ namespace iCSharp.Kernel.Shell
 
               CompleteReplyMatch crm = new CompleteReplyMatch(){
 
-                crm.Name = i,
-                crm.Documentation = "",
-                crm.Value = "",
+                Name = i,
+                Documentation = "",
+                Value = "",
 
               };
                 matches_.Add(crm);
@@ -104,8 +115,8 @@ namespace iCSharp.Kernel.Shell
             }
 
             //matches_.AddRange(listOfKeywords);
-            
-            newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*" ); //replace all non word and dot characters with '*'
+
+            newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
             string cursorWord, cursorLine; 
 
@@ -132,54 +143,71 @@ namespace iCSharp.Kernel.Shell
               cursorWord = cursorLine;
               cursorLine = "";
             }
-            
+
+            this.logger.Info("cursor word " + cursorWord);
+
+            this.logger.Info("Before Removal");
+
+            for (int j = matches_.Count - 1; j > -1; j--)
+            {
+                this.logger.Info(matches_[j].Name);
+            }
+
             //Console.WriteLine(cursorWord);
-            
-            for(int j = matches_.Count()-1; j > -1; j--){
+
+            for (int j = matches_.Count-1; j > -1; j--){
               if(!(matches_[j].Name.StartsWith(cursorWord))){
                 matches_.RemoveAt(j);
               }
             }
 
-    
-           
+            this.logger.Info("After Removal");
 
-           // string txt = completeRequest.Text;
-           // string line = completeRequest.Line;
-           // int cur_pos = completeRequest.CursorPosition;
-           // BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
+            for (int j = matches_.Count - 1; j > -1; j--)
+            {
+                this.logger.Info(matches_[j].Name);
+            }
+
+
+
+            matches_.Add(new CompleteReplyMatch() { Name = "newcode" + newCode });
+            matches_.Add(new CompleteReplyMatch() { Name = "code" + code });
+
+            // string txt = completeRequest.Text;
+            // string line = completeRequest.Line;
+            // int cur_pos = completeRequest.CursorPosition;
+            // BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
 
 
             // Need to know whats inside completeRequest
             // Temporary message to the shell for debugging purposes
 
+            //   matches_.Add("first_one");
+            //   matches_.Add("second_one");
+            //   matches_.Add("code " + code + " cur_pos " + cur_pos);
 
-             
-          //   matches_.Add("first_one");
-          //   matches_.Add("second_one");
-          //   matches_.Add("code " + code + " cur_pos " + cur_pos);
+            // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
 
-          // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
+            // New PROTOCOL
 
-          // New PROTOCOL
+                CompleteReply completeReply = new CompleteReply()
+                {
+                    //CursorEnd = 10,
+                    Matches = matches_,
+                    Status = "ok",
+                    //CursorStart = 5,
+                   // MetaData = null
+                };
 
-         /*    CompleteReply completeReply = new CompleteReply()
-             {
-                 CursorEnd = 10,
-                 Matches = matches_,
-                 Status = "ok",
-                 CursorStart = 5
-             };*/
-         
-        // OLD PROCOTOL
-        
+            // OLD PROCOTOL
+            /*
             CompleteReply completeReply = new CompleteReply()
             {
                 MatchedText = "something_matched",
                 Matches = matches_,
                 Status = "ok",
                 FilterStartIndex = 0,
-            };
+            };*/
 
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
             this.logger.Info("Sending complete_reply");
