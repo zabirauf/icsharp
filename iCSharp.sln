@@ -30,14 +30,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCs.Engine.Mono", "Eng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCs.Hosting", "Engine\src\ScriptCs.Hosting\ScriptCs.Hosting.csproj", "{9AEF2D95-87FB-4829-B384-34BFE076D531}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2AD7E017-5ED8-48F2-B83C-9ACA856C3974}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20371AF1-E487-4ECD-91C8-58495AB713E2}"
 	ProjectSection(SolutionItems) = preProject
-		custom.js = custom.js
+		kernel-spec\static\custom\csharp.css = kernel-spec\static\custom\csharp.css
+		kernel-spec\static\custom\csharp.js = kernel-spec\static\custom\csharp.js
+		kernel-spec\static\custom\custom.css = kernel-spec\static\custom\custom.css
+		kernel-spec\static\custom\custom.js = kernel-spec\static\custom\custom.js
 		kernel-spec\kernel.css = kernel-spec\kernel.css
 		kernel-spec\kernel.js = kernel-spec\kernel.js
 		kernel-spec\kernel.json = kernel-spec\kernel.json
-		kernel-spec\logo-32x32.png = kernel-spec\logo-32x32.png
-		kernel-spec\logo-64x64.png = kernel-spec\logo-64x64.png
+		kernel-spec\static\custom\webintellisense-codemirror.js = kernel-spec\static\custom\webintellisense-codemirror.js
+		kernel-spec\static\custom\webintellisense.js = kernel-spec\static\custom\webintellisense.js
 	EndProjectSection
 EndProject
 Global

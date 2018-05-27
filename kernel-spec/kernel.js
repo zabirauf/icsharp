@@ -61,6 +61,7 @@ define(function () {
                         }
                         results.cells.push(c);
                         results.codes.push(c.code_mirror.getValue());
+                       // console.log('Code: ' + c.code_mirror.getValue()); // CONSOLE LOG
                     }
                 });
 
@@ -68,13 +69,17 @@ define(function () {
         }
 
         function intellisenseRequest(item) {
+
             var cells = getCodeCells();
             var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
             var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
             var callbacks = { shell: {}, iopub: {} };
 
             callbacks.shell.reply = function (msg) {
+                console.log('callback!');
                 if (editor != null && item.keyCode !== 0) {
+                    console.log('callback!');
+                    console.log('msg.content.matches: ' + msg.content.matches);
                     editor.intellisense.setDeclarations(msg.content.matches);
                     editor.intellisense.setStartColumnIndex(msg.content.cursor_start);
                 }
@@ -86,10 +91,11 @@ define(function () {
 
             var content = {
                 Code: JSON.stringify(cells.codes),
-                
-                
                 CursorPosition: cursor.ch
             };
+
+            console.log('intellisenseRequest!');
+            console.log('IQ:' + content);
 
             IPython.notebook.kernel.send_shell_message("complete_request", content, callbacks, null, null);
         }
@@ -113,7 +119,7 @@ define(function () {
                                 changedRecently = true;
                             });
 
-                            // intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
+                             intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
                             // intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
                             // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
                             // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
@@ -122,7 +128,7 @@ define(function () {
                             // intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
                             // intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
                          //   intellisense.onMethod(function (item) { });
-                          //  intellisense.onDeclaration(intellisenseRequest);
+                            intellisense.onDeclaration(intellisenseRequest);
                         }
                     }
 
