@@ -74,14 +74,21 @@ define(function () {
             var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
             var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
             var callbacks = { shell: {}, iopub: {} };
-
+            console.log("call backs: ");
+            console.log(callbacks);
             callbacks.shell.reply = function (msg) {
                 console.log('callback!');
+                console.log(msg);
+
                 if (editor != null && item.keyCode !== 0) {
                     console.log('callback!');
-                    console.log('msg.content.matches: ' + msg.content.matches);
-                    editor.intellisense.setDeclarations(msg.content.matches);
-                    editor.intellisense.setStartColumnIndex(msg.content.cursor_start);
+                        var data = [
+        {name: 'CompareTo', documentation: 'Converts to object to another object' },
+        {name: 'ToString', documentation: 'Converts to object to a string' }
+    ];                 
+                    editor.intellisense.setDeclarations(data);
+
+              //      editor.intellisense.setStartColumnIndex(msg.content.cursor_start);
                 }
             };
 

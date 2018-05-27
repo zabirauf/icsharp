@@ -92,23 +92,23 @@ namespace iCSharp.Kernel.Shell
 
           // New PROTOCOL
 
-             CompleteReply completeReply = new CompleteReply()
+         /*    CompleteReply completeReply = new CompleteReply()
              {
                  CursorEnd = 10,
                  Matches = matches_,
                  Status = "ok",
                  CursorStart = 5
-             };
+             };*/
          
         // OLD PROCOTOL
-        /*
+        
             CompleteReply completeReply = new CompleteReply()
             {
                 MatchedText = "something_matched",
                 Matches = matches_,
                 Status = "ok",
                 FilterStartIndex = 0,
-            };*/
+            };
 
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
             this.logger.Info("Sending complete_reply");
