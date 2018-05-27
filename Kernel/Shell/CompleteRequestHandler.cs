@@ -56,6 +56,9 @@ namespace iCSharp.Kernel.Shell
                 */
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
+
+
+
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
             string code = completeRequest.Code;
             int cur_pos = completeRequest.CursorPosition;
@@ -68,17 +71,30 @@ namespace iCSharp.Kernel.Shell
 
             listOfKeywords.AddRange(arrayOfKeywords); 
 
-            List<string> matches_ = new List<string>();
+            List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
+            CompleteReplyMatch crm;
 
             string catchPattern = @"(\w+)";
 
             Regex p = new Regex(catchPattern);
 
             foreach(Match m in p.Matches(newCode)){
-                matches_.Add(m.ToString());    
+
+                crm.Name = m.ToString();
+                crm.Documentation = "";
+                crm.Value = "";
+                matches_.Add(crm);    
             }
 
-            matches_.AddRange(listOfKeywords);
+            foreach(string i in listOfKeywords){
+              crm.Name = i;
+              crm.Documentation = "";
+                crm.Value = "";
+                matches_.Add(crm);
+
+            }
+
+            //matches_.AddRange(listOfKeywords);
             
             newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*" ); //replace all non word and dot characters with '*'
 
@@ -111,7 +127,7 @@ namespace iCSharp.Kernel.Shell
             //Console.WriteLine(cursorWord);
             
             for(int j = matches_.Count()-1; j > -1; j--){
-              if(!(matches_[j].StartsWith(cursorWord))){
+              if(!(matches_[j].Name.StartsWith(cursorWord))){
                 matches_.RemoveAt(j);
               }
             }
