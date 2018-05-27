@@ -72,7 +72,7 @@ namespace iCSharp.Kernel.Shell
             listOfKeywords.AddRange(arrayOfKeywords); 
 
             List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
-            CompleteReplyMatch crm;
+
 
             string catchPattern = @"(\w+)";
 
@@ -80,16 +80,25 @@ namespace iCSharp.Kernel.Shell
 
             foreach(Match m in p.Matches(newCode)){
 
-                crm.Name = m.ToString();
-                crm.Documentation = "";
-                crm.Value = "";
+              CompleteReplyMatch crm = new CompleteReplyMatch(){
+
+                crm.Name = m.ToString(),
+                crm.Documentation = "",
+                crm.Value = "",
+
+              };
                 matches_.Add(crm);    
             }
 
             foreach(string i in listOfKeywords){
-              crm.Name = i;
-              crm.Documentation = "";
-                crm.Value = "";
+
+              CompleteReplyMatch crm = new CompleteReplyMatch(){
+
+                crm.Name = i,
+                crm.Documentation = "",
+                crm.Value = "",
+
+              };
                 matches_.Add(crm);
 
             }
