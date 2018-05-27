@@ -60,14 +60,60 @@ namespace iCSharp.Kernel.Shell
             string code = completeRequest.Code;
             int cur_pos = completeRequest.CursorPosition;
 
+            string newCode = code.Substring(0, cur_pos); //get substring of code from start to cursor position
+            
+            string[] arrayOfKeywords = {"team", "tech", "te", "term", "tame", "tata"};
+
+            List<string> listOfKeywords = new List<string>();
+
+            listOfKeywords.AddRange(arrayOfKeywords); 
+
             List<string> matches_ = new List<string>();
 
             string catchPattern = @"(\w+)";
 
             Regex p = new Regex(catchPattern);
 
-            foreach(Match m in p.Matches(code)){
+            foreach(Match m in p.Matches(newCode)){
                 matches_.Add(m.ToString());    
+            }
+
+            matches_.AddRange(listOfKeywords);
+            
+            newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*" ); //replace all non word and dot characters with '*'
+
+            string cursorWord, cursorLine; 
+
+            p = new Regex(@".*\*"); //regex to match up to last '*'
+            Match mat = p.Match(newCode);
+
+            if(mat.Success){
+
+              cursorLine = newCode.Substring(mat.Index+mat.Length);              
+
+            }
+            else{
+              cursorLine = newCode;
+            }
+
+
+            p = new Regex(@".*\.");
+            mat = p.Match(cursorLine);
+
+            if(mat.Success){
+              cursorWord = cursorLine.Substring(mat.Index+mat.Length);
+            }
+            else{
+              cursorWord = cursorLine;
+              cursorLine = "";
+            }
+            
+            //Console.WriteLine(cursorWord);
+            
+            for(int j = matches_.Count()-1; j > -1; j--){
+              if(!(matches_[j].StartsWith(cursorWord))){
+                matches_.RemoveAt(j);
+              }
             }
 
     
