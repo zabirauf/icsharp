@@ -61,8 +61,16 @@ namespace iCSharp.Kernel.Shell
 
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
             string code = completeRequest.Code;
-
+            
             this.logger.Info("oringal code:" + code);
+
+			Regex returnType = new Regex(@"[string|int|void]");
+
+			Regex methodName = new Regex(@"(\w)");
+
+
+
+            
 
             int cur_pos = completeRequest.CursorPosition;
 
@@ -70,7 +78,7 @@ namespace iCSharp.Kernel.Shell
 
             code = code.Substring(2, code.Length - 2);
 
-            this.logger.Info("fixed code" + code);
+            this.logger.Info("fixed code " + code);
 
             string newCode = code.Substring(0, cur_pos); //get substring of code from start to cursor position
 
@@ -100,6 +108,32 @@ namespace iCSharp.Kernel.Shell
               };
                 matches_.Add(crm);    
             }
+
+			/////////////////////////////////////////(\([.*]\))   .Groups["methodname"].  (\((.*)\))
+
+			p = new Regex(@"([string|int|void])([\s]+)(?<methodname>\w+)(\([^\)]*\))");
+
+			List<CompleteReplyMatch> methodMatches = new List<CompleteReplyMatch>();
+
+			foreach (Match m in p.Matches(code))
+            {
+
+				this.logger.Info("found method match");
+
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    
+					Name = m.Groups["methodname"].ToString(),
+                    Documentation = "",
+                    Value = "",
+
+                };
+                methodMatches.Add(crm);
+            }
+
+            ////////////////////////////////////////////////
+
+
 
             foreach(string i in listOfKeywords){
 
@@ -138,6 +172,8 @@ namespace iCSharp.Kernel.Shell
 
             if(mat.Success){
               cursorWord = cursorLine.Substring(mat.Index+mat.Length);
+
+               
             }
             else{
               cursorWord = cursorLine;
@@ -189,6 +225,16 @@ namespace iCSharp.Kernel.Shell
             // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
 
             // New PROTOCOL
+
+			if(mat.Success){
+				matches_ = methodMatches;
+			}
+
+			for (int j = methodMatches.Count - 1; j > -1; j--)
+            {
+				this.logger.Info("methodmatch");
+				this.logger.Info(methodMatches[j].Name);
+            }
 
                 CompleteReply completeReply = new CompleteReply()
                 {
