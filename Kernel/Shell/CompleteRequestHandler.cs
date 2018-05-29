@@ -57,18 +57,20 @@ namespace iCSharp.Kernel.Shell
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
 
-
+            
 
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
             string code = completeRequest.Code;
             
             this.logger.Info("oringal code:" + code);
 
+
+
 			Regex returnType = new Regex(@"[string|int|void]");
 
 			Regex methodName = new Regex(@"(\w)");
 
-
+            
 
             
 
@@ -96,7 +98,7 @@ namespace iCSharp.Kernel.Shell
 
             
 
-            string catchPattern = @"(\w+)";
+           /* string catchPattern = @"(\w+)";
 
             Regex p = new Regex(catchPattern);
 
@@ -110,20 +112,20 @@ namespace iCSharp.Kernel.Shell
 
               };
                 matches_.Add(crm);    
-            }
+            }*/
+
+			CatchAllWords(ref matches_, newCode);
 
 			/////////////////////////////////////////(\([.*]\))   .Groups["methodname"].  (\((.*)\))
-
-			p = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
-            
-			Regex r = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<parnames>\w+)");
+			/// 
+			/// 
 
 			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
 
-
-
-
-
+			/*Regex p = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+            
+			Regex r = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<parnames>\w+)");
+         
 			foreach (Match m in p.Matches(code))
             {
 
@@ -150,18 +152,10 @@ namespace iCSharp.Kernel.Shell
 				    Documentation = "",
 				    Value = "",
 					ParamList = parameterTypes,
-
-
-
+               
 				};
 				methodMatches.Add(mm);
-
-
-
-
-
-                
-
+            
 				CompleteReplyMatch crm = new CompleteReplyMatch(){
                     
 					Name = m.Groups["methodname"].ToString(),
@@ -170,11 +164,15 @@ namespace iCSharp.Kernel.Shell
 
                 };
 				methodMatchNames.Add(crm);
-            }
+            }*/
 
-            ////////////////////////////////////////////////
+			////////////////////////////////////////////////
+			/// 
+			/// 
 
+			CatchMethods(code, ref methodMatchNames, ref methodMatches);
 
+            /*
 
             foreach(string i in listOfKeywords){
 
@@ -187,7 +185,9 @@ namespace iCSharp.Kernel.Shell
               };
                 matches_.Add(crm);
 
-            }
+            }*/
+
+			AddKeywordsToMatches(ref matches_);
 
 			foreach(MethodMatch m in methodMatches){
 				this.logger.Info(m.Name);
@@ -203,9 +203,11 @@ namespace iCSharp.Kernel.Shell
 
             newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
-            string cursorWord, cursorLine; 
+			string cursorWord = FindWordToAutoComplete(newCode);
 
-            p = new Regex(@".*\*"); //regex to match up to last '*'
+            /*string cursorWord, cursorLine; 
+
+            Regex p = new Regex(@".*\*"); //regex to match up to last '*'
             Match mat = p.Match(newCode);
 
             if(mat.Success){
@@ -231,6 +233,8 @@ namespace iCSharp.Kernel.Shell
               cursorLine = "";
             }
 
+            */
+
             this.logger.Info("cursor word " + cursorWord);
 
             this.logger.Info("Before Removal");
@@ -240,13 +244,15 @@ namespace iCSharp.Kernel.Shell
                 this.logger.Info(matches_[j].Name);
             }
 
-            //Console.WriteLine(cursorWord);
+			//Console.WriteLine(cursorWord);
 
+			RemoveNonMatches(ref matches_, cursorWord);
+            /*
             for (int j = matches_.Count-1; j > -1; j--){
               if(!(matches_[j].Name.StartsWith(cursorWord))){
                 matches_.RemoveAt(j);
               }
-            }
+            }*/
 
             this.logger.Info("After Removal");
 
@@ -260,25 +266,28 @@ namespace iCSharp.Kernel.Shell
             matches_.Add(new CompleteReplyMatch() { Name = "newcode" + newCode });
             matches_.Add(new CompleteReplyMatch() { Name = "code" + code });
 
-            // string txt = completeRequest.Text;
-            // string line = completeRequest.Line;
-            // int cur_pos = completeRequest.CursorPosition;
-            // BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
+			// string txt = completeRequest.Text;
+			// string line = completeRequest.Line;
+			// int cur_pos = completeRequest.CursorPosition;
+			// BlockType block = JsonSerializer.Deserialize<BlockType>(completeRequest.Block);
 
 
-            // Need to know whats inside completeRequest
-            // Temporary message to the shell for debugging purposes
+			// Need to know whats inside completeRequest
+			// Temporary message to the shell for debugging purposes
 
-            //   matches_.Add("first_one");
-            //   matches_.Add("second_one");
-            //   matches_.Add("code " + code + " cur_pos " + cur_pos);
+			//   matches_.Add("first_one");
+			//   matches_.Add("second_one");
+			//   matches_.Add("code " + code + " cur_pos " + cur_pos);
 
-            // matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
+			// matches_.Add("ch: " + block.ch + " line: " + block.line + " selected: " + block.selectedIndex);
 
-            // New PROTOCOL
-
-			if(mat.Success){
-				matches_ = methodMatchNames;
+			// New PROTOCOL
+			if (newCode.Length > 0)
+			{
+				if (newCode[(newCode.Length - 1)].Equals('.'))
+				{
+					matches_ = methodMatchNames;
+				}
 			}
 
 			for (int j = methodMatchNames.Count - 1; j > -1; j--)
@@ -311,5 +320,155 @@ namespace iCSharp.Kernel.Shell
             this.messageSender.Send(completeReplyMessage, serverSocket);
 
         }
+
+		public void CatchAllWords(ref List<CompleteReplyMatch> matches_, string newCode){
+			//this.logger.Info(s);
+			this.logger.Info("weselna elhamdlAllah");
+
+			string catchPattern = @"(\w+)";
+
+            Regex p = new Regex(catchPattern);
+
+            foreach (Match m in p.Matches(newCode))
+            {
+
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+
+                    Name = m.ToString(),
+                    Documentation = "",
+                    Value = "",
+                    
+                };
+                matches_.Add(crm);
+            }
+
+
+		}
+
+		public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches){
+
+			Regex p = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+
+            Regex r = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<parnames>\w+)");
+
+            foreach (Match m in p.Matches(code))
+            {
+
+                List<string> parameterTypes = new List<string>();
+
+                this.logger.Info("found method match");
+                this.logger.Info(m.Groups["methodname"] + " name");
+                this.logger.Info(m.Groups["returntype"] + " type");
+                this.logger.Info(m.Groups["paramlist"] + " paramList");
+
+                foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString()))
+                {
+
+                    this.logger.Info("we have a parameter");
+                    this.logger.Info(parType.Groups["returntype"]);
+                    this.logger.Info(parType.Groups["parnames"]);
+
+                    parameterTypes.Add(parType.Groups["returntype"].ToString());
+
+                }
+
+				MethodMatch mm = new MethodMatch()
+                {
+                    Name = m.Groups["methodname"].ToString(),
+                    Documentation = "",
+                    Value = "",
+                    ParamList = parameterTypes,
+
+                };
+                methodMatches.Add(mm);
+
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+
+                    Name = m.Groups["methodname"].ToString(),
+                    Documentation = "",
+                    Value = "",
+
+                };
+                methodMatchNames.Add(crm);
+            }
+
+			
+		}
+
+		public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_){
+         
+			string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };          
+            List<string> listOfKeywords = new List<string>();
+            listOfKeywords.AddRange(arrayOfKeywords);
+         
+			foreach (string i in listOfKeywords)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+
+                    Name = i,
+                    Documentation = "",
+                    Value = "",
+
+                };
+                matches_.Add(crm);
+
+            }
+		}
+
+		public string FindWordToAutoComplete(string newCode){
+
+			string cursorWord, cursorLine;
+
+            Regex p = new Regex(@".*\*"); //regex to match up to last '*'
+            Match mat = p.Match(newCode);
+
+            if (mat.Success)
+            {
+
+                cursorLine = newCode.Substring(mat.Index + mat.Length);
+
+            }
+            else
+            {
+                cursorLine = newCode;
+            }
+
+
+            p = new Regex(@".*\.");
+            mat = p.Match(cursorLine);
+
+            if (mat.Success)
+            {
+                cursorWord = cursorLine.Substring(mat.Index + mat.Length);
+
+
+            }
+            else
+            {
+                cursorWord = cursorLine;
+                cursorLine = "";
+            }
+
+			return cursorWord;
+
+            
+
+            
+		}
+
+		public void RemoveNonMatches(ref List<CompleteReplyMatch> matches_, string cursorWord){
+			for (int j = matches_.Count - 1; j > -1; j--)
+            {
+                if (!(matches_[j].Name.StartsWith(cursorWord)))
+                {
+                    matches_.RemoveAt(j);
+                }
+            }
+		}
+
+
     }
 }
