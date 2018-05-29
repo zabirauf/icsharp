@@ -92,13 +92,16 @@ namespace iCSharp.Kernel.Shell
 
             List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
 
+			List<MethodMatch> methodMatches = new List<MethodMatch>();
+
+            
 
             string catchPattern = @"(\w+)";
 
             Regex p = new Regex(catchPattern);
 
             foreach(Match m in p.Matches(newCode)){
-
+                
               CompleteReplyMatch crm = new CompleteReplyMatch(){
 
                 Name = m.ToString(),
@@ -111,24 +114,62 @@ namespace iCSharp.Kernel.Shell
 
 			/////////////////////////////////////////(\([.*]\))   .Groups["methodname"].  (\((.*)\))
 
-			p = new Regex(@"([string|int|void])([\s]+)(?<methodname>\w+)(\([^\)]*\))");
+			p = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+            
+			Regex r = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<parnames>\w+)");
 
-			List<CompleteReplyMatch> methodMatches = new List<CompleteReplyMatch>();
+			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+
+
+
+
 
 			foreach (Match m in p.Matches(code))
             {
 
-				this.logger.Info("found method match");
+				List<string> parameterTypes = new List<string>();
 
-                CompleteReplyMatch crm = new CompleteReplyMatch()
-                {
+				this.logger.Info("found method match");
+				this.logger.Info(m.Groups["methodname"] + " name");
+				this.logger.Info(m.Groups["returntype"] + " type");
+				this.logger.Info(m.Groups["paramlist"] + " paramList");
+
+				foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString())){
+
+					this.logger.Info("we have a parameter");
+					this.logger.Info(parType.Groups["returntype"]);
+					this.logger.Info(parType.Groups["parnames"]);
+
+					parameterTypes.Add(parType.Groups["returntype"].ToString());
+
+				}
+
+				MethodMatch mm = new MethodMatch()
+				{
+					Name = m.Groups["methodname"].ToString(),
+				    Documentation = "",
+				    Value = "",
+					ParamList = parameterTypes,
+
+
+
+				};
+				methodMatches.Add(mm);
+
+
+
+
+
+                
+
+				CompleteReplyMatch crm = new CompleteReplyMatch(){
                     
 					Name = m.Groups["methodname"].ToString(),
                     Documentation = "",
                     Value = "",
 
                 };
-                methodMatches.Add(crm);
+				methodMatchNames.Add(crm);
             }
 
             ////////////////////////////////////////////////
@@ -147,6 +188,16 @@ namespace iCSharp.Kernel.Shell
                 matches_.Add(crm);
 
             }
+
+			foreach(MethodMatch m in methodMatches){
+				this.logger.Info(m.Name);
+				this.logger.Info("number of params = " + m.ParamList.Count );
+				this.logger.Info("param types");
+				for (int i = 0; i < m.ParamList.Count; i++){
+					this.logger.Info(m.ParamList[i]);
+				}
+
+			}
 
             //matches_.AddRange(listOfKeywords);
 
@@ -227,13 +278,13 @@ namespace iCSharp.Kernel.Shell
             // New PROTOCOL
 
 			if(mat.Success){
-				matches_ = methodMatches;
+				matches_ = methodMatchNames;
 			}
 
-			for (int j = methodMatches.Count - 1; j > -1; j--)
+			for (int j = methodMatchNames.Count - 1; j > -1; j--)
             {
 				this.logger.Info("methodmatch");
-				this.logger.Info(methodMatches[j].Name);
+				this.logger.Info(methodMatchNames[j].Name);
             }
 
                 CompleteReply completeReply = new CompleteReply()
