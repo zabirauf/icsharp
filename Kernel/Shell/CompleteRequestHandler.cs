@@ -348,9 +348,9 @@ namespace iCSharp.Kernel.Shell
 
 		public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches){
 
-			Regex p = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+			Regex p = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
 
-            Regex r = new Regex(@"(?<returntype>string|int|void)([\s]+)(?<parnames>\w+)");
+            Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
 
             foreach (Match m in p.Matches(code))
             {
@@ -399,7 +399,7 @@ namespace iCSharp.Kernel.Shell
 
 		public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_){
          
-			string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };          
+			string[] arrayOfKeywords = { "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "using static", "virtual", "void", "volatile", "while"};          
             List<string> listOfKeywords = new List<string>();
             listOfKeywords.AddRange(arrayOfKeywords);
          
