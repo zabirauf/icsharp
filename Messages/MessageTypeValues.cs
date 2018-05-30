@@ -15,7 +15,7 @@ namespace iCSharp.Messages
 
         public const string KernelInfoReply = "kernel_info_reply";
 
-        public const string CompleteRequest = "complete_request";
+        public const string CompleteRequest = "intellisense_request";
 
         public const string CompleteReply = "complete_reply";
 

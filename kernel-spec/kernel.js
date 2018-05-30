@@ -68,6 +68,7 @@ define(function () {
             return results;
         }
 
+
         function intellisenseRequest(item) {
 
             var cells = getCodeCells();
@@ -82,11 +83,7 @@ define(function () {
 
                 if (editor != null && item.keyCode !== 0) {
                     console.log('callback!');
-                        var data = [
-        {name: 'CompareTo', documentation: 'Converts to object to another object'},
-        {name: 'ToString', documentation: 'Converts to object to a string'}
-    ];              console.log(msg);
-                    console.log(data);
+                    console.log(msg);
                     editor.intellisense.setDeclarations(msg.content.matches);
                 }
             };
@@ -96,14 +93,17 @@ define(function () {
             };
 
             var content = {
-                Code: JSON.stringify(cells.codes),
-                cursor_pos: cursor.ch
+                code: JSON.stringify(cells.codes),
+                cursor_pos: cursor.ch,
+                cursor_line: cursor.line,
+                //selected_cell: cells.selectedCell,
+                selected_cell_index: cells.selectedIndex
             };
 
             console.log('intellisenseRequest!');
             console.log(content);
 
-            IPython.notebook.kernel.send_shell_message("complete_request", content, callbacks, null, null);
+            IPython.notebook.kernel.send_shell_message("intellisense_request", content, callbacks, null, null);
         }
 
         //There are dependencies in the lazy loading 

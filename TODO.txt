@@ -1,0 +1,7 @@
+== TO FIX ==
+	-P- Only first cell working
+		-S- Fix code message
+		
+	-P- PRESSING TAB kills kernel
+
+== TO ADD ==
