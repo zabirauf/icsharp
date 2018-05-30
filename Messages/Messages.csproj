@@ -65,7 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="StatusValues.cs" />
-    <Compile Include="FunctionMatch.cs" />
+    <Compile Include="MethodMatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
