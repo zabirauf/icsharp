@@ -51,15 +51,17 @@ define(function () {
         }
 
         function getCodeCells() {
-            var results = { codes: [], cells: [], selectedCell: null, selectedIndex: 0 };
+            var results = { codes: [], cells: [], string_cells: [], selectedCell: null, selectedIndex: 0 };
             IPython.notebook.get_cells()
                 .forEach(function (c) {
                     if (c.cell_type === 'code') {
+                        c.completer = null; // KILLS THE DEFAULT COMPLETER (EXTRA PRECAUTION AGAINST FAILURES)
                         if (c.selected === true) {
                             results.selectedCell = c;
                             results.selectedIndex = results.cells.length;
                         }
                         results.cells.push(c);
+                        results.string_cells.push(JSON.stringify(c.code_mirror.getValue().replace("\n", "*")));
                         results.codes.push(c.code_mirror.getValue());
                        // console.log('Code: ' + c.code_mirror.getValue()); // CONSOLE LOG
                     }
@@ -68,9 +70,20 @@ define(function () {
             return results;
         }
 
+        function getTrueCurPos(cell, line, ch){
+            var lines = cell.split("\n");
+            console.log(lines.length);
+            var calibrated = 0;
+            if (line <= 0) return ch;
+
+            for (var i = 0; i <= line; i++) {
+                calibrated = calibrated + lines[i].length;
+            }
+            return calibrated + ch;
+        }
+
 
         function intellisenseRequest(item) {
-
             var cells = getCodeCells();
             var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
             var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
@@ -94,9 +107,11 @@ define(function () {
 
             var content = {
                 code: JSON.stringify(cells.codes),
+                code_cells: cells.string_cells,
                 cursor_pos: cursor.ch,
+                code_pos: getTrueCurPos(cells.codes[cells.selectedIndex], cursor.line, cursor.ch),
                 cursor_line: cursor.line,
-                //selected_cell: cells.selectedCell,
+                selected_cell: cells.selectedCell,
                 selected_cell_index: cells.selectedIndex
             };
 
