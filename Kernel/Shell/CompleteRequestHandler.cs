@@ -24,11 +24,8 @@ namespace iCSharp.Kernel.Shell
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 
-
-
             string code = completeRequest.CodeCells[0];
-            code = Regex.Replace(code.Substring(2, code.Length - 2), @"\n", "*");
-
+            code = Regex.Replace(code.Substring(2, code.Length - 2), @"\\n", "*");
 
             this.logger.Info("original code:" + code);
 

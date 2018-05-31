@@ -187,3 +187,4 @@ FakesAssemblies/
 /.vs
 Engine
 Engine
+kernel-spec/kernel.json

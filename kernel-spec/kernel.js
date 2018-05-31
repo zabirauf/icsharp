@@ -70,16 +70,9 @@ define(function () {
             return results;
         }
 
-        function getTrueCurPos(cell, line, ch){
+        function getLine(cell, line){
             var lines = cell.split("\n");
-            console.log(lines.length);
-            var calibrated = 0;
-            if (line <= 0) return ch;
-
-            for (var i = 0; i <= line; i++) {
-                calibrated = calibrated + lines[i].length;
-            }
-            return calibrated + ch;
+            return lines[line];
         }
 
 
@@ -109,7 +102,7 @@ define(function () {
                 code: JSON.stringify(cells.codes),
                 code_cells: cells.string_cells,
                 cursor_pos: cursor.ch,
-                code_pos: getTrueCurPos(cells.codes[cells.selectedIndex], cursor.line, cursor.ch),
+                line: getLine(cells.codes[cells.selectedIndex], cursor.line),
                 cursor_line: cursor.line,
                 selected_cell: cells.selectedCell,
                 selected_cell_index: cells.selectedIndex

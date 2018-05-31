@@ -15,8 +15,8 @@ namespace iCSharp.Messages
          [JsonProperty("cursor_pos")]
          public int CursorPosition { get; set; }
 
-        [JsonProperty("code_pos")]
-        public int CodePosition { get; set; }
+        [JsonProperty("line")]
+        public int Line { get; set; }
 
         [JsonProperty("cursor_line")]
          public int CursorLine { get; set; }
@@ -25,13 +25,13 @@ namespace iCSharp.Messages
          public int Selected_Cell_Index { get; set; }
 
         /*
-            code: JSON.stringify(cells.codes),
-            code_cells: cells.codes,
-            cursor_pos: cursor.ch,
-            code_pos: getTrueCurPos(cells.codes[cells.selectedIndex], cursor.line, cursor.ch),
-            cursor_line: cursor.line,
-            selected_cell: cells.selectedCell,
-            selected_cell_index: cells.selectedIndex
+                code: JSON.stringify(cells.codes),
+                code_cells: cells.string_cells,
+                cursor_pos: cursor.ch,
+                line: getLine(cells.codes[cells.selectedIndex], cursor.line),
+                cursor_line: cursor.line,
+                selected_cell: cells.selectedCell,
+                selected_cell_index: cells.selectedIndex
          */
 
     }
