@@ -23,13 +23,17 @@ namespace iCSharp.Kernel.Shell
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
+
+
+
             string code = completeRequest.CodeCells[0];
             code = Regex.Replace(code.Substring(2, code.Length - 2), @"\n", "*");
 
+
             this.logger.Info("original code:" + code);
 
-			Regex returnType = new Regex(@"[string|int|void]");
-			Regex methodName = new Regex(@"(\w)");
+            Regex returnType = new Regex(@"[string|int|void]");
+            Regex methodName = new Regex(@"(\w)");
 
             int cur_pos = completeRequest.CursorPosition;
 
@@ -43,37 +47,39 @@ namespace iCSharp.Kernel.Shell
 
             this.logger.Info("newcode " + newCode);
 
-            string[] arrayOfKeywords = {"team", "tech", "te", "term", "tame", "tata"};
+            string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
 
             List<string> listOfKeywords = new List<string>();
 
-            listOfKeywords.AddRange(arrayOfKeywords); 
+            listOfKeywords.AddRange(arrayOfKeywords);
 
             List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
 
-			List<MethodMatch> methodMatches = new List<MethodMatch>();
+            List<MethodMatch> methodMatches = new List<MethodMatch>();
 
-			CatchAllWords(ref matches_, newCode);
+            CatchAllWords(ref matches_, newCode);
 
-			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+            List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
 
-			CatchMethods(code, ref methodMatchNames, ref methodMatches);
+            CatchMethods(code, ref methodMatchNames, ref methodMatches);
 
-			AddKeywordsToMatches(ref matches_);
+            AddKeywordsToMatches(ref matches_);
 
-			foreach(MethodMatch m in methodMatches){
-				this.logger.Info(m.Name);
-				this.logger.Info("number of params = " + m.ParamList.Count );
-				this.logger.Info("param types");
-				for (int i = 0; i < m.ParamList.Count; i++){
-					this.logger.Info(m.ParamList[i]);
-				}
+            foreach (MethodMatch m in methodMatches)
+            {
+                this.logger.Info(m.Name);
+                this.logger.Info("number of params = " + m.ParamList.Count);
+                this.logger.Info("param types");
+                for (int i = 0; i < m.ParamList.Count; i++)
+                {
+                    this.logger.Info(m.ParamList[i]);
+                }
 
-			}
+            }
 
             newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
-			string cursorWord = FindWordToAutoComplete(newCode);
+            string cursorWord = FindWordToAutoComplete(newCode);
 
             this.logger.Info("cursor word " + cursorWord);
 
@@ -84,9 +90,9 @@ namespace iCSharp.Kernel.Shell
                 this.logger.Info(matches_[j].Name);
             }
 
-			//Console.WriteLine(cursorWord);
+            //Console.WriteLine(cursorWord);
 
-			RemoveNonMatches(ref matches_, cursorWord);
+            RemoveNonMatches(ref matches_, cursorWord);
 
             this.logger.Info("After Removal");
 
@@ -94,19 +100,19 @@ namespace iCSharp.Kernel.Shell
             {
                 this.logger.Info(matches_[j].Name);
             }
-            
-			if (newCode.Length > 0)
-			{
-				if (newCode[(newCode.Length - 1)].Equals('.'))
-				{
-					matches_ = methodMatchNames;
-				}
-			}
 
-			for (int j = methodMatchNames.Count - 1; j > -1; j--)
+            if (newCode.Length > 0)
             {
-				this.logger.Info("methodmatch");
-				this.logger.Info(methodMatchNames[j].Name);
+                if (newCode[(newCode.Length - 1)].Equals('.'))
+                {
+                    matches_ = methodMatchNames;
+                }
+            }
+
+            for (int j = methodMatchNames.Count - 1; j > -1; j--)
+            {
+                this.logger.Info("methodmatch");
+                this.logger.Info(methodMatchNames[j].Name);
             }
 
             CompleteReply completeReply = new CompleteReply()
@@ -126,11 +132,12 @@ namespace iCSharp.Kernel.Shell
 
         }
 
-		public void CatchAllWords(ref List<CompleteReplyMatch> matches_, string newCode){
-			//this.logger.Info(s);
-			this.logger.Info("weselna elhamdlAllah");
+        public void CatchAllWords(ref List<CompleteReplyMatch> matches_, string newCode)
+        {
+            //this.logger.Info(s);
+            this.logger.Info("weselna elhamdlAllah");
 
-			string catchPattern = @"(\w+)";
+            string catchPattern = @"(\w+)";
 
             Regex p = new Regex(catchPattern);
 
@@ -143,26 +150,49 @@ namespace iCSharp.Kernel.Shell
                     Name = m.ToString(),
                     Documentation = "",
                     Value = "",
-                    
+
                 };
                 matches_.Add(crm);
             }
 
 
-		}
+        }
 
-		public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches){
+        public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches)
+        {
 
-			Regex p = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+            this.logger.Info("code in methods " + code);
+
+            //[^(\n\w)]
+
+            Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
 
             Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
+
+            Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
+            string editedDoc;
 
             foreach (Match m in p.Matches(code))
             {
 
+
+
                 List<string> parameterTypes = new List<string>();
 
                 this.logger.Info("found method match");
+                this.logger.Info(m.Groups["documentation"] + " documentation");
+                Match i = doc.Match(m.Groups["documentation"].ToString());
+                editedDoc = i.Groups["docsum"].ToString();
+
+                this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
+
+                editedDoc = editedDoc.Replace("///", "");
+                editedDoc = editedDoc.Replace("\\n", "");
+                editedDoc = editedDoc.TrimStart(' ');
+                editedDoc = editedDoc.TrimEnd(' ');
+                editedDoc = editedDoc.Replace(@"\s+", " ");
+
+                this.logger.Info(editedDoc + " new docsum here----");
                 this.logger.Info(m.Groups["methodname"] + " name");
                 this.logger.Info(m.Groups["returntype"] + " type");
                 this.logger.Info(m.Groups["paramlist"] + " paramList");
@@ -178,10 +208,10 @@ namespace iCSharp.Kernel.Shell
 
                 }
 
-				MethodMatch mm = new MethodMatch()
+                MethodMatch mm = new MethodMatch()
                 {
                     Name = m.Groups["methodname"].ToString(),
-                    Documentation = "",
+                    Documentation = editedDoc,
                     Value = "",
                     ParamList = parameterTypes,
 
@@ -192,23 +222,24 @@ namespace iCSharp.Kernel.Shell
                 {
 
                     Name = m.Groups["methodname"].ToString(),
-                    Documentation = "",
+                    Documentation = editedDoc,
                     Value = "",
 
                 };
                 methodMatchNames.Add(crm);
             }
 
-			
-		}
 
-		public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_){
-         
-			string[] arrayOfKeywords = { "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "using static", "virtual", "void", "volatile", "while"};          
+        }
+
+        public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_)
+        {
+
+            string[] arrayOfKeywords = { "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "using static", "virtual", "void", "volatile", "while" };
             List<string> listOfKeywords = new List<string>();
             listOfKeywords.AddRange(arrayOfKeywords);
-         
-			foreach (string i in listOfKeywords)
+
+            foreach (string i in listOfKeywords)
             {
                 CompleteReplyMatch crm = new CompleteReplyMatch()
                 {
@@ -221,11 +252,12 @@ namespace iCSharp.Kernel.Shell
                 matches_.Add(crm);
 
             }
-		}
+        }
 
-		public string FindWordToAutoComplete(string newCode){
+        public string FindWordToAutoComplete(string newCode)
+        {
 
-			string cursorWord, cursorLine;
+            string cursorWord, cursorLine;
 
             Regex p = new Regex(@".*\*"); //regex to match up to last '*'
             Match mat = p.Match(newCode);
@@ -257,19 +289,20 @@ namespace iCSharp.Kernel.Shell
                 cursorLine = "";
             }
 
-			return cursorWord;
+            return cursorWord;
 
-		}
+        }
 
-		public void RemoveNonMatches(ref List<CompleteReplyMatch> matches_, string cursorWord){
-			for (int j = matches_.Count - 1; j > -1; j--)
+        public void RemoveNonMatches(ref List<CompleteReplyMatch> matches_, string cursorWord)
+        {
+            for (int j = matches_.Count - 1; j > -1; j--)
             {
                 if (!(matches_[j].Name.StartsWith(cursorWord)))
                 {
                     matches_.RemoveAt(j);
                 }
             }
-		}
+        }
 
 
     }
