@@ -26,9 +26,15 @@ namespace iCSharp.Kernel.Shell
 
             string code = completeRequest.CodeCells[0];
 			string line = completeRequest.Line;
-            code = Regex.Replace(code.Substring(2, code.Length - 2), @"\\n", "*");
 
             this.logger.Info("original code:" + code);
+            this.logger.Info("original line:" + line);
+
+            code = Regex.Replace(code.Substring(1, code.Length - 2), @"\\n", "*");
+            line = line.Substring(1, line.Length - 2);
+
+            this.logger.Info("substring code:" + code);
+            this.logger.Info("substring line:" + line);
 
             Regex returnType = new Regex(@"[string|int|void]");
             Regex methodName = new Regex(@"(\w)");
@@ -37,15 +43,11 @@ namespace iCSharp.Kernel.Shell
 
             this.logger.Info("cur_pos " + cur_pos);
 
-            code = code.Substring(2, code.Length - 2);
             
-            this.logger.Info("fixed code " + code);
-
             //string newCode = code.
             
             line = line.Substring(0, cur_pos); //get substring of code from start to cursor position
-            
-            this.logger.Info("line " + line);
+
 
             string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
 
@@ -256,6 +258,7 @@ namespace iCSharp.Kernel.Shell
 
         public string FindWordToAutoComplete(string line)
         {
+            line = Regex.Replace(line, @"[^\w&^\.]", "*");
 
             string cursorWord, cursorLine;
 

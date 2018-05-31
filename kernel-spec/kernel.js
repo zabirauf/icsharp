@@ -61,7 +61,7 @@ define(function () {
                             results.selectedIndex = results.cells.length;
                         }
                         results.cells.push(c);
-                        results.string_cells.push(JSON.stringify(c.code_mirror.getValue().replace("\n", "*")));
+                        results.string_cells.push(JSON.stringify(c.code_mirror.getValue()));
                         results.codes.push(c.code_mirror.getValue());
                        // console.log('Code: ' + c.code_mirror.getValue()); // CONSOLE LOG
                     }
@@ -102,7 +102,7 @@ define(function () {
                 code: JSON.stringify(cells.codes),
                 code_cells: cells.string_cells,
                 cursor_pos: cursor.ch,
-                line: JSON.stringify(getLine(cells.codes[cells.selectedIndex], cursor.line),
+                line: JSON.stringify(getLine(cells.codes[cells.selectedIndex], cursor.line)),
                 cursor_line: cursor.line,
                 selected_cell: cells.selectedCell,
                 selected_cell_index: cells.selectedIndex
@@ -133,7 +133,7 @@ define(function () {
                                 changedRecently = true;
                             });
 
-                             intellisense.addDeclarationTrigger({ keyCode: 190 }); // `.`
+                             intellisense.addMethodTrigger({ keyCode: 190 }); // `.`
                              intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
                             // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
                             // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
@@ -141,7 +141,7 @@ define(function () {
                             // intellisense.addDeclarationTrigger({ keyCode: 222, shiftKey: true }); // `"`
                             // intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
                             // intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
-                         //   intellisense.onMethod(function (item) { });
+                            intellisense.onMethod(intellisenseRequest);
                             intellisense.onDeclaration(intellisenseRequest);
                         }
                     }
