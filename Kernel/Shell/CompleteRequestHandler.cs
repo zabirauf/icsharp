@@ -25,6 +25,7 @@ namespace iCSharp.Kernel.Shell
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 
             string code = completeRequest.CodeCells[0];
+			string line = completeRequest.Line;
             code = Regex.Replace(code.Substring(2, code.Length - 2), @"\\n", "*");
 
             this.logger.Info("original code:" + code);
@@ -37,12 +38,14 @@ namespace iCSharp.Kernel.Shell
             this.logger.Info("cur_pos " + cur_pos);
 
             code = code.Substring(2, code.Length - 2);
-
+            
             this.logger.Info("fixed code " + code);
 
-            string newCode = code.Substring(0, cur_pos); //get substring of code from start to cursor position
-
-            this.logger.Info("newcode " + newCode);
+            //string newCode = code.
+            
+            line = line.Substring(0, cur_pos); //get substring of code from start to cursor position
+            
+            this.logger.Info("line " + line);
 
             string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
 
@@ -53,8 +56,8 @@ namespace iCSharp.Kernel.Shell
             List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
 
             List<MethodMatch> methodMatches = new List<MethodMatch>();
-
-            CatchAllWords(ref matches_, newCode);
+            
+            CatchAllWords(ref matches_, code);
 
             List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
 
@@ -73,10 +76,10 @@ namespace iCSharp.Kernel.Shell
                 }
 
             }
+            
+            code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
-            newCode = Regex.Replace(newCode, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
-
-            string cursorWord = FindWordToAutoComplete(newCode);
+            string cursorWord = FindWordToAutoComplete(line);
 
             this.logger.Info("cursor word " + cursorWord);
 
@@ -97,10 +100,10 @@ namespace iCSharp.Kernel.Shell
             {
                 this.logger.Info(matches_[j].Name);
             }
-
-            if (newCode.Length > 0)
+            
+            if (line.Length > 0)
             {
-                if (newCode[(newCode.Length - 1)].Equals('.'))
+                if (line[(line.Length - 1)].Equals('.'))
                 {
                     matches_ = methodMatchNames;
                 }
@@ -251,23 +254,23 @@ namespace iCSharp.Kernel.Shell
             }
         }
 
-        public string FindWordToAutoComplete(string newCode)
+        public string FindWordToAutoComplete(string line)
         {
 
             string cursorWord, cursorLine;
 
             Regex p = new Regex(@".*\*"); //regex to match up to last '*'
-            Match mat = p.Match(newCode);
+            Match mat = p.Match(line);
 
             if (mat.Success)
             {
 
-                cursorLine = newCode.Substring(mat.Index + mat.Length);
+                cursorLine = line.Substring(mat.Index + mat.Length);
 
             }
             else
             {
-                cursorLine = newCode;
+                cursorLine = line;
             }
 
 

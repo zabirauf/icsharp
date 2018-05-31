@@ -102,7 +102,7 @@ define(function () {
                 code: JSON.stringify(cells.codes),
                 code_cells: cells.string_cells,
                 cursor_pos: cursor.ch,
-                line: getLine(cells.codes[cells.selectedIndex], cursor.line),
+                line: JSON.stringify(getLine(cells.codes[cells.selectedIndex], cursor.line),
                 cursor_line: cursor.line,
                 selected_cell: cells.selectedCell,
                 selected_cell_index: cells.selectedIndex

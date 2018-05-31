@@ -188,3 +188,7 @@ FakesAssemblies/
 Engine
 Engine
 kernel-spec/kernel.json
+kernel-spec/kernel.json
+.DS_Store
+.DS_Store
+kernel-spec/kernel.json

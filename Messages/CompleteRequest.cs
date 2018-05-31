@@ -16,7 +16,7 @@ namespace iCSharp.Messages
          public int CursorPosition { get; set; }
 
         [JsonProperty("line")]
-        public int Line { get; set; }
+        public string Line { get; set; }
 
         [JsonProperty("cursor_line")]
          public int CursorLine { get; set; }
