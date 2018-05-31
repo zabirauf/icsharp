@@ -65,6 +65,8 @@ namespace iCSharp.Kernel.Shell
 
             CatchMethods(code, ref methodMatchNames, ref methodMatches);
 
+
+                
             AddKeywordsToMatches(ref matches_);
 
             foreach (MethodMatch m in methodMatches)
@@ -79,9 +81,13 @@ namespace iCSharp.Kernel.Shell
 
             }
             
-            code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
+            //code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
             string cursorWord = FindWordToAutoComplete(line);
+
+			List<CompleteReplyMatch> matchesSign = new List<CompleteReplyMatch>();
+            
+			MakeMethodSignMatches(line, methodMatches, ref matchesSign);
 
             this.logger.Info("cursor word " + cursorWord);
 
@@ -109,6 +115,9 @@ namespace iCSharp.Kernel.Shell
                 {
                     matches_ = methodMatchNames;
                 }
+				else if(line[(line.Length - 1)].Equals('(')){
+					matches_ = matchesSign;
+				}
             }
 
             for (int j = methodMatchNames.Count - 1; j > -1; j--)
@@ -189,7 +198,7 @@ namespace iCSharp.Kernel.Shell
                 this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
 
                 editedDoc = editedDoc.Replace("///", "");
-                editedDoc = editedDoc.Replace("\\n", "");
+                editedDoc = editedDoc.Replace("*", "");
                 editedDoc = editedDoc.TrimStart(' ');
                 editedDoc = editedDoc.TrimEnd(' ');
                 editedDoc = editedDoc.Replace(@"\s+", " ");
@@ -306,6 +315,39 @@ namespace iCSharp.Kernel.Shell
                 }
             }
         }
+
+		public void MakeMethodSignMatches(string line,List<MethodMatch> methodMatches, ref List<CompleteReplyMatch> matchesSign){
+
+			Regex regex = new Regex(@"(?<name>\w+)(\()");
+
+			Match i = regex.Match(line);
+
+			string add;
+            
+			foreach(MethodMatch m in methodMatches){
+
+				add = "";
+				if(i.Groups["name"].ToString().Equals(m.Name)){
+					add = m.Name + "(";
+					foreach(string s in m.ParamList){
+						add = add + s+", ";
+					}
+					add = add + ")";
+				}
+
+				CompleteReplyMatch crm = new CompleteReplyMatch
+				{
+					Name = add,
+					Documentation = "",
+					Value = "",
+				};
+				matchesSign.Add(crm);
+
+
+			}
+
+			
+		}
 
 
     }
