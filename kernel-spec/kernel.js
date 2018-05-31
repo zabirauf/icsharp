@@ -76,11 +76,12 @@ define(function () {
         }
 
 
-        function intellisenseRequest(item) {
+        function intellisenseRequestDeclaration(item) {
             var cells = getCodeCells();
             var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
             var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
             var callbacks = { shell: {}, iopub: {} };
+
             console.log("call backs: ");
             console.log(callbacks);
             callbacks.shell.reply = function (msg) {
@@ -90,8 +91,10 @@ define(function () {
                 if (editor != null && item.keyCode !== 0) {
                     console.log('callback!');
                     console.log(msg);
+
                     editor.intellisense.setDeclarations(msg.content.matches);
                 }
+                
             };
 
             callbacks.iopub.output = function (msg) {
@@ -114,6 +117,59 @@ define(function () {
             IPython.notebook.kernel.send_shell_message("intellisense_request", content, callbacks, null, null);
         }
 
+        function intellisenseRequestMethod(item) {
+            var cells = getCodeCells();
+            var editor = cells.selectedCell != null ? cells.selectedCell.code_mirror : null
+            var cursor = editor != null ? editor.doc.getCursor() : { ch: 0, line: 0 }
+            var callbacks = { shell: {}, iopub: {} };
+
+                if (item.keyCode === 8)//|| item.keyCode === 48)
+                {
+                    editor.intellisense.getMeths().setVisible(false);
+                }
+                else
+                {
+                  
+                
+
+            console.log("call backs: method");
+            console.log(callbacks);
+            callbacks.shell.reply = function (msg) {
+                console.log('callback!');
+                //console.log(msg);
+
+                if (editor != null && item.keyCode !== 0) {
+                    console.log('callback method!');
+                    console.log(msg);
+
+                editor.intellisense.setMethods(['CompareTo(int)', 'CompareTo(Object)']);
+
+               //     editor.intellisense.setMethods(msg.content.matches);
+
+                }
+             }
+
+            callbacks.iopub.output = function (msg) {
+                updateMarkers(msg.content.data.errors);
+            };
+
+            var content = {
+                code: JSON.stringify(cells.codes),
+                code_cells: cells.string_cells,
+                cursor_pos: cursor.ch,
+                line: JSON.stringify(getLine(cells.codes[cells.selectedIndex], cursor.line)),
+                cursor_line: cursor.line,
+                selected_cell: cells.selectedCell,
+                selected_cell_index: cells.selectedIndex
+            };
+
+            console.log('intellisenseRequest!');
+            console.log(content);
+
+            IPython.notebook.kernel.send_shell_message("intellisense_request", content, callbacks, null, null);
+        }
+    }
+
         //There are dependencies in the lazy loading 
         require(['codemirror/addon/mode/loadmode'], function () {
             require([staticFolder + 'custom/csharp.js'], function () {
@@ -133,16 +189,17 @@ define(function () {
                                 changedRecently = true;
                             });
 
-                             intellisense.addMethodTrigger({ keyCode: 190 }); // `.`
+                            //intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
+                            //intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
+                             intellisense.addMethodsTrigger({ keyCode: 8 }); // `backspace`
+                             intellisense.addMethodsTrigger({ keyCode: 190 });
                              intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
                             // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
                             // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
                             // intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`
                             // intellisense.addDeclarationTrigger({ keyCode: 222, shiftKey: true }); // `"`
-                            // intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
-                            // intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
-                            intellisense.onMethod(intellisenseRequest);
-                            intellisense.onDeclaration(intellisenseRequest);
+                            intellisense.onMethod(intellisenseRequestMethod); 
+                            intellisense.onDeclaration(intellisenseRequestDeclaration);
                         }
                     }
 
@@ -181,7 +238,7 @@ define(function () {
                         changedRecently = false;
                         kernelIdledSinceTypeCheck = false;
                         kernelIdledRecently = false;
-                        intellisenseRequest({ keyCode: 0 })
+                        intellisenseRequestDeclaration({ keyCode: 0 }) //FIX THIS LATER
                     }, 1000);
 
                 });
