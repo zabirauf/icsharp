@@ -281,7 +281,7 @@ define(function () {
                 CursorPosition: cursor.ch
             };
 
-            IPython.notebook.kernel.send_shell_message("complete_reqruest", content, callbacks, null, null);
+            IPython.notebook.kernel.send_shell_message("complete_request", content, callbacks, null, null);
         }
 
         //There are dependencies in the lazy loading 
