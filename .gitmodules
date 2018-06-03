@@ -1,3 +1,6 @@
 [submodule "Engine"]
 	path = Engine
 	url = https://github.com/scriptcs/scriptcs.git
+[submodule "roslyn"]
+	path = roslyn
+	url = https://github.com/dotnet/roslyn
