@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel.csproj", "{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}"
 EndProject
@@ -33,6 +33,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2AD7E017-5ED8-48F2-B83C-9ACA856C3974}"
 	ProjectSection(SolutionItems) = preProject
 		custom.js = custom.js
+		kernel-spec\ipython_config.py = kernel-spec\ipython_config.py
 		kernel-spec\kernel.css = kernel-spec\kernel.css
 		kernel-spec\kernel.js = kernel-spec\kernel.js
 		kernel-spec\kernel.json = kernel-spec\kernel.json
