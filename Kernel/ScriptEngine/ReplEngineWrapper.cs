@@ -1,6 +1,8 @@
 ﻿using Common.Logging;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using System.Text;
+using System.Threading;
 using ILog = Common.Logging.ILog;
 
 namespace iCSharp.Kernel.ScriptEngine
@@ -23,15 +25,65 @@ namespace iCSharp.Kernel.ScriptEngine
             this.logger.Debug(string.Format("Executing: {0}", script));
             this.console.ClearAllInBuffer();
 
-            repl = repl == null ? CSharpScript.RunAsync(script).Result : repl.ContinueWithAsync(script).Result;
+            this.console.WriteLine("Script:");
+            this.console.WriteLine(script);
+            this.console.WriteLine();
 
-            object scriptResult = this.repl.ContinueWithAsync(script);
+            var cancellationToken = new CancellationToken();
 
-            ExecutionResult executionResult = new ExecutionResult()
+            Script<object> newScript;
+            if (repl == null)
+            {
+                newScript = CSharpScript.Create<object>(script);//, scriptOptions, globals.GetType(), assemblyLoader: null);
+            }
+            else
+            {
+                newScript = repl.Script.ContinueWith(script); //scriptOptions
+            }
+
+            // For errors
+            var diagnostics = newScript.Compile(cancellationToken);
+
+            ExecutionResult executionResult;
+
+            if (diagnostics.Length > 0)
+            {
+                foreach (var error in diagnostics)
+                {
+                    this.console.WriteLine(error.ToString());
+                }
+
+                return new ExecutionResult() { OutputResultWithColorInformation = this.console.GetAllInBuffer()};
+            }
+
+
+            var task = (repl == null) ?
+                            newScript.RunAsync(catchException: e => false, cancellationToken: cancellationToken) :
+                            newScript.RunFromAsync(repl, catchException: e => false, cancellationToken: cancellationToken);
+
+            repl = task.GetAwaiter().GetResult();
+
+           // this.console.WriteLine("Result:");
+            //this.console.WriteLine(newScript.);
+
+            this.console.WriteLine("Variables:");
+
+            foreach (var _var in repl.Variables)
+            {
+                this.console.WriteLine("Var_Name: " + _var.Name + "Var_Val: " + _var.Value);
+            }
+
+            if (repl.ReturnValue != null && !string.IsNullOrEmpty(repl.ReturnValue.ToString()))
+            {
+                this.console.WriteLine("Result:");
+                this.console.WriteLine(repl.ReturnValue.ToString());
+            }
+
+
+            executionResult = new ExecutionResult()
             {
                 OutputResultWithColorInformation = this.console.GetAllInBuffer()
             };
-
             return executionResult;
         }
 
