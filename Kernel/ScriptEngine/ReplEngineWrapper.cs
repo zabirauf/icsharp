@@ -1,7 +1,6 @@
 ﻿using Common.Logging;
-using ScriptCs;
-using ScriptCs.Contracts;
-
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using ILog = Common.Logging.ILog;
 
 namespace iCSharp.Kernel.ScriptEngine
@@ -9,10 +8,10 @@ namespace iCSharp.Kernel.ScriptEngine
     internal class ReplEngineWrapper : IReplEngine
     {
         private readonly ILog logger;
-        private readonly Repl repl;
+        private ScriptState<object> repl;
         private readonly MemoryBufferConsole console;
 
-        public ReplEngineWrapper(ILog logger, Repl repl, MemoryBufferConsole console)
+        public ReplEngineWrapper(ILog logger, ScriptState<object> repl, MemoryBufferConsole console)
         {
             this.logger = logger;
             this.repl = repl;
@@ -24,7 +23,9 @@ namespace iCSharp.Kernel.ScriptEngine
             this.logger.Debug(string.Format("Executing: {0}", script));
             this.console.ClearAllInBuffer();
 
-            ScriptResult scriptResult = this.repl.Execute(script);
+            repl = repl == null ? CSharpScript.RunAsync(script).Result : repl.ContinueWithAsync(script).Result;
+
+            object scriptResult = this.repl.ContinueWithAsync(script);
 
             ExecutionResult executionResult = new ExecutionResult()
             {
@@ -34,10 +35,10 @@ namespace iCSharp.Kernel.ScriptEngine
             return executionResult;
         }
 
-        private bool IsCompleteResult(ScriptResult scriptResult)
-        {
-            return scriptResult.ReturnValue != null && !string.IsNullOrEmpty(scriptResult.ReturnValue.ToString());
-        }
+       // private bool IsCompleteResult(ScriptResult scriptResult)
+       // {
+       //     return scriptResult.ReturnValue != null && !string.IsNullOrEmpty(scriptResult.ReturnValue.ToString());
+        //}
 
         
 
