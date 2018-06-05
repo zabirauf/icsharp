@@ -25,6 +25,7 @@ namespace iCSharp.Kernel.ScriptEngine
 
 		public ExecutionResult Execute(string script)
 		{
+            this.console.ResetColor();
 			this.logger.Debug(string.Format("Executing: {0}", script));
 			this.console.ClearAllInBuffer();
 			this.console.Clear();
@@ -36,9 +37,6 @@ namespace iCSharp.Kernel.ScriptEngine
 			var cancellationToken = new CancellationToken();
 
 			Script<object> newScript;
-
-
-
             
 			if (repl == null)
 			{
@@ -60,6 +58,7 @@ namespace iCSharp.Kernel.ScriptEngine
 
 			if (diagnostics.Length > 0)
 			{
+                this.console.ForegroundColor = System.ConsoleColor.Red;
 				foreach (var error in diagnostics)
 				{
 					this.console.WriteLine(error.ToString());
