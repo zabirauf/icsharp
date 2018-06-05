@@ -8,7 +8,7 @@ if system() != "Windows":
 	arguments.append("mono")
 	path = getcwd().replace("kernel-spec", "") + "/Kernel/bin/Release/iCSharp.Kernel.exe"
 else:
-	path = getcwd().replace("kernel-spec", "") + "\\Kernel\\bin\\Release\\iCSharp.Kernel.exe"
+	path = getcwd().replace("kernel-spec", "") + "\\bin\\Release\\iCSharp.Kernel.exe"
 
 arguments.append(path)
 arguments.append("{connection_file}")
