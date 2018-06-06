@@ -34,10 +34,19 @@ cd Engine
 Open the project on Visual Studio and attempt to build, follow the remaining instructions below after successful build to launch Jupyter Notebooks with the newly installed C# Kernel.
 
 #### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-on-Mac-OS-X)
+In the directory, run
+```
+./build.sh
+```
 
 #### [Linux](https://github.com/zabirauf/icsharp/wiki/Install-on-Unix-(Debian-7.8))
+In the directory, run
+```
+./build.sh
+```
 
 #### [Windows](https://github.com/zabirauf/icsharp/wiki/Installation)
+No need to change paths! Build on Visual Studio and you will have C# Kernel installed on your Jupyter Notebook.
 
 ### Feedback
 I am eager to receive [feedback](mailto:zabirauf@gmail.com) from anyone who has attempted to use ICSharp. I would love to hear
