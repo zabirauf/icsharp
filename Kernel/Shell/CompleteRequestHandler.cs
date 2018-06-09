@@ -65,6 +65,9 @@ namespace iCSharp.Kernel.Shell
 
             CatchMethods(code, ref methodMatchNames, ref methodMatches);
 
+			List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
+			CatchClasses(code, ref classMatchNames);
+
 
                 
             AddKeywordsToMatches(ref matches_);
@@ -114,6 +117,7 @@ namespace iCSharp.Kernel.Shell
                 if (line[(line.Length - 1)].Equals('.'))
                 {
                     matches_ = methodMatchNames;
+					matches_.AddRange(classMatchNames);
                 }
 				else if(line[(line.Length - 1)].Equals('(')){
 					matches_ = matchesSign;
@@ -165,9 +169,45 @@ namespace iCSharp.Kernel.Shell
                 };
                 matches_.Add(crm);
             }
-
+            
 
         }
+
+		public void CatchClasses(string code, ref List<CompleteReplyMatch> classMatchNames){
+			Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*(private|internal|public)?(class)([\s]+)(?<classname>\w+)");
+
+			Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
+            string editedDoc;
+
+
+
+
+			foreach(Match m in p.Matches(code)){
+
+				this.logger.Info("found class");
+
+				Match i = doc.Match(m.Groups["documentation"].ToString());
+				editedDoc = i.Groups["docsum"].ToString();
+				editedDoc = editedDoc.Replace("///", "");
+                editedDoc = editedDoc.Replace("*", "");
+                editedDoc = editedDoc.TrimStart(' ');
+                editedDoc = editedDoc.TrimEnd(' ');
+                editedDoc = editedDoc.Replace(@"\s+", " ");
+
+				this.logger.Info(editedDoc + " class new docsum here----");
+			
+				CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+
+                    Name = m.Groups["classname"].ToString(),
+                    Documentation = "",
+                    Value = "",
+
+                };
+				classMatchNames.Add(crm);
+
+			}
+		}
 
         public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches)
         {
@@ -177,7 +217,7 @@ namespace iCSharp.Kernel.Shell
             //[^(\n\w)]
 
             Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
-
+            
             Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
 
             Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
@@ -203,7 +243,7 @@ namespace iCSharp.Kernel.Shell
                 editedDoc = editedDoc.TrimEnd(' ');
                 editedDoc = editedDoc.Replace(@"\s+", " ");
 
-                this.logger.Info(editedDoc + " new docsum here----");
+                this.logger.Info(editedDoc + " method new docsum here----");
                 this.logger.Info(m.Groups["methodname"] + " name");
                 this.logger.Info(m.Groups["returntype"] + " type");
                 this.logger.Info(m.Groups["paramlist"] + " paramList");
