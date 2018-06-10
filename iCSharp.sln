@@ -17,10 +17,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5EEE02
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20371AF1-E487-4ECD-91C8-58495AB713E2}"
-	ProjectSection(SolutionItems) = preProject
-		kernel-spec\static\custom\csharp.css = kernel-spec\static\custom\csharp.css
-		kernel-spec\static\custom\csharp.js = kernel-spec\static\custom\csharp.js
-		kernel-spec\static\custom\custom.css = kernel-spec\static\custom\custom.css
-		kernel-spec\static\custom\custom.js = kernel-spec\static\custom\custom.js
-		custom.js = custom.js
-		kernel-spec\ipython_config.py = kernel-spec\ipython_config.py
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A785BBFB-CD6C-48B7-8BEA-DC241ACB6D70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DC4BCD0-8E6B-4657-AD7C-2E1E01E3EB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DC4BCD0-8E6B-4657-AD7C-2E1E01E3EB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DC4BCD0-8E6B-4657-AD7C-2E1E01E3EB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DC4BCD0-8E6B-4657-AD7C-2E1E01E3EB34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0330B333-D8B9-451E-B3B7-20DAF7A2FCD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0330B333-D8B9-451E-B3B7-20DAF7A2FCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0330B333-D8B9-451E-B3B7-20DAF7A2FCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0330B333-D8B9-451E-B3B7-20DAF7A2FCD4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAB5358C-2B5E-4BED-A076-A669E37F2893}
+	EndGlobalSection
+EndGlobal
