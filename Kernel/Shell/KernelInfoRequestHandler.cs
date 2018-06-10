@@ -42,7 +42,7 @@ namespace iCSharp.Kernel.Shell
                 ProtocolVersion = "4.1",
                 LanguageVersion = "0.0.1",
                 IPythonVersion = "4.0.0",
-                Language = "C#",
+                Language = "csharp",
                 Implementation = "iCsharp",
                 ImplementationVersion = "0.0.2"
             };

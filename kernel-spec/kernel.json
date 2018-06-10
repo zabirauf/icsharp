@@ -1,5 +1,5 @@
 {
-    "argv": ["C:\/Users\/Mohamed\/source\/repos\/icsharp_kernel\/Kernel\/bin\/Debug\/iCSharp.Kernel.exe", "{connection_file}"],
+    "argv": ["C:\/Users\/James\/git\/icsharp\/Kernel\/bin\/Debug\/iCSharp.Kernel.exe", "{connection_file}"],
     "display_name": "C#",
     "language": "csharp"
 }
