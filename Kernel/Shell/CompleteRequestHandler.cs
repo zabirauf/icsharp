@@ -2,6 +2,7 @@
 
 namespace iCSharp.Kernel.Shell
 {
+	
     using Common.Logging;
     using System.Collections.Generic;
     using Common.Serializer;
@@ -9,6 +10,11 @@ namespace iCSharp.Kernel.Shell
     using NetMQ.Sockets;
     using iCSharp.Kernel.Helpers;
     using System.Text.RegularExpressions;
+	using System.IO;
+	using System.Reflection;
+	using System;
+	using System.Linq;
+	//using System.Linq.Expressions.Analyzer
     public class CompleteRequestHandler : IShellMessageHandler
     {
         private ILog logger;
@@ -24,7 +30,10 @@ namespace iCSharp.Kernel.Shell
         {
             CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 
+
             string code = completeRequest.CodeCells[0];
+            
+            
 			string line = completeRequest.Line;
 
             this.logger.Info("original code:" + code);
@@ -42,6 +51,7 @@ namespace iCSharp.Kernel.Shell
             int cur_pos = completeRequest.CursorPosition;
 
             this.logger.Info("cur_pos " + cur_pos);
+			//Type type = typeof(code);
 
             
             //string newCode = code.
@@ -67,6 +77,11 @@ namespace iCSharp.Kernel.Shell
 
 			List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
 			CatchClasses(code, ref classMatchNames);
+
+			List<VariableMatch> variableMatches = new List<VariableMatch>();
+			VariableMatches(code, ref variableMatches);
+
+			//string[] dirs = Directory.GetDirectories
 
 
                 
@@ -116,12 +131,27 @@ namespace iCSharp.Kernel.Shell
             {
                 if (line[(line.Length - 1)].Equals('.'))
                 {
+					Console.WriteLine("in function and cursor word is " + cursorWord);
                     matches_ = methodMatchNames;
 					matches_.AddRange(classMatchNames);
+					foreach(var i in variableMatches){
+						if(i.Name.Equals(cursorWord)){
+							try
+							{
+								//Type type = Type.GetType(i.VarType);
+								ShowMethods(i.VarType, ref matches_);
+							}catch(NullReferenceException e){
+								Console.WriteLine("Do Not Have This Type");
+							}
+
+						}
+					}
+					//Type type = typ
                 }
 				else if(line[(line.Length - 1)].Equals('(')){
 					matches_ = matchesSign;
 				}
+
             }
 
             for (int j = methodMatchNames.Count - 1; j > -1; j--)
@@ -181,8 +211,11 @@ namespace iCSharp.Kernel.Shell
 
 
 
-
+            
 			foreach(Match m in p.Matches(code)){
+				//Type mytype = t(code); 
+				//MethodInfo methodInfo = getMethods(m.Groups.ToString());
+				//	.ToString();
 
 				this.logger.Info("found class");
 
@@ -206,6 +239,8 @@ namespace iCSharp.Kernel.Shell
                 };
 				classMatchNames.Add(crm);
 
+
+
 			}
 		}
 
@@ -216,7 +251,7 @@ namespace iCSharp.Kernel.Shell
 
             //[^(\n\w)]
 
-            Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+			Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*((?<access>public|private)([\s]+))?(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
             
             Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
 
@@ -244,7 +279,7 @@ namespace iCSharp.Kernel.Shell
                 editedDoc = editedDoc.Replace(@"\s+", " ");
 
                 this.logger.Info(editedDoc + " method new docsum here----");
-                this.logger.Info(m.Groups["methodname"] + " name");
+				this.logger.Info(m.Groups["methodname"] + " name" + "-- Access = " + m.Groups["access"]);
                 this.logger.Info(m.Groups["returntype"] + " type");
                 this.logger.Info(m.Groups["paramlist"] + " paramList");
 
@@ -305,26 +340,31 @@ namespace iCSharp.Kernel.Shell
             }
         }
 
-        public string FindWordToAutoComplete(string line)
-        {
-            line = Regex.Replace(line, @"[^\w&^\.]", "*");
+		public string FindWordToAutoComplete(string line)
+		{
+			line = Regex.Replace(line, @"[^\w&^\.]", "*");
 
-            string cursorWord, cursorLine;
+			string cursorWord, cursorLine;
 
-            Regex p = new Regex(@".*\*"); //regex to match up to last '*'
-            Match mat = p.Match(line);
+			Regex p = new Regex(@".*\*"); //regex to match up to last '*'
+			Match mat = p.Match(line);
 
-            if (mat.Success)
-            {
+			if (mat.Success)
+			{
 
-                cursorLine = line.Substring(mat.Index + mat.Length);
+				cursorLine = line.Substring(mat.Index + mat.Length);
 
-            }
-            else
-            {
-                cursorLine = line;
-            }
-
+			}
+			else
+			{
+				cursorLine = line;
+			}
+			if (cursorLine.Length > 0){
+			if (cursorLine[cursorLine.Length - 1] == '.')
+			{
+				cursorLine = cursorLine.Substring(0, cursorLine.Length - 1);
+			}
+		}
 
             p = new Regex(@".*\.");
             mat = p.Match(cursorLine);
@@ -384,11 +424,149 @@ namespace iCSharp.Kernel.Shell
 				matchesSign.Add(crm);
 
 
+
 			}
 
+
+		}
+
+		public void VariableMatches(string code, ref List<VariableMatch> variableMatches){
+			Console.WriteLine("GHAYARNA EL CODE1");
+			Regex regex = new Regex(@"(?<type>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|Comparer<[^>]*>|EqualityComparer<[^>]*>|HashSet<[^>]*>|LinkedList<[^>]*>|List<[^>]*>|Queue<[^*]>|SortedSet<[^*]>|Stack<[^*]>|)([\s]+)(?<name>\w+)");
+			string type;
+			foreach(Match m in regex.Matches(code)){
+				Console.WriteLine("Found variable match");
+				Console.WriteLine(m.Groups["type"]);
+				type = m.Groups["type"].ToString();
+				Type t = ProperTypeName(type);
+
+				VariableMatch variableMatch = new VariableMatch
+				{
+
+					Name = m.Groups["name"].ToString(),
+				    VarType = t,
+
+				};
+				variableMatches.Add(variableMatch);
+
+                 
+					
+			}
+            
 			
 		}
 
+		public Type ProperTypeName(string type){
+
+			int index = type.IndexOf("<");
+			if(index > 0){
+				type = type.Substring(0, index);
+			}
+
+			Console.WriteLine("type after index " + type);
+
+			switch(type)
+			{
+				case "int":
+					return typeof(int);
+					break;
+				case "string":
+					return typeof(string);
+					break;
+				case "sbyte":
+					return typeof(sbyte);
+					break;                   
+				case "short":
+					return typeof(short);
+					break;
+				case "long":
+					return typeof(long);
+					break;
+				case "byte":
+					return typeof(byte);
+					break;
+				case "ushort":
+					return typeof(ushort);
+					break;
+				case "ulong":
+					return typeof(ulong);
+					break;
+				case "char":
+					return typeof(char);
+					break;
+				case "float":
+					return typeof(float);
+					break;
+				case "double":
+					return typeof(double);
+					break;
+				case "decimal":
+					return typeof(decimal);
+					break;
+				case "bool":
+					return typeof(bool);
+					break;
+				case "Comparer":
+					return typeof(Comparer<>);
+					break;				
+				case "EqualityComparer":
+					return typeof(EqualityComparer<>);
+                    break;
+				case "HashSet":
+					return typeof(HashSet<>);
+                    break;
+				case "LinkedList":
+					return typeof(LinkedList<>);
+                    break;
+				case "List":
+					Console.WriteLine("in the list branch");
+                    return typeof(List<>);
+                    break;
+				case "Queue":
+                    return typeof(Queue<>);
+                    break;
+				case "SortedSet":
+					return typeof(SortedSet<>);
+                    break;
+				case "Stack":
+                    return typeof(Stack<>);
+                    break;
+				default:
+					Console.WriteLine("in the default branch");
+					return null;
+					break;
+			}
+			
+		}
+
+		public void ShowMethods(Type type, ref List<CompleteReplyMatch> matches_)
+        {
+            foreach (var method in type.GetMethods())
+            {
+                var parameters = method.GetParameters();
+                var parameterDescriptions = string.Join
+                    (", ", method.GetParameters()
+                                 .Select(x => x.ParameterType + " " + x.Name)
+                                 .ToArray());
+
+				CompleteReplyMatch crm = new CompleteReplyMatch
+				{
+					
+					Name = method.Name,
+					Documentation = parameterDescriptions,
+					Value = "",
+
+				};
+				matches_.Add(crm);
+                
+            }
+        }
+         
+
 
     }
+
+    
 }
+
+

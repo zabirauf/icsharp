@@ -22,6 +22,9 @@ namespace iCSharp.Messages
 		[JsonProperty("paramlist")]
 		public List<string> ParamList { get; set; }
 
+		[JsonProperty("access")]
+        public string Access { get; set; }
+
 
 
 
