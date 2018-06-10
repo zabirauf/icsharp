@@ -17,6 +17,8 @@ namespace iCSharp.Messages
 
         public const string CompleteRequest = "complete_request";
 
+        public const string CompleteReply = "complete_reply";
+
         public const string Status = "status";
 
         public const string Output = "pyout";
