@@ -59,11 +59,17 @@ namespace iCSharp.Kernel.Shell
             line = line.Substring(0, cur_pos); //get substring of code from start to cursor position
 
 
-            string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
+			//string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
+
+			List<CompleteReplyMatch> DirectiveMatches = new List<CompleteReplyMatch>();
+			DirectivesList(ref DirectiveMatches);
+
+
+
 
             List<string> listOfKeywords = new List<string>();
 
-            listOfKeywords.AddRange(arrayOfKeywords);
+            //listOfKeywords.AddRange(arrayOfKeywords);
 
             List<CompleteReplyMatch> matches_ = new List<CompleteReplyMatch>();
 
@@ -150,9 +156,15 @@ namespace iCSharp.Kernel.Shell
                 }
 				else if(line[(line.Length - 1)].Equals('(')){
 					matches_ = matchesSign;
-				}
+				}else if (line.StartsWith("using "))
+                {
+                    Console.WriteLine("We're Starting with using!!!!!!!");
+                    matches_ = DirectiveMatches;
+                }
 
-            }
+			}
+
+
 
             for (int j = methodMatchNames.Count - 1; j > -1; j--)
             {
@@ -561,6 +573,29 @@ namespace iCSharp.Kernel.Shell
                 
             }
         }
+
+		public void DirectivesList(ref List<CompleteReplyMatch> DirectiveMatches){
+            
+			//List<Type> list = new List<Type>();
+            foreach (Assembly ass in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (Type t in ass.GetTypes())
+                    {
+                        
+						CompleteReplyMatch crm = new CompleteReplyMatch
+						{
+							Name = t.ToString(),
+							Documentation = "",
+							Value = "",
+
+						};
+						DirectiveMatches.Add(crm);
+                            }
+                    }
+            
+
+			
+		}
          
 
 
