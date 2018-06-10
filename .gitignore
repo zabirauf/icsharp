@@ -186,4 +186,6 @@ FakesAssemblies/
 *.userprefs
 /.vs
 Engine
+kernel-spec/kernel.json
+.DS_Store
 

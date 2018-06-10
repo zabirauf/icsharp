@@ -49,6 +49,9 @@ namespace iCSharp.Kernel.Shell
 
             // 3: Evaluate the C# code
             string code = executeRequest.Code;
+			Console.WriteLine("////////////////////////////////////");
+			Console.WriteLine("code: " + code);
+
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
             string codeHtmlOutput = this.GetCodeHtmlOutput(results);
@@ -82,6 +85,9 @@ namespace iCSharp.Kernel.Shell
 
         private string GetCodeOutput(ExecutionResult executionResult)
         {
+
+			//Console.WriteLine("????????????????????????");
+			//Console.WriteLine("Weselna");
             StringBuilder sb = new StringBuilder();
 
             foreach (string result in executionResult.OutputResults)

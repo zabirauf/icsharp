@@ -9,7 +9,7 @@ namespace iCSharp.Messages
 {
     public class CompleteReply
     {
-        /* [JsonProperty("matches")]
+       /* [JsonProperty("matches")]
           public List<string> Matches { get; set; }
 
           [JsonProperty("cursor_start")]
@@ -24,8 +24,8 @@ namespace iCSharp.Messages
           [JsonProperty("status")]
           public string Status { get; set; }*/
 
-        [JsonProperty("matches")]
-        public List<string> Matches { get; set; }
+       [JsonProperty("matches")]
+        public List<CompleteReplyMatch> Matches { get; set; }
 
         [JsonProperty("matched_text")]
         public string MatchedText { get; set; }
@@ -34,6 +34,6 @@ namespace iCSharp.Messages
         public int FilterStartIndex { get; set; }
 
         [JsonProperty("status")]
-        public string Status { get; set; }  
+        public string Status { get; set; } 
     }
 }
