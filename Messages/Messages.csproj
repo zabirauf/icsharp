@@ -66,6 +66,8 @@
     <Compile Include="Status.cs" />
     <Compile Include="StatusValues.cs" />
     <Compile Include="MethodMatch.cs" />
+    <Compile Include="ClassMatch.cs" />
+    <Compile Include="VariableMatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
