@@ -312,7 +312,7 @@ define(function () {
                     console.log('callback method!');
                     console.log(msg);
 
-                editor.intellisense.setMethods(['CompareTo(int)', 'CompareTo(Object)']);
+             //   editor.intellisense.setMethods(['CompareTo(int)', 'CompareTo(Object)']);
 
                //     editor.intellisense.setMethods(msg.content.matches);
 

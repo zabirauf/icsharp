@@ -14,9 +14,13 @@ namespace iCSharp.Kernel.Shell
 	using System.Reflection;
 	using System;
 	using System.Linq;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis;
+
     //using System.
-	//using System.Linq.Expressions.Analyzer
-	public class CompleteRequestHandler : IShellMessageHandler
+    //using System.Linq.Expressions.Analyzer
+    public class CompleteRequestHandler : IShellMessageHandler
 	{
 		private ILog logger;
 		private readonly IMessageSender messageSender;
@@ -31,11 +35,9 @@ namespace iCSharp.Kernel.Shell
 		{
 			CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 
+            //string code = completeRequest.CodeCells[completeRequest.Selected_Cell_Index];
 
-			//string code = completeRequest.CodeCells[completeRequest.Selected_Cell_Index];
-
-
-			string line = completeRequest.Line;
+            string line = completeRequest.Line;
 
 		//	this.logger.Info("original code:" + code);
 			this.logger.Info("original line:" + line);
@@ -79,13 +81,29 @@ namespace iCSharp.Kernel.Shell
 
             List<VariableMatch> variableMatches = new List<VariableMatch>();
 
+
+            var syntax_code = Regex.Replace(completeRequest.CodeCells[0].Substring(1, completeRequest.CodeCells[0].Length - 2), @"\\n", "*");
+
+            var tree = CSharpSyntaxTree.ParseText(syntax_code);
+
+            var syntaxRoot = tree.GetRoot();
+      //      var MyClass = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+       //     var MyMethod = syntaxRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
+
+          //  Console.WriteLine("ayyyyyyy" + MyClass.Identifier.ToString());
+          //  Console.WriteLine("yaaaaaaay" + MyMethod.Identifier.ToString());
+
+            CatchClasses(syntaxRoot, ref classMatchNames);
+            CatchMethods(syntaxRoot, ref methodMatchNames, ref methodMatches);
+
             foreach (var codes in completeRequest.CodeCells)
             {
                 var code = Regex.Replace(codes.Substring(1, codes.Length - 2), @"\\n", "*");
-              //  CatchAllWords(ref matches_, code);
-                CatchClasses(code, ref classMatchNames);
-              //  CatchMethods(code, ref methodMatchNames, ref methodMatches);
-               // VariableMatches(code, ref variableMatches);
+                //  CatchAllWords(ref matches_, code);
+                //  CatchMethods(code, ref methodMatchNames, ref methodMatches);
+                // VariableMatches(code, ref variableMatches);
+
+
 
             }
 
@@ -291,16 +309,18 @@ namespace iCSharp.Kernel.Shell
 
 		}
 
-		public void CatchClasses(string code, ref List<CompleteReplyMatch> classMatchNames)
+		public void CatchClasses(SyntaxNode tree, ref List<CompleteReplyMatch> classMatchNames)
 		{
             //(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*
+            var MyClass = tree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
+
             this.logger.Info("Running catchclass");
             Regex p = new Regex(@"class([\s]+)(?<classname>\w+)");
             
 			Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
 			string editedDoc;
 
-			foreach (Match m in p.Matches(code))
+			foreach (var node in MyClass)
 			{
 				//Type mytype = t(code); 
 				//MethodInfo methodInfo = getMethods(m.Groups.ToString());
@@ -308,7 +328,7 @@ namespace iCSharp.Kernel.Shell
 
 				this.logger.Info("found class");
 
-				Match i = doc.Match(m.Groups["documentation"].ToString());
+			/*	Match i = doc.Match(m.Groups["documentation"].ToString());
 				editedDoc = i.Groups["docsum"].ToString();
 				editedDoc = editedDoc.Replace("///", "");
 				editedDoc = editedDoc.Replace("*", "");
@@ -316,27 +336,26 @@ namespace iCSharp.Kernel.Shell
 				editedDoc = editedDoc.TrimEnd(' ');
 				editedDoc = editedDoc.Replace(@"\s+", " ");
 
-				this.logger.Info(editedDoc + " class new docsum here----");
+				this.logger.Info(editedDoc + " class new docsum here----");*/
 
 				CompleteReplyMatch crm = new CompleteReplyMatch()
 				{
 
-					Name = m.Groups["classname"].ToString(),
+					Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
 					Documentation = "this is a class",
 					Value = "",
                     Glyph = "class"
 				};
 				classMatchNames.Add(crm);
 
-
-
 			}
 		}
 
-		public void CatchMethods(string code, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches)
+		public void CatchMethods(SyntaxNode tree, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches)
 		{
 
-			this.logger.Info("code in methods " + code);
+            var MyMethod = tree.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+            this.logger.Info("code in methods ");
 
 			//[^(\n\w)]
 
@@ -347,55 +366,55 @@ namespace iCSharp.Kernel.Shell
 			Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
 			string editedDoc;
 
-			foreach (Match m in p.Matches(code))
+			foreach (var mat in MyMethod)
 			{
 
-				List<string> parameterTypes = new List<string>();
+                /*	List<string> parameterTypes = new List<string>();
 
-				this.logger.Info("found method match");
-				this.logger.Info(m.Groups["documentation"] + " documentation");
-				Match i = doc.Match(m.Groups["documentation"].ToString());
-				editedDoc = i.Groups["docsum"].ToString();
+                    this.logger.Info("found method match");
+                    this.logger.Info(m.Groups["documentation"] + " documentation");
+                    Match i = doc.Match(m.Groups["documentation"].ToString());
+                    editedDoc = i.Groups["docsum"].ToString();
 
-				this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
+                    this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
 
-				editedDoc = editedDoc.Replace("///", "");
-				editedDoc = editedDoc.Replace("*", "");
-				editedDoc = editedDoc.TrimStart(' ');
-				editedDoc = editedDoc.TrimEnd(' ');
-				editedDoc = editedDoc.Replace(@"\s+", " ");
+                    editedDoc = editedDoc.Replace("///", "");
+                    editedDoc = editedDoc.Replace("*", "");
+                    editedDoc = editedDoc.TrimStart(' ');
+                    editedDoc = editedDoc.TrimEnd(' ');
+                    editedDoc = editedDoc.Replace(@"\s+", " ");
 
-				this.logger.Info(editedDoc + " method new docsum here----");
-				this.logger.Info(m.Groups["methodname"] + " name" + "-- Access = " + m.Groups["access"]);
-				this.logger.Info(m.Groups["returntype"] + " type");
-				this.logger.Info(m.Groups["paramlist"] + " paramList");
+                    this.logger.Info(editedDoc + " method new docsum here----");
+                    this.logger.Info(m.Groups["methodname"] + " name" + "-- Access = " + m.Groups["access"]);
+                    this.logger.Info(m.Groups["returntype"] + " type");
+                    this.logger.Info(m.Groups["paramlist"] + " paramList");
 
-				foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString()))
-				{
+                    foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString()))
+                    {
 
-					this.logger.Info("we have a parameter");
-					this.logger.Info(parType.Groups["returntype"]);
-					this.logger.Info(parType.Groups["parnames"]);
+                        this.logger.Info("we have a parameter");
+                        this.logger.Info(parType.Groups["returntype"]);
+                        this.logger.Info(parType.Groups["parnames"]);
 
-					parameterTypes.Add(parType.Groups["returntype"].ToString());
+                        parameterTypes.Add(parType.Groups["returntype"].ToString());
 
-				}
+                    }*/
 
-				MethodMatch mm = new MethodMatch()
-				{
-					Name = m.Groups["methodname"].ToString(),
-					Documentation = editedDoc,
-					Value = "",
-					ParamList = parameterTypes,
+                /*	MethodMatch mm = new MethodMatch()
+                    {
+                        Name = m.Groups["methodname"].ToString(),
+                        Documentation = editedDoc,
+                        Value = "",
+                        ParamList = parameterTypes,
 
-				};
-				methodMatches.Add(mm);
+                    };
+                    methodMatches.Add(mm);*/
 
                 CompleteReplyMatch crm = new CompleteReplyMatch()
                 {
 
-                    Name = m.Groups["methodname"].ToString(),
-                    Documentation = editedDoc,
+                    Name = mat.Identifier.ToString(),
+                    Documentation = "",
                     Value = "",
                     Glyph = "method"
 
