@@ -73,17 +73,7 @@ namespace iCSharp.Kernel.Shell
 
 			List<MethodMatch> methodMatches = new List<MethodMatch>();
 
-<<<<<<< HEAD
             List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
-=======
-            
-
-			CatchAllWords(ref matches_, code);
-
-			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
-
-			CatchMethods(code, ref methodMatchNames, ref methodMatches);
->>>>>>> d35751b8f00728384ec449d09864ee1bef2f80e8
 
             List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
 
@@ -226,28 +216,36 @@ namespace iCSharp.Kernel.Shell
 				//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
 			foreach (var i in tempMatches)
             {
-                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
+                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch() {Name = "-empty-"};
+                foreach(var j in matches_) {
+                    if (i == j.Name)
+                    {
+                        completeReplyMatch = new CompleteReplyMatch
+                        {
+                            Name = j.Name,
+                            Documentation = j.Documentation,
+                            Glyph = j.Glyph,
+                            Value = j.Value
+                        };
+                    }
+                }
+                if (completeReplyMatch.Name != "-empty-")
                 {
-                    Name = i,
-                    Documentation = "",
-                    Value = "",
+                    finalMatches.Add(completeReplyMatch);
 
-                };
-				finalMatches.Add(completeReplyMatch);
+                }
             }
 
 
-
-			CompleteReply completeReply = new CompleteReply()
+            CompleteReply completeReply = new CompleteReply()
 			{
 				//CursorEnd = 10,
 				Matches = finalMatches,
 				Status = "ok",
-				MatchedText = " " + -1 * cursorWordLength, // so cursor_start is this, but it has to be -cursorWordLength?
-          //      FilterStartIndex = cur_pos, // no idea what this is
+				MatchedText = cursorWord, 
+                FilterStartIndex = ReplacementStartPosition
                 // MetaData = null
             };
-
 
 
 			Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
