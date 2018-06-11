@@ -73,7 +73,17 @@ namespace iCSharp.Kernel.Shell
 
 			List<MethodMatch> methodMatches = new List<MethodMatch>();
 
+<<<<<<< HEAD
             List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+=======
+            
+
+			CatchAllWords(ref matches_, code);
+
+			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+
+			CatchMethods(code, ref methodMatchNames, ref methodMatches);
+>>>>>>> d35751b8f00728384ec449d09864ee1bef2f80e8
 
             List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
 
@@ -209,10 +219,29 @@ namespace iCSharp.Kernel.Shell
 			int ReplacementStartPosition = cur_pos - cursorWordLength;
 			Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
 
+			List<CompleteReplyMatch> finalMatches = new List<CompleteReplyMatch>();
+
+			List <string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
+
+				//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+			foreach (var i in tempMatches)
+            {
+                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
+                {
+                    Name = i,
+                    Documentation = "",
+                    Value = "",
+
+                };
+				finalMatches.Add(completeReplyMatch);
+            }
+
+
+
 			CompleteReply completeReply = new CompleteReply()
 			{
 				//CursorEnd = 10,
-				Matches = matches_,
+				Matches = finalMatches,
 				Status = "ok",
 				MatchedText = " " + -1 * cursorWordLength, // so cursor_start is this, but it has to be -cursorWordLength?
           //      FilterStartIndex = cur_pos, // no idea what this is
