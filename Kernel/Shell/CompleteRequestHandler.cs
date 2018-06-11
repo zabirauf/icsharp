@@ -76,6 +76,8 @@ namespace iCSharp.Kernel.Shell
 
 			List<MethodMatch> methodMatches = new List<MethodMatch>();
 
+            
+
 			CatchAllWords(ref matches_, code);
 
 			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
@@ -212,10 +214,29 @@ namespace iCSharp.Kernel.Shell
 			int ReplacementStartPosition = cur_pos - cursorWordLength;
 			Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
 
+			List<CompleteReplyMatch> finalMatches = new List<CompleteReplyMatch>();
+
+			List <string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
+
+				//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+			foreach (var i in tempMatches)
+            {
+                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
+                {
+                    Name = i,
+                    Documentation = "",
+                    Value = "",
+
+                };
+				finalMatches.Add(completeReplyMatch);
+            }
+
+
+
 			CompleteReply completeReply = new CompleteReply()
 			{
 				//CursorEnd = 10,
-				Matches = matches_,
+				Matches = finalMatches,
 				Status = "ok",
 				CursorStart = ReplacementStartPosition,
 				// MetaData = null
