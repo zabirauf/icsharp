@@ -261,6 +261,7 @@ define(function () {
                     console.log(msg);
 
                     editor.intellisense.setDeclarations(msg.content.matches);
+                    editor.intellisense.setStartColumnIndex(msg.content.cursor_start);
                 }
                 
             };
