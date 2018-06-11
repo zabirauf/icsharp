@@ -14,9 +14,9 @@ namespace iCSharp.Kernel.Shell
 	using System.Reflection;
 	using System;
 	using System.Linq;
-
-    //using System.Linq.Expressions.Analyzer
-    public class CompleteRequestHandler : IShellMessageHandler
+    //using System.
+	//using System.Linq.Expressions.Analyzer
+	public class CompleteRequestHandler : IShellMessageHandler
 	{
 		private ILog logger;
 		private readonly IMessageSender messageSender;
@@ -107,7 +107,12 @@ namespace iCSharp.Kernel.Shell
 
 			//code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
-			string cursorWord = FindWordToAutoComplete(line);
+			Tuple<string, int> cursorInfo;
+			cursorInfo = FindWordToAutoComplete(line);
+
+			string cursorWord = cursorInfo.Item1;
+			int cursorWordLength = cursorInfo.Item2;
+
 
 			List<CompleteReplyMatch> matchesSign = new List<CompleteReplyMatch>();
 
@@ -124,7 +129,7 @@ namespace iCSharp.Kernel.Shell
 
 			//Console.WriteLine(cursorWord);
 
-
+			RemoveNonMatches(ref matches_, cursorWord, line);
 
 			this.logger.Info("After Removal");
 
@@ -137,7 +142,27 @@ namespace iCSharp.Kernel.Shell
 
 			if (line.Length > 0)
 			{
-				if (line[(line.Length - 1)].Equals('.'))
+				if (line.StartsWith("using "))
+                {
+                    Console.WriteLine("We're Starting with using!!!!!!!");
+                    DirectivesList(ref DirectiveMatches, line);
+                    List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+                    foreach (var i in l)
+                    {
+                        CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
+                        {
+                            Name = i,
+                            Documentation = "",
+                            Value = "",
+                            Glyph = "directive"
+                        };
+                        FinalDirectives.Add(completeReplyMatch);
+                    }
+                    matches_ = FinalDirectives;
+
+					RemoveNonMatches(ref matches_, cursorWord, line);
+                }
+				else if (line[(line.Length - 1)].Equals('.'))
 				{
 					Console.WriteLine("in function and cursor word is " + cursorWord);
 					matches_ = methodMatchNames;
@@ -164,44 +189,35 @@ namespace iCSharp.Kernel.Shell
 				{
 					matches_ = matchesSign;
 				}
-				else if (line.StartsWith("using "))
-				{
-					Console.WriteLine("We're Starting with using!!!!!!!");
-					DirectivesList(ref DirectiveMatches, line);
-					List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
-					foreach(var i in l){
-						CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
-						{
-							Name = i,
-							Documentation = "",
-                            Value = "",
-                            Glyph = "directive"
-						};
-						FinalDirectives.Add(completeReplyMatch);
-					}
-					matches_ = FinalDirectives;
-				}
-
 			}
 
-			RemoveNonMatches(ref matches_, cursorWord);
+			Console.WriteLine("Matches size = " + matches_.Count);
+			Console.WriteLine("cw = " + cursorWord + " line = " + line);
+			//RemoveNonMatches(ref matches_, cursorWord, line);
+			Console.WriteLine("Matches size after = " + matches_.Count);
 
 
-            /*
+
+			/*
 			for (int j = methodMatchNames.Count - 1; j > -1; j--)
 			{
 				this.logger.Info("methodmatch");
 				this.logger.Info(methodMatchNames[j].Name);
 			}*/
+			Console.WriteLine("CursorPosition " + cur_pos);
+			Console.WriteLine("minus number " + cursorWordLength);
+			int ReplacementStartPosition = cur_pos - cursorWordLength;
+			Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
 
 			CompleteReply completeReply = new CompleteReply()
 			{
 				//CursorEnd = 10,
 				Matches = matches_,
 				Status = "ok",
-				//CursorStart = 5,
-				// MetaData = null
-			};
+				MatchedText = " " + -1 * cursorWordLength, // so cursor_start is this, but it has to be -cursorWordLength?
+          //      FilterStartIndex = cur_pos, // no idea what this is
+                // MetaData = null
+            };
 
 
 
@@ -376,11 +392,12 @@ namespace iCSharp.Kernel.Shell
 			}
 		}
 
-		public string FindWordToAutoComplete(string line)
+		public Tuple<string,int> FindWordToAutoComplete(string line)
 		{
 			line = Regex.Replace(line, @"[^\w&^\.]", "*");
 
 			string cursorWord, cursorLine;
+			int curWordLength = 0;
 
 			Regex p = new Regex(@".*\*"); //regex to match up to last '*'
 			Match mat = p.Match(line);
@@ -418,16 +435,28 @@ namespace iCSharp.Kernel.Shell
 				cursorLine = "";
 			}
 
-			return cursorWord;
+			curWordLength = cursorWord.Length;
+
+			if(line.Length>0){
+				if(line[line.Length-1] == '.'){
+					curWordLength = 0;
+				}
+			}
+
+			return Tuple.Create(cursorWord, curWordLength);
 
 		}
 
-		public void RemoveNonMatches(ref List<CompleteReplyMatch> matches_, string cursorWord)
+		public void RemoveNonMatches(ref List<CompleteReplyMatch> matches_, string cursorWord, string line)
 		{
 
 			//Console.WriteLine("1. " + matches_[0].Name + " 2. " + matches_[matches_.Count-1].Name);
+
 			for (int j = matches_.Count - 1; j > -1; j--)
 			{
+				if ((line.StartsWith("using ")) && (line[line.Length-1] == '.')){
+					return;
+				}
 				if (!(matches_[j].Name.StartsWith(cursorWord)))
 				{
 					matches_.RemoveAt(j);
@@ -651,14 +680,16 @@ namespace iCSharp.Kernel.Shell
 
             //Console.WriteLine("Arrived here " + t.FullName +" " + s);
 
-            if (!(t.FullName.StartsWith(s)))
+			if (!(t.FullName.StartsWith(s)))
             {
+				
                 return " ";
             }
+			//Console.WriteLine("3adeina elhamdlAllah " + t.FullName);
 
             string ns = t.FullName ?? "";
 
-            int firstDot = s.LastIndexOf('.');
+            int firstDot = s.IndexOf('.');
 
             //Console.WriteLine( "ns before " + ns);
             if (ns.Equals(""))
@@ -669,6 +700,7 @@ namespace iCSharp.Kernel.Shell
             {
                 ns = ns.Substring(firstDot + 1);
             }
+
             int firstDotns = ns.IndexOf('.');
             //int firstDot = s.LastIndexOf('.');
 
@@ -683,5 +715,4 @@ namespace iCSharp.Kernel.Shell
 
 	}
 }
-
 

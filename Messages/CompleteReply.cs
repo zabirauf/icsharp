@@ -30,7 +30,7 @@ namespace iCSharp.Messages
         [JsonProperty("matched_text")]
         public string MatchedText { get; set; }
 
-        [JsonProperty("filter_start_index")]
+       [JsonProperty("filter_start_index")]
         public int FilterStartIndex { get; set; }
 
         [JsonProperty("status")]
