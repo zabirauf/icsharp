@@ -170,7 +170,8 @@ define(function () {
 
     var kernelSpecs = requirejs.s.contexts._.config.paths.kernelspecs;
     var staticFolder = kernelSpecs + "/csharp/static/";
-
+    var resourcesFolder = staticFolder + "resources/";
+    
     var link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";

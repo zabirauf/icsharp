@@ -14,8 +14,9 @@ namespace iCSharp.Kernel.Shell
 	using System.Reflection;
 	using System;
 	using System.Linq;
-	//using System.Linq.Expressions.Analyzer
-	public class CompleteRequestHandler : IShellMessageHandler
+
+    //using System.Linq.Expressions.Analyzer
+    public class CompleteRequestHandler : IShellMessageHandler
 	{
 		private ILog logger;
 		private readonly IMessageSender messageSender;
@@ -31,18 +32,18 @@ namespace iCSharp.Kernel.Shell
 			CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
 
 
-			string code = completeRequest.CodeCells[0];
+			//string code = completeRequest.CodeCells[completeRequest.Selected_Cell_Index];
 
 
 			string line = completeRequest.Line;
 
-			this.logger.Info("original code:" + code);
+		//	this.logger.Info("original code:" + code);
 			this.logger.Info("original line:" + line);
 
-			code = Regex.Replace(code.Substring(1, code.Length - 2), @"\\n", "*");
+		//	code = Regex.Replace(code.Substring(1, code.Length - 2), @"\\n", "*");
 			line = line.Substring(1, line.Length - 2);
 
-			this.logger.Info("substring code:" + code);
+		//	this.logger.Info("substring code:" + code);
 			this.logger.Info("substring line:" + line);
 
 			Regex returnType = new Regex(@"[string|int|void]");
@@ -64,9 +65,6 @@ namespace iCSharp.Kernel.Shell
 			List<CompleteReplyMatch> DirectiveMatches = new List<CompleteReplyMatch>();
 			//DirectivesList(ref DirectiveMatches);
 
-
-
-
 			List<string> listOfKeywords = new List<string>();
 
 			//listOfKeywords.AddRange(arrayOfKeywords);
@@ -75,25 +73,27 @@ namespace iCSharp.Kernel.Shell
 
 			List<MethodMatch> methodMatches = new List<MethodMatch>();
 
-			CatchAllWords(ref matches_, code);
+            List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
 
-			List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+            List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
 
-			CatchMethods(code, ref methodMatchNames, ref methodMatches);
+            List<VariableMatch> variableMatches = new List<VariableMatch>();
 
-			List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
-			CatchClasses(code, ref classMatchNames);
+            foreach (var codes in completeRequest.CodeCells)
+            {
+                var code = Regex.Replace(codes.Substring(1, codes.Length - 2), @"\\n", "*");
+                CatchAllWords(ref matches_, code);
+                CatchMethods(code, ref methodMatchNames, ref methodMatches);
+                CatchClasses(code, ref classMatchNames);
+                VariableMatches(code, ref variableMatches);
 
-			List<VariableMatch> variableMatches = new List<VariableMatch>();
-			VariableMatches(code, ref variableMatches);
+            }
 
-			//string[] dirs = Directory.GetDirectories
+            AddKeywordsToMatches(ref matches_);
 
+            //string[] dirs = Directory.GetDirectories
 
-
-			AddKeywordsToMatches(ref matches_);
-
-			foreach (MethodMatch m in methodMatches)
+            foreach (MethodMatch m in methodMatches)
 			{
 				this.logger.Info(m.Name);
 				this.logger.Info("number of params = " + m.ParamList.Count);
@@ -175,7 +175,7 @@ namespace iCSharp.Kernel.Shell
 							Name = i,
 							Documentation = "",
                             Value = "",
-
+                            Glyph = "directive"
 						};
 						FinalDirectives.Add(completeReplyMatch);
 					}
@@ -219,7 +219,7 @@ namespace iCSharp.Kernel.Shell
 			string catchPattern = @"(\w+)";
 
 			Regex p = new Regex(catchPattern);
-
+            
 			foreach (Match m in p.Matches(newCode))
 			{
 
@@ -229,7 +229,7 @@ namespace iCSharp.Kernel.Shell
 					Name = m.ToString(),
 					Documentation = "",
 					Value = "",
-
+                    Glyph = "variable"
 				};
 				matches_.Add(crm);
 			}
@@ -271,7 +271,7 @@ namespace iCSharp.Kernel.Shell
 					Name = m.Groups["classname"].ToString(),
 					Documentation = "",
 					Value = "",
-
+                    Glyph = "class"
 				};
 				classMatchNames.Add(crm);
 
@@ -296,8 +296,6 @@ namespace iCSharp.Kernel.Shell
 
 			foreach (Match m in p.Matches(code))
 			{
-
-
 
 				List<string> parameterTypes = new List<string>();
 
@@ -340,12 +338,13 @@ namespace iCSharp.Kernel.Shell
 				};
 				methodMatches.Add(mm);
 
-				CompleteReplyMatch crm = new CompleteReplyMatch()
-				{
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
 
-					Name = m.Groups["methodname"].ToString(),
-					Documentation = editedDoc,
-					Value = "",
+                    Name = m.Groups["methodname"].ToString(),
+                    Documentation = editedDoc,
+                    Value = "",
+                    Glyph = "method"
 
 				};
 				methodMatchNames.Add(crm);
@@ -356,19 +355,20 @@ namespace iCSharp.Kernel.Shell
 
 		public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_)
 		{
-
+            
 			string[] arrayOfKeywords = { "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "using static", "virtual", "void", "volatile", "while" };
 			List<string> listOfKeywords = new List<string>();
 			listOfKeywords.AddRange(arrayOfKeywords);
-
+            
 			foreach (string i in listOfKeywords)
 			{
 				CompleteReplyMatch crm = new CompleteReplyMatch()
 				{
 
 					Name = i,
-					Documentation = "",
+					Documentation = i + " Keyword",
 					Value = "",
+                    Glyph = "keyword"
 
 				};
 				matches_.Add(crm);
@@ -463,13 +463,10 @@ namespace iCSharp.Kernel.Shell
 					Name = add,
 					Documentation = "",
 					Value = "",
+                    Glyph = "method"
 				};
 				matchesSign.Add(crm);
-
-
-
 			}
-
 
 		}
 
@@ -602,7 +599,7 @@ namespace iCSharp.Kernel.Shell
 					Name = method.Name,
 					Documentation = parameterDescriptions,
 					Value = "",
-
+                    Glyph = "method"
 				};
 				matches_.Add(crm);
 
@@ -635,30 +632,22 @@ namespace iCSharp.Kernel.Shell
 							Name = n,
 							Documentation = "",
 							Value = "",
+                            Glyph = "directive"
 
 						};
 						DirectiveMatches.Add(crm);
 					}
 				}
-
 				}
 				catch (ReflectionTypeLoadException e)
 				{
 					Console.WriteLine("Could not load type");
 				}
-
-
-
 			}
-
-
-
 		}
 
 		public string GetToNearestDot(Type t, string s)
         {
-
-
 
             //Console.WriteLine("Arrived here " + t.FullName +" " + s);
 

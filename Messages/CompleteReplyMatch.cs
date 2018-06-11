@@ -19,7 +19,8 @@ namespace iCSharp.Messages
           [JsonProperty("value")]
           public string Value { get; set; }
 
+          [JsonProperty("glyph")]
+          public string Glyph { get; set; }
 
-      
     }
 }

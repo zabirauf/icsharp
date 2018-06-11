@@ -176,6 +176,23 @@ th {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAoklEQVR4XsXTPQ6CQBCG4Q8ksTAbrb2BB6CioLT0Cl7Bxmt4Bc9gZwmJieEChsKCUkMFFT9hCJspiAVxGRKeevPObDZrEREkbAg5AJDfTwS2UNvbyjsfMKC/dXcFHVD+DjoWvPAvtb9YDn5waFB/kA5USYjs8YGJOok5wJauZxZ4x5O9AiOSBaguhYGqmHmDJv3CXm9GB45l9LzCjD4//29sAVazOELv0oQIAAAAAElFTkSuQmCC);
 }
 
+.icon-glyph-method {
+    background-image: url('../resources/Method16.png');
+}
+
+.icon-glyph-class {
+    background-image: url('../resources/Class16.png');
+}
+
+.icon-glyph-directive {
+    background-image: url('../resources/Namespace16.png');
+}
+
+.icon-glyph-keyword {
+    background-image: url('../resources/Keyword16.png');
+}
+
+C:\Users\Mohamed\source\repos\icsharp\kernel-spec\static\custom\resources
 .cm-s-neat span.cm-comment { color: #008000; }
 .cm-s-neat span.cm-keyword { line-height: 1em; font-weight: bold; color: blue; }
 .cm-s-neat span.cm-string { color: #B21543; }
