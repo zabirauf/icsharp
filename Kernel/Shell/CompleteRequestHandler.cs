@@ -82,10 +82,10 @@ namespace iCSharp.Kernel.Shell
             foreach (var codes in completeRequest.CodeCells)
             {
                 var code = Regex.Replace(codes.Substring(1, codes.Length - 2), @"\\n", "*");
-                CatchAllWords(ref matches_, code);
-                CatchMethods(code, ref methodMatchNames, ref methodMatches);
+              //  CatchAllWords(ref matches_, code);
                 CatchClasses(code, ref classMatchNames);
-                VariableMatches(code, ref variableMatches);
+              //  CatchMethods(code, ref methodMatchNames, ref methodMatches);
+               // VariableMatches(code, ref variableMatches);
 
             }
 
@@ -213,7 +213,7 @@ namespace iCSharp.Kernel.Shell
 
 			List <string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
 
-				//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+			//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
 			foreach (var i in tempMatches)
             {
                 CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch() {Name = "-empty-"};
@@ -232,23 +232,34 @@ namespace iCSharp.Kernel.Shell
                 if (completeReplyMatch.Name != "-empty-")
                 {
                     finalMatches.Add(completeReplyMatch);
-
                 }
             }
 
+            CompleteReply completeReply = new CompleteReply();
 
-            CompleteReply completeReply = new CompleteReply()
-			{
-				//CursorEnd = 10,
-				Matches = finalMatches,
-				Status = "ok",
-				MatchedText = cursorWord, 
-                FilterStartIndex = ReplacementStartPosition
-                // MetaData = null
-            };
+            if (line.Length > 0)
+            {
+                if (line[line.Length - 1] == '.')
+                {
+                    completeReply.Matches = finalMatches;
+                    completeReply.Status = "ok";
 
-
-			Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
+                }
+                else
+                {
+                    completeReply.Matches = finalMatches;
+                    completeReply.Status = "ok";
+                    completeReply.MatchedText = cursorWord;
+                    completeReply.FilterStartIndex = ReplacementStartPosition;
+                }
+            }
+            else
+            {
+                completeReply.Matches = finalMatches;
+                completeReply.Status = "ok";
+            }
+            
+            Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
 			this.logger.Info("Sending complete_reply");
 			this.messageSender.Send(completeReplyMessage, serverSocket);
 
@@ -282,13 +293,12 @@ namespace iCSharp.Kernel.Shell
 
 		public void CatchClasses(string code, ref List<CompleteReplyMatch> classMatchNames)
 		{
-			Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*(private|internal|public)?(class)([\s]+)(?<classname>\w+)");
-
+            //(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*
+            this.logger.Info("Running catchclass");
+            Regex p = new Regex(@"class([\s]+)(?<classname>\w+)");
+            
 			Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
 			string editedDoc;
-
-
-
 
 			foreach (Match m in p.Matches(code))
 			{
@@ -312,7 +322,7 @@ namespace iCSharp.Kernel.Shell
 				{
 
 					Name = m.Groups["classname"].ToString(),
-					Documentation = "",
+					Documentation = "this is a class",
 					Value = "",
                     Glyph = "class"
 				};
@@ -706,17 +716,21 @@ namespace iCSharp.Kernel.Shell
         {
 
             //Console.WriteLine("Arrived here " + t.FullName +" " + s);
-
-			if (!(t.FullName.StartsWith(s)))
+            try{
+                if (!(t.Namespace.StartsWith(s)))
+                {
+                    return " ";
+                }
+            }catch(NullReferenceException e)
             {
-				
                 return " ";
             }
+			
 			//Console.WriteLine("3adeina elhamdlAllah " + t.FullName);
 
-            string ns = t.FullName ?? "";
+            string ns = t.Namespace ?? "";
 
-            int firstDot = s.IndexOf('.');
+            int firstDot = s.LastIndexOf('.');
 
             //Console.WriteLine( "ns before " + ns);
             if (ns.Equals(""))
