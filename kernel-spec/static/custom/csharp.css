@@ -192,6 +192,10 @@ th {
     background-image: url('../resources/Keyword16.png');
 }
 
+.icon-glyph-field {
+    background-image: url('../resources/Field16.png');
+}
+
 .icon-glyph-interface {
     background-image: url('../resources/Interface16.png');
 }
