@@ -75,6 +75,18 @@ define(function () {
             return lines[line];
         }
 
+        function getTrueCurPos(cell, line, ch){
+            var lines = cell.split("\n");
+            console.log(lines.length);
+            var calibrated = 0;
+            if (line <= 0) return ch;
+
+            for (var i = 0; i < line; i++) {
+                calibrated = calibrated + lines[i].length + 1;
+            }
+            return calibrated + ch;
+        }
+
 
         function intellisenseRequestDeclaration(item) {
             var cells = getCodeCells();
@@ -106,6 +118,7 @@ define(function () {
                 code: JSON.stringify(cells.codes),
                 code_cells: cells.string_cells,
                 cursor_pos: cursor.ch,
+                code_pos: getTrueCurPos(cells.codes[cells.selectedIndex], cursor.line, cursor.ch),
                 line: JSON.stringify(getLine(cells.codes[cells.selectedIndex], cursor.line)),
                 cursor_line: cursor.line,
                 selected_cell: cells.selectedCell,
@@ -249,3 +262,4 @@ define(function () {
 
     return { onload: onload }
 })
+    

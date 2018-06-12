@@ -21,7 +21,10 @@ namespace iCSharp.Messages
         [JsonProperty("cursor_line")]
          public int CursorLine { get; set; }
 
-         [JsonProperty("selected_cell_index")]
+        [JsonProperty("code_pos")]
+        public int CodePosition { get; set; }
+
+        [JsonProperty("selected_cell_index")]
          public int Selected_Cell_Index { get; set; }
 
         /*

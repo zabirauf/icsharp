@@ -52,13 +52,14 @@ namespace iCSharp.Kernel.Shell
 
 			int cur_pos = completeRequest.CursorPosition;
 
-			this.logger.Info("cur_pos " + cur_pos);
-			//Type type = typeof(code);
+            Console.WriteLine("cur_pos " + cur_pos);
+            Console.WriteLine("code_pos " + completeRequest.CodePosition);
+            //Type type = typeof(code);
 
 
-			//string newCode = code.
+            //string newCode = code.
 
-			line = line.Substring(0, cur_pos); //get substring of code from start to cursor position
+            line = line.Substring(0, cur_pos); //get substring of code from start to cursor position
 
 
 			//string[] arrayOfKeywords = { "team", "tech", "te", "term", "tame", "tata" };
@@ -95,6 +96,7 @@ namespace iCSharp.Kernel.Shell
             List<VariableMatch> variableMatches = new List<VariableMatch>();
 
             var syntax_code = Regex.Replace(completeRequest.CodeCells[0].Substring(1, completeRequest.CodeCells[0].Length - 2), @"\\n", "*");
+            Console.WriteLine("code_size " + syntax_code);
 
             var tree = CSharpSyntaxTree.ParseText(syntax_code);
 
@@ -124,9 +126,9 @@ namespace iCSharp.Kernel.Shell
                 // VariableMatches(code, ref variableMatches);
             }
 
-            CatchAllWords(ref matches_, syntax_code);
+            //CatchAllWords(ref matches_, syntax_code);
 
-            CatchClassMethods(syntaxRoot, ref classList, ref methodList);
+            CatchClassMethods(tree, ref classList, ref methodList, completeRequest.CodePosition);
 
             Console.WriteLine("Class List");
 
@@ -254,14 +256,17 @@ namespace iCSharp.Kernel.Shell
                 {
                     Console.WriteLine("We're Starting with using!!!!!!!");
                     DirectivesList(ref DirectiveMatches, line);
-                    List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+
+                    var l = DirectiveMatches.GroupBy(i => i.Name).Select(group => group.First());
+
                     foreach (var i in l)
                     {
                         CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
                         {
-                            Name = i,
-                            Documentation = "",
+                            Name = i.Name,
+                            Documentation = i.Documentation,
                             Value = "",
+                            Glyph = "directive"
 
                         };
                         FinalDirectives.Add(completeReplyMatch);
@@ -387,28 +392,6 @@ namespace iCSharp.Kernel.Shell
 			this.logger.Info("Sending complete_reply");
 			this.messageSender.Send(completeReplyMessage, serverSocket);
 
-		}
-
-		public void CatchAllWords(ref List<CompleteReplyMatch> matches_, string newCode)
-		{
-			//this.logger.Info(s);
-			this.logger.Info("weselna elhamdlAllah");
-
-			string catchPattern = @"(\w+)";
-
-			Regex p = new Regex(catchPattern);
-            
-			foreach (Match m in p.Matches(newCode))
-			{
-				CompleteReplyMatch crm = new CompleteReplyMatch()
-				{
-					Name = m.ToString(),
-					Documentation = "",
-					Value = "",
-                    Glyph = "variable"
-				};
-				matches_.Add(crm);
-			}
 		}
         
         public void catchInterfaces(SyntaxNode tree, ref List<CompleteReplyMatch> interfaceList)
@@ -539,7 +522,7 @@ namespace iCSharp.Kernel.Shell
 		}
         */
 
-        public void CatchClassMethods(SyntaxNode root, ref List<ClassDeclarationSyntax> classList, ref List<MethodDeclarationSyntax> methodList)
+        public void CatchClassMethods(SyntaxTree tree, ref List<ClassDeclarationSyntax> classList, ref List<MethodDeclarationSyntax> methodList, int curPos)
         {
 
             //this.logger.Info("code in methods " + code);
@@ -553,16 +536,34 @@ namespace iCSharp.Kernel.Shell
             Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
             string editedDoc;
 
+            var root = (CompilationUnitSyntax)tree.GetRoot();
 
+            var compilation = CSharpCompilation.Create("HelloWorld")
+                                               .AddReferences(
+                                                    MetadataReference.CreateFromFile(
+                                                        typeof(object).Assembly.Location))
+                                               .AddSyntaxTrees(tree);
+
+            var model = compilation.GetSemanticModel(tree);
+    
             List<ClassDeclarationSyntax> classListCaptured = root.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
             //List<MemberDeclarationSyntax> methodList;
+
+        /*    var enclosingMethod = model.GetEnclosingSymbol(curPos) as IMethodSymbol;
+            if (enclosingMethod != null)
+            {
+                Console.WriteLine("Enclosing name " + enclosingMethod.Name.ToString());
+            }*/
+
 
             //Console.WriteLine("class names");
             foreach (var l in classListCaptured)
             {
-                /*Console.WriteLine("class name");
+                Console.WriteLine("class name");
 				Console.WriteLine(l.Identifier);
-				Console.WriteLine("Class ParamList");
+                Console.WriteLine("class span");
+                Console.WriteLine(l.Span);
+                Console.WriteLine("Class ParamList");
 				Console.WriteLine(l.TypeParameterList);
 				Console.WriteLine("class methods");
 				Console.WriteLine(l.Members);
@@ -581,10 +582,10 @@ namespace iCSharp.Kernel.Shell
 				Console.WriteLine("class modifier");
 				Console.WriteLine(l.Modifiers);
 				Console.WriteLine("class type parameter list");
-                Console.WriteLine(l.TypeParameterList);*/
+                Console.WriteLine(l.TypeParameterList);
                 classList.Add(l);
 
-                SyntaxTree tree = CSharpSyntaxTree.ParseText(l.Members.ToString());
+             //   SyntaxTree tree = CSharpSyntaxTree.ParseText(l.Members.ToString());
                 var MethRoot = tree.GetRoot();
 
                 List<MethodDeclarationSyntax> MethList = MethRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
@@ -608,13 +609,6 @@ namespace iCSharp.Kernel.Shell
 
 
             }
-
-
-
-
-
-
-
 
             /*
 
@@ -810,13 +804,13 @@ namespace iCSharp.Kernel.Shell
 
 		public void VariableMatches(string code, ref List<VariableMatch> variableMatches)
 		{
-			Console.WriteLine("GHAYARNA EL CODE1");
+			//Console.WriteLine("GHAYARNA EL CODE1");
 			Regex regex = new Regex(@"(?<type>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|Comparer<[^>]*>|EqualityComparer<[^>]*>|HashSet<[^>]*>|LinkedList<[^>]*>|List<[^>]*>|Queue<[^*]>|SortedSet<[^*]>|Stack<[^*]>|)([\s]+)(?<name>\w+)");
 			string type;
 			foreach (Match m in regex.Matches(code))
 			{
-				Console.WriteLine("Found variable match");
-				Console.WriteLine(m.Groups["type"]);
+			//	Console.WriteLine("Found variable match");
+		//		Console.WriteLine(m.Groups["type"]);
 				type = m.Groups["type"].ToString();
 				Type t = ProperTypeName(type);
 
@@ -845,7 +839,7 @@ namespace iCSharp.Kernel.Shell
 				type = type.Substring(0, index);
 			}
 
-			Console.WriteLine("type after index " + type);
+		//	Console.WriteLine("type after index " + type);
 
 			switch (type)
 			{
@@ -901,7 +895,7 @@ namespace iCSharp.Kernel.Shell
 					return typeof(LinkedList<>);
 					break;
 				case "List":
-					Console.WriteLine("in the list branch");
+					//Console.WriteLine("in the list branch");
 					return typeof(List<>);
 					break;
 				case "Queue":
@@ -914,7 +908,7 @@ namespace iCSharp.Kernel.Shell
 					return typeof(Stack<>);
 					break;
 				default:
-					Console.WriteLine("in the default branch");
+				//	Console.WriteLine("in the default branch");
 					return null;
 					break;
 			}
@@ -950,7 +944,7 @@ namespace iCSharp.Kernel.Shell
 			Match match = regex.Match(line);
 			string input = match.Groups["directive"].ToString();
 
-			Console.WriteLine("Directive aho " + match.Groups["directive"].ToString());
+		//	Console.WriteLine("Directive aho " + match.Groups["directive"].ToString());
 
 			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
