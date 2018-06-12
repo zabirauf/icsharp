@@ -74,6 +74,10 @@ namespace iCSharp.Kernel.Shell
 
 			List<MethodMatch> methodMatches = new List<MethodMatch>();
 
+            List<ClassDeclarationSyntax> classList = new List<ClassDeclarationSyntax>();
+            List<MethodDeclarationSyntax> methodList = new List<MethodDeclarationSyntax>();
+            List<MethodDeclarationSyntax> globalMethodList = new List<MethodDeclarationSyntax>();
+
             List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
 
             List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
@@ -88,7 +92,6 @@ namespace iCSharp.Kernel.Shell
 
             List<CompleteReplyMatch> variableNames = new List<CompleteReplyMatch>();
 
-
             List<VariableMatch> variableMatches = new List<VariableMatch>();
 
             var syntax_code = Regex.Replace(completeRequest.CodeCells[0].Substring(1, completeRequest.CodeCells[0].Length - 2), @"\\n", "*");
@@ -96,20 +99,16 @@ namespace iCSharp.Kernel.Shell
             var tree = CSharpSyntaxTree.ParseText(syntax_code);
 
             var syntaxRoot = tree.GetRoot();
-            var diagnostics = tree.GetDiagnostics();
 
-            Console.WriteLine();
-            Console.WriteLine("Diagonistics");
-            Console.WriteLine(diagnostics.ToString());
-      //      var MyClass = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
-       //     var MyMethod = syntaxRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
 
-          //  Console.WriteLine("ayyyyyyy" + MyClass.Identifier.ToString());
-          //  Console.WriteLine("yaaaaaaay" + MyMethod.Identifier.ToString());
+            //      var MyClass = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
+            //     var MyMethod = syntaxRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
+
+            //  Console.WriteLine("ayyyyyyy" + MyClass.Identifier.ToString());
+            //  Console.WriteLine("yaaaaaaay" + MyMethod.Identifier.ToString());
 
             // CATCH STUFF
-            CatchClasses(syntaxRoot, ref classMatchNames);
-            CatchMethods(syntaxRoot, ref methodMatchNames, ref methodMatches);
+
             catchInterfaces(syntaxRoot, ref interfaceNames);
             catchEnums(syntaxRoot, ref enumNames);
             catchStructs(syntaxRoot, ref structNames);
@@ -125,60 +124,137 @@ namespace iCSharp.Kernel.Shell
                 // VariableMatches(code, ref variableMatches);
             }
 
-            AddKeywordsToMatches(ref matches_);
+            CatchAllWords(ref matches_, code);
+
+            List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
+
+            CatchClassMethods(root, ref classList, ref methodList);
+
+            Console.WriteLine("Class List");
+
+            foreach (var l in classList)
+            {
+                Console.WriteLine(l.Identifier);
+            }
+
+            Console.WriteLine("Method List");
+
+            foreach (var i in methodList)
+            {
+                Console.WriteLine(i.Identifier);
+         //       Console.WriteLine(i.)
+
+            }
+
+
+            List<MethodDeclarationSyntax> MethList = root.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+            bool found = false;
+            foreach (var m in MethList)
+            {
+                foreach (var i in methodList)
+                {
+                    if (((m.Identifier).Equals(i.Identifier)) && ((m.Parent).Equals(i.Parent)))
+                    {
+                        found = true;
+                    }
+                }
+
+                if (!found)
+                {
+                    globalMethodList.Add(m);
+                }
+                found = false;
+
+            }
+
+
+
+
+
+            Console.WriteLine("Global Method List");
+
+            foreach (var i in globalMethodList)
+            {
+                Console.WriteLine(i.Identifier);
+            }
+
+            //globalMethodList = (globalMethodList.Distinct((IEnumerable<MethodDeclarationSyntax>) methodList)).ToList();
+
+            Console.WriteLine("New Global Method List");
+
+            foreach (var i in globalMethodList)
+            {
+                Console.WriteLine(i.Identifier);
+            }
+
+
+
+            //List<MethodDeclarationSyntax> intersection = methodList.Intersect((IEnumerable<>) globalMethodList);
+
+
+
+            List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
+            //CatchClasses(code, ref classMatchNames);
+
+            List<VariableMatch> variableMatches = new List<VariableMatch>();
+            VariableMatches(code, ref variableMatches);
 
             //string[] dirs = Directory.GetDirectories
 
+
+
+            AddKeywordsToMatches(ref matches_);
+
             foreach (MethodMatch m in methodMatches)
-			{
-				this.logger.Info(m.Name);
-				this.logger.Info("number of params = " + m.ParamList.Count);
-				this.logger.Info("param types");
-				for (int i = 0; i < m.ParamList.Count; i++)
-				{
-					this.logger.Info(m.ParamList[i]);
-				}
+            {
+                //this.logger.Info(m.Name);
+                //this.logger.Info("number of params = " + m.ParamList.Count);
+                //this.logger.Info("param types");
+                for (int i = 0; i < m.ParamList.Count; i++)
+                {
+                    //this.logger.Info(m.ParamList[i]);
+                }
 
-			}
+            }
 
-			//code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
+            //code = Regex.Replace(code, @"[^\w&^\.]", "*"); //replace all non word and dot characters with '*'
 
-			Tuple<string, int> cursorInfo;
-			cursorInfo = FindWordToAutoComplete(line);
+            Tuple<string, int> cursorInfo;
+            cursorInfo = FindWordToAutoComplete(line);
 
-			string cursorWord = cursorInfo.Item1;
-			int cursorWordLength = cursorInfo.Item2;
+            string cursorWord = cursorInfo.Item1;
+            int cursorWordLength = cursorInfo.Item2;
 
 
-			List<CompleteReplyMatch> matchesSign = new List<CompleteReplyMatch>();
+            List<CompleteReplyMatch> matchesSign = new List<CompleteReplyMatch>();
 
-			MakeMethodSignMatches(line, methodMatches, ref matchesSign);
+            MakeMethodSignMatches(line, methodMatches, ref matchesSign);
 
-			this.logger.Info("cursor word " + cursorWord);
+            this.logger.Info("cursor word " + cursorWord);
 
-			this.logger.Info("Before Removal");
+            this.logger.Info("Before Removal");
 
-			for (int j = matches_.Count - 1; j > -1; j--)
-			{
-				this.logger.Info(matches_[j].Name);
-			}
+            for (int j = matches_.Count - 1; j > -1; j--)
+            {
+                //this.logger.Info(matches_[j].Name);
+            }
 
-			//Console.WriteLine(cursorWord);
+            //Console.WriteLine(cursorWord);
 
-			RemoveNonMatches(ref matches_, cursorWord, line);
+            RemoveNonMatches(ref matches_, cursorWord, line);
 
-			this.logger.Info("After Removal");
+            this.logger.Info("After Removal");
 
-			List<CompleteReplyMatch> FinalDirectives = new List<CompleteReplyMatch>();
+            List<CompleteReplyMatch> FinalDirectives = new List<CompleteReplyMatch>();
 
-			for (int j = matches_.Count - 1; j > -1; j--)
-			{
-				this.logger.Info(matches_[j].Name);
-			}
+            for (int j = matches_.Count - 1; j > -1; j--)
+            {
+                //this.logger.Info(matches_[j].Name);
+            }
 
-			if (line.Length > 0)
-			{
-				if (line.StartsWith("using "))
+            if (line.Length > 0)
+            {
+                if (line.StartsWith("using "))
                 {
                     Console.WriteLine("We're Starting with using!!!!!!!");
                     DirectivesList(ref DirectiveMatches, line);
@@ -190,84 +266,43 @@ namespace iCSharp.Kernel.Shell
                             Name = i,
                             Documentation = "",
                             Value = "",
-                            Glyph = "directive"
+
                         };
                         FinalDirectives.Add(completeReplyMatch);
                     }
                     matches_ = FinalDirectives;
 
-					RemoveNonMatches(ref matches_, cursorWord, line);
+                    RemoveNonMatches(ref matches_, cursorWord, line);
                 }
-				else if (line[(line.Length - 1)].Equals('.'))
-				{
-					Console.WriteLine("in function and cursor word is " + cursorWord);
-					matches_ = methodMatchNames;
-					matches_.AddRange(classMatchNames);
-					foreach (var i in variableMatches)
-					{
-						if (i.Name.Equals(cursorWord))
-						{
-							try
-							{
-								//Type type = Type.GetType(i.VarType);
-								ShowMethods(i.VarType, ref matches_);
-							}
-							catch (NullReferenceException e)
-							{
-								Console.WriteLine("Do Not Have This Type");
-							}
-
-						}
-					}
-					//Type type = typ
-				}
-				else if (line[(line.Length - 1)].Equals('('))
-				{
-					matches_ = matchesSign;
-				}
-			}
-
-			Console.WriteLine("Matches size = " + matches_.Count);
-			Console.WriteLine("cw = " + cursorWord + " line = " + line);
-			//RemoveNonMatches(ref matches_, cursorWord, line);
-			Console.WriteLine("Matches size after = " + matches_.Count);
-
-			/*
-			for (int j = methodMatchNames.Count - 1; j > -1; j--)
-			{
-				this.logger.Info("methodmatch");
-				this.logger.Info(methodMatchNames[j].Name);
-			}*/
-
-			Console.WriteLine("CursorPosition " + cur_pos);
-			Console.WriteLine("minus number " + cursorWordLength);
-			int ReplacementStartPosition = cur_pos - cursorWordLength;
-			Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
-
-			List<CompleteReplyMatch> finalMatches = new List<CompleteReplyMatch>();
-
-			List <string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
-
-			//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
-			foreach (var i in tempMatches)
-            {
-                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch() {Name = "-empty-"};
-                foreach(var j in matches_) {
-                    if (i == j.Name)
-                    {
-                        completeReplyMatch = new CompleteReplyMatch
-                        {
-                            Name = j.Name,
-                            Documentation = j.Documentation,
-                            Glyph = j.Glyph,
-                            Value = j.Value
-                        };
-                    }
-                }
-                if (completeReplyMatch.Name != "-empty-")
+                else if (line[(line.Length - 1)].Equals('.'))
                 {
-                    finalMatches.Add(completeReplyMatch);
+                    Console.WriteLine("in function and cursor word is " + cursorWord);
+                    matches_ = methodMatchNames;
+                    matches_.AddRange(classMatchNames);
+                    foreach (var i in variableMatches)
+                    {
+                        if (i.Name.Equals(cursorWord))
+                        {
+                            try
+                            {
+                                //Type type = Type.GetType(i.VarType);
+                                ShowMethods(i.VarType, ref matches_);
+                            }
+                            catch (NullReferenceException e)
+                            {
+                                Console.WriteLine("Do Not Have This Type");
+                            }
+
+                        }
+                    }
+                    //Type type = typ
                 }
+                else if (line[(line.Length - 1)].Equals('('))
+                {
+                    matches_ = matchesSign;
+                }
+
+
             }
 
             //TEMPORARY
@@ -414,7 +449,7 @@ namespace iCSharp.Kernel.Shell
             }
         }
 
-        public void CatchClasses(SyntaxNode tree, ref List<CompleteReplyMatch> classMatchNames)
+      /*  public void CatchClasses(SyntaxNode tree, ref List<CompleteReplyMatch> classMatchNames)
 		{
             //(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*
             var MyClass = tree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
@@ -433,7 +468,7 @@ namespace iCSharp.Kernel.Shell
 
 				this.logger.Info("found class");
 
-			/*	Match i = doc.Match(m.Groups["documentation"].ToString());
+				Match i = doc.Match(m.Groups["documentation"].ToString());
 				editedDoc = i.Groups["docsum"].ToString();
 				editedDoc = editedDoc.Replace("///", "");
 				editedDoc = editedDoc.Replace("*", "");
@@ -441,7 +476,7 @@ namespace iCSharp.Kernel.Shell
 				editedDoc = editedDoc.TrimEnd(' ');
 				editedDoc = editedDoc.Replace(@"\s+", " ");
 
-				this.logger.Info(editedDoc + " class new docsum here----");*/
+				this.logger.Info(editedDoc + " class new docsum here----");
 
 				CompleteReplyMatch crm = new CompleteReplyMatch()
 				{
@@ -455,82 +490,148 @@ namespace iCSharp.Kernel.Shell
 
 			}
 		}
+        */
 
-		public void CatchMethods(SyntaxNode tree, ref List<CompleteReplyMatch> methodMatchNames, ref List<MethodMatch> methodMatches)
-		{
+        public void CatchClassMethods(SyntaxNode root, ref List<ClassDeclarationSyntax> classList, ref List<MethodDeclarationSyntax> methodList)
+        {
 
-            var MyMethod = tree.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
-            this.logger.Info("code in methods ");
+            //this.logger.Info("code in methods " + code);
 
-			//[^(\n\w)]
+            //[^(\n\w)]
 
-			Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*((?<access>public|private)([\s]+))?(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
+            Regex p = new Regex(@"(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*((?<access>public|private)([\s]+))?(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum|void)([\s]+)(?<methodname>\w+)(?<paramlist>\([^\)]*\))");
 
-			Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
+            Regex r = new Regex(@"(?<returntype>string|sbyte|short|int|long|byte|ushort|uint|ulong|char|float|double|decimal|bool|enum)([\s]+)(?<parnames>\w+)");
 
-			Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
-			string editedDoc;
+            Regex doc = new Regex(@"(<summary>)(?<docsum>(?:(?!<\/summary>).)*)");
+            string editedDoc;
 
-			foreach (var mat in MyMethod)
+
+            List<ClassDeclarationSyntax> classListCaptured = root.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
+            //List<MemberDeclarationSyntax> methodList;
+
+            //Console.WriteLine("class names");
+            foreach (var l in classListCaptured)
+            {
+                /*Console.WriteLine("class name");
+				Console.WriteLine(l.Identifier);
+				Console.WriteLine("Class ParamList");
+				Console.WriteLine(l.TypeParameterList);
+				Console.WriteLine("class methods");
+				Console.WriteLine(l.Members);
+				Console.WriteLine("class directives");
+                Console.WriteLine(l.ContainsDirectives);
+				Console.WriteLine("class annotations");
+                Console.WriteLine(l.ContainsAnnotations);
+				Console.WriteLine("class attributes");
+                Console.WriteLine(l.AttributeLists);
+				Console.WriteLine("class baselist");
+                Console.WriteLine(l.BaseList);
+				Console.WriteLine("class close brace token");
+                Console.WriteLine(l.CloseBraceToken);
+				Console.WriteLine("class keyword");
+                Console.WriteLine(l.Keyword);
+				Console.WriteLine("class modifier");
+				Console.WriteLine(l.Modifiers);
+				Console.WriteLine("class type parameter list");
+                Console.WriteLine(l.TypeParameterList);*/
+                classList.Add(l);
+
+                SyntaxTree tree = CSharpSyntaxTree.ParseText(l.Members.ToString());
+                var MethRoot = tree.GetRoot();
+
+                List<MethodDeclarationSyntax> MethList = MethRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+
+                foreach (var m in MethList)
+                {
+                    /*Console.WriteLine("method modifers");
+                    Console.WriteLine(m.Modifiers);
+					Console.WriteLine("method identifier");
+                    Console.WriteLine(m.Identifier);
+					Console.WriteLine("method type parameter list");
+                    Console.WriteLine(m.ParameterList);
+					Console.WriteLine("method return type");
+                    Console.WriteLine(m.ReturnType);
+					//Console.WriteLine("class type parameter list");
+                    //Console.WriteLine(m.);*/
+
+                    methodList.Add(m);
+
+                }
+
+
+            }
+
+
+
+
+
+
+
+
+            /*
+
+			foreach (Match m in p.Matches(code))
 			{
 
-                /*	List<string> parameterTypes = new List<string>();
 
-                    this.logger.Info("found method match");
-                    this.logger.Info(m.Groups["documentation"] + " documentation");
-                    Match i = doc.Match(m.Groups["documentation"].ToString());
-                    editedDoc = i.Groups["docsum"].ToString();
 
-                    this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
+				List<string> parameterTypes = new List<string>();
 
-                    editedDoc = editedDoc.Replace("///", "");
-                    editedDoc = editedDoc.Replace("*", "");
-                    editedDoc = editedDoc.TrimStart(' ');
-                    editedDoc = editedDoc.TrimEnd(' ');
-                    editedDoc = editedDoc.Replace(@"\s+", " ");
+				this.logger.Info("found method match");
+				this.logger.Info(m.Groups["documentation"] + " documentation");
+				Match i = doc.Match(m.Groups["documentation"].ToString());
+				editedDoc = i.Groups["docsum"].ToString();
 
-                    this.logger.Info(editedDoc + " method new docsum here----");
-                    this.logger.Info(m.Groups["methodname"] + " name" + "-- Access = " + m.Groups["access"]);
-                    this.logger.Info(m.Groups["returntype"] + " type");
-                    this.logger.Info(m.Groups["paramlist"] + " paramList");
+				this.logger.Info(i.Groups["docsum"].ToString() + " docsum here!!!");
 
-                    foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString()))
-                    {
+				editedDoc = editedDoc.Replace("///", "");
+				editedDoc = editedDoc.Replace("*", "");
+				editedDoc = editedDoc.TrimStart(' ');
+				editedDoc = editedDoc.TrimEnd(' ');
+				editedDoc = editedDoc.Replace(@"\s+", " ");
 
-                        this.logger.Info("we have a parameter");
-                        this.logger.Info(parType.Groups["returntype"]);
-                        this.logger.Info(parType.Groups["parnames"]);
+				this.logger.Info(editedDoc + " method new docsum here----");
+				this.logger.Info(m.Groups["methodname"] + " name" + "-- Access = " + m.Groups["access"]);
+				this.logger.Info(m.Groups["returntype"] + " type");
+				this.logger.Info(m.Groups["paramlist"] + " paramList");
 
-                        parameterTypes.Add(parType.Groups["returntype"].ToString());
+				foreach (Match parType in r.Matches(m.Groups["paramlist"].ToString()))
+				{
 
-                    }*/
+					this.logger.Info("we have a parameter");
+					this.logger.Info(parType.Groups["returntype"]);
+					this.logger.Info(parType.Groups["parnames"]);
 
-                /*	MethodMatch mm = new MethodMatch()
-                    {
-                        Name = m.Groups["methodname"].ToString(),
-                        Documentation = editedDoc,
-                        Value = "",
-                        ParamList = parameterTypes,
+					parameterTypes.Add(parType.Groups["returntype"].ToString());
 
-                    };
-                    methodMatches.Add(mm);*/
+				}
 
-                CompleteReplyMatch crm = new CompleteReplyMatch()
-                {
+				MethodMatch mm = new MethodMatch()
+				{
+					Name = m.Groups["methodname"].ToString(),
+					Documentation = editedDoc,
+					Value = "",
+					ParamList = parameterTypes,
 
-                    Name = mat.Identifier.ToString(),
-                    Documentation = "",
-                    Value = "",
-                    Glyph = "method"
+				};
+				methodMatches.Add(mm);
+
+				CompleteReplyMatch crm = new CompleteReplyMatch()
+				{
+
+					Name = m.Groups["methodname"].ToString(),
+					Documentation = editedDoc,
+					Value = "",
 
 				};
 				methodMatchNames.Add(crm);
 			}
 
+*/
+        }
 
-		}
-
-		public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_)
+        public void AddKeywordsToMatches(ref List<CompleteReplyMatch> matches_)
 		{
             
 			string[] arrayOfKeywords = { "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "using static", "virtual", "void", "volatile", "while" };
