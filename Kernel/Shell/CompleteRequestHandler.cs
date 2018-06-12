@@ -124,11 +124,9 @@ namespace iCSharp.Kernel.Shell
                 // VariableMatches(code, ref variableMatches);
             }
 
-            CatchAllWords(ref matches_, code);
+            CatchAllWords(ref matches_, syntax_code);
 
-            List<CompleteReplyMatch> methodMatchNames = new List<CompleteReplyMatch>();
-
-            CatchClassMethods(root, ref classList, ref methodList);
+            CatchClassMethods(syntaxRoot, ref classList, ref methodList);
 
             Console.WriteLine("Class List");
 
@@ -147,7 +145,7 @@ namespace iCSharp.Kernel.Shell
             }
 
 
-            List<MethodDeclarationSyntax> MethList = root.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+            List<MethodDeclarationSyntax> MethList = syntaxRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
             bool found = false;
             foreach (var m in MethList)
             {
@@ -193,11 +191,9 @@ namespace iCSharp.Kernel.Shell
 
 
 
-            List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
             //CatchClasses(code, ref classMatchNames);
 
-            List<VariableMatch> variableMatches = new List<VariableMatch>();
-            VariableMatches(code, ref variableMatches);
+            VariableMatches(syntax_code, ref variableMatches);
 
             //string[] dirs = Directory.GetDirectories
 
@@ -305,6 +301,41 @@ namespace iCSharp.Kernel.Shell
 
             }
 
+            //Console.WriteLine("Matches size = " + matches_.Count);
+            //Console.WriteLine("cw = " + cursorWord + " line = " + line);
+            //RemoveNonMatches(ref matches_, cursorWord, line);
+            //Console.WriteLine("Matches size after = " + matches_.Count);
+
+
+
+            /*
+			for (int j = methodMatchNames.Count - 1; j > -1; j--)
+			{
+				this.logger.Info("methodmatch");
+				this.logger.Info(methodMatchNames[j].Name);
+			}*/
+            Console.WriteLine("CursorPosition " + cur_pos);
+            Console.WriteLine("minus number " + cursorWordLength);
+            int ReplacementStartPosition = cur_pos - cursorWordLength;
+            Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
+
+            List<CompleteReplyMatch> finalMatches = new List<CompleteReplyMatch>();
+
+            List<string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
+
+            //List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+            foreach (var i in tempMatches)
+            {
+                CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
+                {
+                    Name = i,
+                    Documentation = "",
+                    Value = "",
+
+                };
+                finalMatches.Add(completeReplyMatch);
+            }
+
             //TEMPORARY
             finalMatches.AddRange(interfaceNames);
             finalMatches.AddRange(enumNames);
@@ -318,24 +349,40 @@ namespace iCSharp.Kernel.Shell
             {
                 if (line[line.Length - 1] == '.')
                 {
+
                     completeReply.Matches = finalMatches;
                     completeReply.Status = "ok";
+
+                    //CursorEnd = 10,
+                    //Matches = finalMatches,
+                    //Status = "ok",
+                    //FilterStartIndex = ReplacementStartPosition,
+                    // MatchedText = cursorWord,
+                    // MetaData = null
+                    //};
 
                 }
                 else
                 {
+
                     completeReply.Matches = finalMatches;
                     completeReply.Status = "ok";
-                    completeReply.MatchedText = cursorWord;
                     completeReply.FilterStartIndex = ReplacementStartPosition;
+                    completeReply.MatchedText = cursorWord;
+                    /*
+					CompleteReply completeReply = new CompleteReply()
+					{
+						//CursorEnd = 10,
+						Matches = finalMatches,
+						Status = "ok",
+						FilterStartIndex = ReplacementStartPosition,
+						MatchedText = cursorWord,
+						// MetaData = null
+					};*/
                 }
             }
-            else
-            {
-                completeReply.Matches = finalMatches;
-                completeReply.Status = "ok";
-            }
-            
+
+       
             Message completeReplyMessage = MessageBuilder.CreateMessage(MessageTypeValues.CompleteReply, JsonSerializer.Serialize(completeReply), message.Header);
 			this.logger.Info("Sending complete_reply");
 			this.messageSender.Send(completeReplyMessage, serverSocket);
