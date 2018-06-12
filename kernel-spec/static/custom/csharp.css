@@ -192,6 +192,18 @@ th {
     background-image: url('../resources/Keyword16.png');
 }
 
+.icon-glyph-interface {
+    background-image: url('../resources/Interface16.png');
+}
+
+.icon-glyph-enum {
+    background-image: url('../resources/Enum16.png');
+}
+
+.icon-glyph-property {
+    background-image: url('../resources/Property16.png');
+}
+
 .cm-s-neat span.cm-comment { color: #008000; }
 .cm-s-neat span.cm-keyword { line-height: 1em; font-weight: bold; color: blue; }
 .cm-s-neat span.cm-string { color: #B21543; }

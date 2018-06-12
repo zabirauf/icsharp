@@ -2,7 +2,6 @@
 
 namespace iCSharp.Kernel.Shell
 {
-
 	using Common.Logging;
 	using System.Collections.Generic;
 	using Common.Serializer;
@@ -25,7 +24,7 @@ namespace iCSharp.Kernel.Shell
 		private ILog logger;
 		private readonly IMessageSender messageSender;
 
-		public CompleteRequestHandler(ILog logger, IMessageSender messageSender)
+        public CompleteRequestHandler(ILog logger, IMessageSender messageSender)
 		{
 			this.logger = logger;
 			this.messageSender = messageSender;
@@ -79,32 +78,51 @@ namespace iCSharp.Kernel.Shell
 
             List<CompleteReplyMatch> classMatchNames = new List<CompleteReplyMatch>();
 
-            List<VariableMatch> variableMatches = new List<VariableMatch>();
+            List<CompleteReplyMatch> interfaceNames = new List<CompleteReplyMatch>();
 
+            List<CompleteReplyMatch> enumNames = new List<CompleteReplyMatch>();
+
+            List<CompleteReplyMatch> structNames = new List<CompleteReplyMatch>();
+
+            List<CompleteReplyMatch> propertyNames = new List<CompleteReplyMatch>();
+
+            List<CompleteReplyMatch> variableNames = new List<CompleteReplyMatch>();
+
+
+            List<VariableMatch> variableMatches = new List<VariableMatch>();
 
             var syntax_code = Regex.Replace(completeRequest.CodeCells[0].Substring(1, completeRequest.CodeCells[0].Length - 2), @"\\n", "*");
 
             var tree = CSharpSyntaxTree.ParseText(syntax_code);
 
             var syntaxRoot = tree.GetRoot();
+            var diagnostics = tree.GetDiagnostics();
+
+            Console.WriteLine();
+            Console.WriteLine("Diagonistics");
+            Console.WriteLine(diagnostics.ToString());
       //      var MyClass = syntaxRoot.DescendantNodes().OfType<ClassDeclarationSyntax>().First();
        //     var MyMethod = syntaxRoot.DescendantNodes().OfType<MethodDeclarationSyntax>().First();
 
           //  Console.WriteLine("ayyyyyyy" + MyClass.Identifier.ToString());
           //  Console.WriteLine("yaaaaaaay" + MyMethod.Identifier.ToString());
 
+            // CATCH STUFF
             CatchClasses(syntaxRoot, ref classMatchNames);
             CatchMethods(syntaxRoot, ref methodMatchNames, ref methodMatches);
+            catchInterfaces(syntaxRoot, ref interfaceNames);
+            catchEnums(syntaxRoot, ref enumNames);
+            catchStructs(syntaxRoot, ref structNames);
+            catchProperties(syntaxRoot, ref propertyNames);
+            catchVariables(syntaxRoot, ref variableNames);
 
             foreach (var codes in completeRequest.CodeCells)
             {
                 var code = Regex.Replace(codes.Substring(1, codes.Length - 2), @"\\n", "*");
+                
                 //  CatchAllWords(ref matches_, code);
                 //  CatchMethods(code, ref methodMatchNames, ref methodMatches);
                 // VariableMatches(code, ref variableMatches);
-
-
-
             }
 
             AddKeywordsToMatches(ref matches_);
@@ -214,14 +232,13 @@ namespace iCSharp.Kernel.Shell
 			//RemoveNonMatches(ref matches_, cursorWord, line);
 			Console.WriteLine("Matches size after = " + matches_.Count);
 
-
-
 			/*
 			for (int j = methodMatchNames.Count - 1; j > -1; j--)
 			{
 				this.logger.Info("methodmatch");
 				this.logger.Info(methodMatchNames[j].Name);
 			}*/
+
 			Console.WriteLine("CursorPosition " + cur_pos);
 			Console.WriteLine("minus number " + cursorWordLength);
 			int ReplacementStartPosition = cur_pos - cursorWordLength;
@@ -252,6 +269,13 @@ namespace iCSharp.Kernel.Shell
                     finalMatches.Add(completeReplyMatch);
                 }
             }
+
+            //TEMPORARY
+            finalMatches.AddRange(interfaceNames);
+            finalMatches.AddRange(enumNames);
+            finalMatches.AddRange(structNames);
+            finalMatches.AddRange(propertyNames);
+            finalMatches.AddRange(variableNames);
 
             CompleteReply completeReply = new CompleteReply();
 
@@ -294,10 +318,8 @@ namespace iCSharp.Kernel.Shell
             
 			foreach (Match m in p.Matches(newCode))
 			{
-
 				CompleteReplyMatch crm = new CompleteReplyMatch()
 				{
-
 					Name = m.ToString(),
 					Documentation = "",
 					Value = "",
@@ -305,15 +327,98 @@ namespace iCSharp.Kernel.Shell
 				};
 				matches_.Add(crm);
 			}
-
-
 		}
+        
+        public void catchInterfaces(SyntaxNode tree, ref List<CompleteReplyMatch> interfaceList)
+        {
+            var myInterface = tree.DescendantNodes().OfType<InterfaceDeclarationSyntax>().ToList();
 
-		public void CatchClasses(SyntaxNode tree, ref List<CompleteReplyMatch> classMatchNames)
+            foreach (var node in myInterface)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
+                    Documentation = "<font style=\"color:blue\">interface</font>" + node.Identifier.ToString(),
+                    Value = "",
+                    Glyph = "interface"
+                };
+                interfaceList.Add(crm);
+            }
+        }
+        
+        public void catchEnums(SyntaxNode tree, ref List<CompleteReplyMatch> enumList)
+        {
+            var myEnum = tree.DescendantNodes().OfType<EnumDeclarationSyntax>().ToList();
+            
+            foreach (var node in myEnum)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
+                    Documentation = "<font style=\"color:blue\">enum</font>" + node.Identifier.ToString(),
+                    Value = "",
+                    Glyph = "enum"
+                };
+                enumList.Add(crm);
+            }
+        }
+
+        public void catchStructs(SyntaxNode tree, ref List<CompleteReplyMatch> structList)
+        {
+            var myStruct = tree.DescendantNodes().OfType<StructDeclarationSyntax>().ToList();
+
+            foreach (var node in myStruct)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
+                    Documentation = "<font style=\"color:blue\">struct</font>" + node.Identifier.ToString(),
+                    Value = "",
+                    Glyph = "struct"
+                };
+                structList.Add(crm);
+            }
+        }
+
+        public void catchProperties(SyntaxNode tree, ref List<CompleteReplyMatch> propertyList)
+        {
+            var myProperty = tree.DescendantNodes().OfType<PropertyDeclarationSyntax>().ToList();
+
+            foreach (var node in myProperty)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
+                    Documentation = "<font style=\"color:blue\">property</font>" + node.Identifier.ToString(),
+                    Value = "",
+                    Glyph = "property"
+                };
+                propertyList.Add(crm);
+            }
+        }
+
+        public void catchVariables(SyntaxNode tree, ref List<CompleteReplyMatch> variableList)
+        {
+            var myVariable = tree.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList();
+            
+            foreach (var node in myVariable)
+            {
+                CompleteReplyMatch crm = new CompleteReplyMatch()
+                {
+                    Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
+                    Documentation = "<font style=\"color:blue\">variable</font>" + node.Identifier.ToString(),
+                    Value = "",
+                    Glyph = "variable"
+                };
+                variableList.Add(crm);
+            }
+        }
+
+        public void CatchClasses(SyntaxNode tree, ref List<CompleteReplyMatch> classMatchNames)
 		{
             //(?<documentation>\/\/\/(?:(?!\n\w).)*?)?(\n)*
             var MyClass = tree.DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
-
+            
             this.logger.Info("Running catchclass");
             Regex p = new Regex(@"class([\s]+)(?<classname>\w+)");
             
