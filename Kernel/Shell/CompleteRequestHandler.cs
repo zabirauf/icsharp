@@ -598,7 +598,7 @@ namespace iCSharp.Kernel.Shell
 					}
 					foreach (var item in variableNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -613,7 +613,7 @@ namespace iCSharp.Kernel.Shell
 					}
 					foreach (var item in enumNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -628,7 +628,7 @@ namespace iCSharp.Kernel.Shell
 					}
 					foreach (var item in structNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -684,7 +684,7 @@ namespace iCSharp.Kernel.Shell
 					}
 					foreach (var item in variableNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -695,11 +695,23 @@ namespace iCSharp.Kernel.Shell
 
 							};
 							matches_.Add(completeReplyMatch);
+						}else{
+							if(item.className.Equals(currentclass)){
+								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+                                {
+                                    Name = item.propertyDeclarationSyntax.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList().First().Identifier.ToString(),
+                                    Documentation = "",
+                                    Value = "",
+                                    Glyph = "field",
+
+                                };
+                                matches_.Add(completeReplyMatch);
+							}
 						}
 					}
 					foreach (var item in enumNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -710,11 +722,25 @@ namespace iCSharp.Kernel.Shell
 
 							};
 							matches_.Add(completeReplyMatch);
-						}
+						}else
+                        {
+                            if (item.className.Equals(currentclass))
+                            {
+								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+								{
+									Name = item.name,
+									Documentation = "",
+                                    Value = "",
+                                    Glyph = "enum",
+
+                                };
+                                matches_.Add(completeReplyMatch);
+                            }
+                        }
 					}
 					foreach (var item in structNames)
 					{
-						if (!(item.className.Equals("global")))
+						if ((item.className.Equals("global")))
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
@@ -725,7 +751,21 @@ namespace iCSharp.Kernel.Shell
 
 							};
 							matches_.Add(completeReplyMatch);
-						}
+						}else
+                    {
+                        if (item.className.Equals(currentclass))
+                        {
+                            CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+                            {
+									Name = item.name,
+									Documentation = "",
+                                Value = "",
+                                Glyph = "struct",
+
+                            };
+                            matches_.Add(completeReplyMatch);
+                        }
+                    }
 
 					}
 					matches_.AddRange(interfaceNames);
