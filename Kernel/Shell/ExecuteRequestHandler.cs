@@ -49,12 +49,42 @@ namespace iCSharp.Kernel.Shell
 
             // 3: Evaluate the C# code
             string code = executeRequest.Code;
+
 			Console.WriteLine("////////////////////////////////////");
 			Console.WriteLine("code: " + code);
 
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
             string codeHtmlOutput = this.GetCodeHtmlOutput(results);
+
+            if (code.Contains("Console.WriteLine") && !codeOutput.Contains(": error CS"))
+            {
+                // Then there exists Console.WriteLine which should be added to output
+                int startIndex = 0;
+                string addToHTMLOutput = "";
+
+                while (true)
+                {
+                    startIndex = code.IndexOf("Console.WriteLine(", startIndex, StringComparison.CurrentCulture);
+
+                    if (startIndex == -1) {
+                        break;
+                    }
+                    int currentIndex = startIndex + 18;
+                    int endIndex = code.IndexOf(")", currentIndex, StringComparison.CurrentCulture);
+                    if (code[currentIndex] == '"')
+                    {
+                        currentIndex++;
+                        endIndex--;
+                    }
+                    string toPrinted = code.Substring(currentIndex, endIndex - currentIndex);
+                    addToHTMLOutput += "<font style=\"color:black\">" + toPrinted + "</font>" + "<br />";
+                    startIndex = endIndex;
+                }
+
+                codeHtmlOutput = addToHTMLOutput + codeHtmlOutput;
+            }
+
 
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
