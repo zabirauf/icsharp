@@ -55,7 +55,7 @@ namespace iCSharp.Kernel.Shell
 
             ExecutionResult results = this.replEngine.Execute(code);
             string codeOutput = this.GetCodeOutput(results);
-            string codeHtmlOutput = this.GetCodeHtmlOutput(results);
+            string codeHtmlOutput = this.GetCodeHtmlOutput(results);           
 
             Dictionary<string, object> data = new Dictionary<string, object>()
             {
@@ -102,11 +102,10 @@ namespace iCSharp.Kernel.Shell
         private string GetCodeHtmlOutput(ExecutionResult executionResult)
         {
             StringBuilder sb = new StringBuilder();
-            bool flag = true;
             foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
             {
                 string encoded = HttpUtility.HtmlEncode(tuple.Item1);
-				sb.Append(string.Format("<font style=\"color{0}\">", tuple.Item2.ToString()));
+				sb.Append(string.Format("<font style=\"color:{0}\">", tuple.Item2.ToString()));
 
 				foreach (string result in encoded.Split(Environment.NewLine.ToCharArray()))
 				{
