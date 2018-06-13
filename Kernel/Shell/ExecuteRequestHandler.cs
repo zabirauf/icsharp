@@ -49,6 +49,7 @@ namespace iCSharp.Kernel.Shell
 
             // 3: Evaluate the C# code
             string code = executeRequest.Code;
+
 			Console.WriteLine("////////////////////////////////////");
 			Console.WriteLine("code: " + code);
 
@@ -101,10 +102,10 @@ namespace iCSharp.Kernel.Shell
         private string GetCodeHtmlOutput(ExecutionResult executionResult)
         {
             StringBuilder sb = new StringBuilder();
+            bool flag = true;
             foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
             {
                 string encoded = HttpUtility.HtmlEncode(tuple.Item1);
-
 				sb.Append(string.Format("<font style=\"color{0}\">", tuple.Item2.ToString()));
 
 				foreach (string result in encoded.Split(Environment.NewLine.ToCharArray()))
