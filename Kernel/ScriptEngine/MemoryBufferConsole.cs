@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ScriptCs.Contracts;
 
 namespace iCSharp.Kernel.ScriptEngine
 {
-    public class MemoryBufferConsole : IConsole
+    public class MemoryBufferConsole
     {
         private const ConsoleColor DefaultConsoleColor = ConsoleColor.Black;
 

@@ -45,7 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockType.cs" />
     <Compile Include="CompleteReply.cs" />
+    <Compile Include="CompleteReplyMatch.cs" />
     <Compile Include="CompleteRequest.cs" />
     <Compile Include="ConnectionInformation.cs" />
     <Compile Include="DisplayData.cs" />
@@ -63,6 +65,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="StatusValues.cs" />
+    <Compile Include="MethodMatch.cs" />
+    <Compile Include="ClassMatch.cs" />
+    <Compile Include="VariableMatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

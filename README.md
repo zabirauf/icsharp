@@ -16,11 +16,37 @@ This is Alpha. Take with a large pinch of salt :)
 
 ### Installation
 
+### BUILD ISSUE FIX AND INSTALLATION (Windows confirmed working for now)
+Clone the respository and make sure that the submodule engine has been cloned by using this command:
+
+`git clone --recurse-submodules -j8 git://github.com/MohamedEihab/icsharp`
+  
+Update and restore the nuget dependencies using the following commands
+
+```
+nuget\Nuget.exe update -self
+.nuget\Nuget.exe restore
+cd Engine
+.nuget\Nuget.exe update -self
+.nuget\Nuget.exe restore
+```
+
+Open the project on Visual Studio and attempt to build, follow the remaining instructions below after successful build to launch Jupyter Notebooks with the newly installed C# Kernel.
+
 #### [Mac OS X](https://github.com/zabirauf/icsharp/wiki/Install-on-Mac-OS-X)
+In the directory, run
+```
+./build.sh
+```
 
 #### [Linux](https://github.com/zabirauf/icsharp/wiki/Install-on-Unix-(Debian-7.8))
+In the directory, run
+```
+./build.sh
+```
 
 #### [Windows](https://github.com/zabirauf/icsharp/wiki/Installation)
+No need to change paths! Build on Visual Studio and you will have C# Kernel installed on your Jupyter Notebook.
 
 ### Feedback
 I am eager to receive [feedback](mailto:zabirauf@gmail.com) from anyone who has attempted to use ICSharp. I would love to hear
@@ -32,10 +58,17 @@ some thoughts on how to improve ICSharp.
 
 ## [Demo](http://nbviewer.jupyter.org/urls/gist.githubusercontent.com/zabirauf/a0d4aa22b383afaa1e23/raw/65e539dc98b2cf3e38cc26faf3575e50f4ac9108/iCSharp%20Sample.ipynb)
 
-## Contributors
-Thanks to contributors (in alphabetic order).
-* [awb99](https://github.com/awb99)
-* [denfromufa](https://github.com/denfromufa)
-* [gwenzek](https://github.com/gwenzek)
+## TODO
 
-## [Twitter](http://twitter.com/zabirauf)
+### Code to write
+
+- [ ] Intellisense Support
+- [ ] YellowBook addition
+
+### Current
+- [ ] Syntax Highlighting - Mohamed
+- [ ] Jupyter Notebook Fix - Mostafa
+
+
+### Done
+
