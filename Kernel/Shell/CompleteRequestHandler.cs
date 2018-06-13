@@ -16,11 +16,12 @@ namespace iCSharp.Kernel.Shell
 	using Microsoft.CodeAnalysis.CSharp;
 	using Microsoft.CodeAnalysis.CSharp.Syntax;
 	using Microsoft.CodeAnalysis;
-    
+    using System.Text;
 
-	//using System.
-	//using System.Linq.Expressions.Analyzer
-	public class CompleteRequestHandler : IShellMessageHandler
+
+    //using System.
+    //using System.Linq.Expressions.Analyzer
+    public class CompleteRequestHandler : IShellMessageHandler
 	{
 		private ILog logger;
 		private readonly IMessageSender messageSender;
@@ -440,13 +441,13 @@ namespace iCSharp.Kernel.Shell
 						DirectivesList(ref DirectiveMatches, line);
 
 						var l = DirectiveMatches.GroupBy(i => i.Name).Select(group => group.First());
-
+                        
 						foreach (var i in l)
 						{
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
 							{
 								Name = i.Name,
-								Documentation = i.Documentation,
+								Documentation = "<font style=\"color:blue\">Namespace</font> " + i.Documentation,
 								Value = "",
 								Glyph = "directive"
 
@@ -498,8 +499,8 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = m.mds.Identifier.ToString(),
-												Documentation = "",
-												Value = "",
+												Documentation = "<font style =\"color:blue\">" + m.mds.ReturnType.ToString() + "</font> " + m.mds.Identifier.ToString() + "()",
+                                                Value = "",
 												Glyph = "method",
 
 											};
@@ -533,7 +534,7 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = e.name,
-												Documentation = "",
+												Documentation = "<font style =\"color:blue\">Enum</font> " + e.name,
 												Value = "",
 												Glyph = "enum",
 
@@ -551,8 +552,8 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = s.name,
-												Documentation = "",
-												Value = "",
+												Documentation = "<font style =\"color:blue\">Struct</font> " + s.name,
+                                                Value = "",
 												Glyph = "struct",
 
 											};
@@ -572,8 +573,8 @@ namespace iCSharp.Kernel.Shell
 						CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 						{
 							Name = item,
-							Documentation = "",
-							Value = "",
+							Documentation = "<font style =\"color:blue\">Keyword</font> " + item,
+                            Value = "",
 							Glyph = "keyword",
 
 						};
@@ -588,8 +589,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.Identifier.ToString(),
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">Class</font> " + item.Identifier.ToString(),
+                                Value = "",
 								Glyph = "class",
 
 							};
@@ -618,8 +619,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.name,
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">Enum</font> " + item.name,
+                                Value = "",
 								Glyph = "enum",
 
 							};
@@ -633,8 +634,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.name,
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">Struct</font> " + item.name,
+                                Value = "",
 								Glyph = "struct",
 
 							};
@@ -655,8 +656,8 @@ namespace iCSharp.Kernel.Shell
 						CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 						{
 							Name = item,
-							Documentation = "",
-							Value = "",
+							Documentation = "<font style =\"color:blue\">Keyword</font> " + item,
+                            Value = "",
 							Glyph = "keyword",
 
 						};
@@ -673,8 +674,8 @@ namespace iCSharp.Kernel.Shell
 								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 								{
 									Name = item.Identifier.ToString(),
-									Documentation = "",
-									Value = "",
+									Documentation = "<font style =\"color:blue\">Class</font> " + item.Identifier.ToString(),
+                                    Value = "",
 									Glyph = "class",
 
 								};
@@ -716,8 +717,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.name,
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">Enum</font> " + item.name,
+                                Value = "",
 								Glyph = "enum",
 
 							};
@@ -729,7 +730,7 @@ namespace iCSharp.Kernel.Shell
 								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 								{
 									Name = item.name,
-									Documentation = "",
+									Documentation = "<font style =\"color:blue\">Enum</font> " + item.name,
                                     Value = "",
                                     Glyph = "enum",
 
@@ -745,8 +746,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.name,
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">Struct</font> " + item.name,
+                                Value = "",
 								Glyph = "struct",
 
 							};
@@ -758,7 +759,7 @@ namespace iCSharp.Kernel.Shell
                             CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
                             {
 									Name = item.name,
-									Documentation = "",
+									Documentation = "<font style =\"color:blue\">Struct</font> " + item.name,
                                 Value = "",
                                 Glyph = "struct",
 
@@ -776,8 +777,8 @@ namespace iCSharp.Kernel.Shell
 							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 							{
 								Name = item.mds.Identifier.ToString(),
-								Documentation = "",
-								Value = "",
+								Documentation = "<font style =\"color:blue\">" + item.mds.ReturnType.ToString() + "</font> " + item.mds.Identifier.ToString() + "()",
+                                Value = "",
 								Glyph = "method",
 
 							};
@@ -864,8 +865,8 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = m.mds.Identifier.ToString(),
-												Documentation = "",
-												Value = "",
+												Documentation = "<font style =\"color:blue\">" + m.mds.ReturnType.ToString() + "</font> " + m.mds.Identifier.ToString() + "()",
+                                                Value = "",
 												Glyph = "method",
 
 											};
@@ -899,8 +900,8 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = e.name,
-												Documentation = "",
-												Value = "",
+												Documentation = "<font style =\"color:blue\">Enum</font> " + e.name,
+                                                Value = "",
 												Glyph = "enum",
 
 											};
@@ -917,8 +918,8 @@ namespace iCSharp.Kernel.Shell
 											CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
 											{
 												Name = s.name,
-												Documentation = "",
-												Value = "",
+												Documentation = "<font style =\"color:blue\">Struct</font> " + s.name,
+                                                Value = "",
 												Glyph = "struct",
 
 											};
@@ -950,8 +951,8 @@ namespace iCSharp.Kernel.Shell
 										CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
 										{
 											Name = item.name,
-											Documentation = "",
-											Value = "",
+											Documentation = "<font style =\"color:blue\">Enum</font> " + item.name,
+                                            Value = "",
 											Glyph = "enum"
 										};
 										matches_.Add(completeReplyMatch);
@@ -964,8 +965,8 @@ namespace iCSharp.Kernel.Shell
 										CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
 										{
 											Name = item.name,
-											Documentation = "",
-											Value = "",
+											Documentation = "<font style =\"color:blue\">Struct</font> " + item.name,
+                                            Value = "",
 											Glyph = "struct"
 										};
 										matches_.Add(completeReplyMatch);
@@ -978,8 +979,8 @@ namespace iCSharp.Kernel.Shell
 										CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
 										{
 											Name = item.mds.Identifier.ToString(),
-											Documentation = "",
-											Value = "",
+											Documentation = "<font style =\"color:blue\">" + item.mds.ReturnType.ToString() + "</font> " + item.mds.Identifier.ToString() + "()",
+                                            Value = "",
 											Glyph = "method"
 										};
 										matches_.Add(completeReplyMatch);
@@ -1037,6 +1038,17 @@ namespace iCSharp.Kernel.Shell
 			this.messageSender.Send(completeReplyMessage, serverSocket);
 
 		}
+        
+        public string returnMethodDocumentation(MethodDeclarationSyntax mds)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(string.Format("<font style =\"color:{0}\">{1}</font> ", "blue", mds.ReturnType.ToString()));
+            sb.Append(string.Format("<font style =\"color:{0}\">{1}</font>", "green", mds.ReturnType.ToString()));
+
+            //   sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", ", encoded));
+
+            return sb.ToString();
+        }
 
 		public void catchInterfaces(SyntaxNode tree, ref List<CompleteReplyMatch> interfaceList, List<ClassDeclarationSyntax> classes)
 		{
@@ -1047,7 +1059,7 @@ namespace iCSharp.Kernel.Shell
 				CompleteReplyMatch crm = new CompleteReplyMatch()
 				{
 					Name = node.Identifier.ToString(),// m.Groups["classname"].ToString(),
-					Documentation = "<font style=\"color:blue\">interface</font>" + node.Identifier.ToString(),
+					Documentation = "<font style=\"color:blue\">interface</font> " + node.Identifier.ToString(),
 					Value = "",
 					Glyph = "interface"
 				};

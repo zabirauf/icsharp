@@ -205,9 +205,10 @@ define(function () {
 
                             //intellisense.addMethodsTrigger({ keyCode: 57, shiftKey: true }); // `(`
                             //intellisense.addMethodsTrigger({ keyCode: 48, shiftKey: true });// `)`
-                             intellisense.addMethodsTrigger({ keyCode: 8 }); // `backspace`
-                             intellisense.addMethodsTrigger({ keyCode: 190 });
-                             intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
+                         //    intellisense.addMethodsTrigger({ keyCode: 8 }); // `backspace`
+                          //   intellisense.addMethodsTrigger({ keyCode: 190 });
+                            intellisense.addDeclarationTrigger({ keyCode: 190,}); // `.`
+                            intellisense.addDeclarationTrigger({ keyCode: 32, ctrlKey: true, preventDefault: true, type: 'down' }); // `ctrl+space`
                             // intellisense.addDeclarationTrigger({ keyCode: 191 }); // `/`
                             // intellisense.addDeclarationTrigger({ keyCode: 220 }); // `\`
                             // intellisense.addDeclarationTrigger({ keyCode: 222 }); // `"`
