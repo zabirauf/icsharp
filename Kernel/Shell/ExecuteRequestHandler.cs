@@ -131,10 +131,16 @@ namespace iCSharp.Kernel.Shell
         private string GetCodeHtmlOutput(ExecutionResult executionResult)
         {
             StringBuilder sb = new StringBuilder();
+            bool flag = true;
             foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
             {
                 string encoded = HttpUtility.HtmlEncode(tuple.Item1);
                 sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", tuple.Item2.ToString(), encoded));
+                if (!flag)
+                {
+                    sb.Append("<br />");
+                }
+                flag = false;
             }
 
             return sb.ToString();
