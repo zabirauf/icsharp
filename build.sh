@@ -5,6 +5,10 @@ set -x
 
 python ./kernel-spec/kernelWriter.py
 
+if [ -d "build" ]; then
+    rm -R build
+fi
+
 # Install dependencies
 mozroots --import --sync --quiet
 mono ./.nuget/NuGet.exe restore ./iCSharp.sln
