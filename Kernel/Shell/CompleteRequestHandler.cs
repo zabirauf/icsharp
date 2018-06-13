@@ -286,7 +286,7 @@ namespace iCSharp.Kernel.Shell
 			{
 				//this.logger.Info(matches_[j].Name);
 			}
-
+            /*
 			if (line.Length > 0)
 			{
 				//Deals with directives
@@ -343,7 +343,7 @@ namespace iCSharp.Kernel.Shell
 
 
 			}
-
+*/
 			//interfaces
 			Regex interfaceRegex = new Regex(@"(class)([\s]+)(\w+)([\s]+):([\s]+)([\w]*)");
 
@@ -351,9 +351,7 @@ namespace iCSharp.Kernel.Shell
 			Match match = interfaceRegex.Match(line);
 			if (match.Success)
 			{
-				//Console.WriteLine("successfully matched");
-				//Console.WriteLine(line.Length - 1);
-				//Console.WriteLine(match.Index + " index  length " + match.Length);
+				
 				if ((match.Index + match.Length) == (line.Length))
 				{
 					Console.WriteLine("it works!!!!!!");
@@ -361,30 +359,16 @@ namespace iCSharp.Kernel.Shell
 				}
 			}
 
+           
 
-			//Console.WriteLine("Matches size = " + matches_.Count);
-			//Console.WriteLine("cw = " + cursorWord + " line = " + line);
-			//RemoveNonMatches(ref matches_, cursorWord, line);
-			//Console.WriteLine("Matches size after = " + matches_.Count);
-
-
-
-			/*
-			for (int j = methodMatchNames.Count - 1; j > -1; j--)
-			{
-				this.logger.Info("methodmatch");
-				this.logger.Info(methodMatchNames[j].Name);
-			}*/
-			Console.WriteLine("CursorPosition " + cur_pos);
-			Console.WriteLine("minus number " + cursorWordLength);
 			int ReplacementStartPosition = cur_pos - cursorWordLength;
-			Console.WriteLine("ReplacementStartPosition " + ReplacementStartPosition);
+
 
 			List<CompleteReplyMatch> finalMatches = new List<CompleteReplyMatch>();
 
 			List<string> tempMatches = matches_.Select(x => x.Name).Distinct().ToList();
 
-			//List<string> l = DirectiveMatches.Select(x => x.Name).Distinct().ToList();
+
 			foreach (var i in tempMatches)
 			{
 				CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch
@@ -663,7 +647,122 @@ namespace iCSharp.Kernel.Shell
 			}
 			else
 			{
-				if (line.Length > 0)
+				if (String.IsNullOrWhiteSpace(line))
+				{
+					Console.WriteLine("We are in the else");
+					foreach (var item in listOfKeywords)
+					{
+						CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+						{
+							Name = item,
+							Documentation = "",
+							Value = "",
+							Glyph = "keyword",
+
+						};
+						matches_.Add(completeReplyMatch);
+					}
+					foreach (var item in classList)
+					{
+						Console.WriteLine("Weselna public classes");
+						if (!(item.Modifiers.ToString().Equals("private")))
+						{
+							if (!(item.Identifier.ToString().Equals(currentclass)))
+							{
+								Console.WriteLine("Weselna public classes");
+								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+								{
+									Name = item.Identifier.ToString(),
+									Documentation = "",
+									Value = "",
+									Glyph = "class",
+
+								};
+								matches_.Add(completeReplyMatch);
+							}
+						}
+					}
+					foreach (var item in variableNames)
+					{
+						if (!(item.className.Equals("global")))
+						{
+							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+							{
+								Name = item.propertyDeclarationSyntax.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList().First().Identifier.ToString(),
+								Documentation = "",
+								Value = "",
+								Glyph = "field",
+
+							};
+							matches_.Add(completeReplyMatch);
+						}
+					}
+					foreach (var item in enumNames)
+					{
+						if (!(item.className.Equals("global")))
+						{
+							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+							{
+								Name = item.name,
+								Documentation = "",
+								Value = "",
+								Glyph = "enum",
+
+							};
+							matches_.Add(completeReplyMatch);
+						}
+					}
+					foreach (var item in structNames)
+					{
+						if (!(item.className.Equals("global")))
+						{
+							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+							{
+								Name = item.name,
+								Documentation = "",
+								Value = "",
+								Glyph = "struct",
+
+							};
+							matches_.Add(completeReplyMatch);
+						}
+
+					}
+					matches_.AddRange(interfaceNames);
+					foreach (var item in methodList)
+					{
+						if (item.className.Equals(currentclass))
+						{
+							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+							{
+								Name = item.mds.Identifier.ToString(),
+								Documentation = "",
+								Value = "",
+								Glyph = "method",
+
+							};
+							matches_.Add(completeReplyMatch);
+						}
+						/*else
+						{
+							if (!(item.mds.Modifiers.Equals("private")))
+							{
+								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
+								{
+									Name = item.mds.Identifier.ToString(),
+									Documentation = "",
+									Value = "",
+									Glyph = "method",
+
+								};
+								matches_.Add(completeReplyMatch);
+							}
+						}*/
+					}
+				}
+
+
+				else if (line.Length > 0)
 				{
 					if (line[line.Length - 1] == '.')
 					{
@@ -687,7 +786,7 @@ namespace iCSharp.Kernel.Shell
 
 							}
 						}
-						foreach (var i in variableNames)
+						/*foreach (var i in variableNames)
 						{
 							if (i.propertyDeclarationSyntax.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList().First().Identifier.ToString().Equals(cursorWord))
 							{
@@ -706,7 +805,7 @@ namespace iCSharp.Kernel.Shell
 								}
 
 							}
-						}
+						}*/
 						foreach (var i in classList)
 						{ //class before dot
 
@@ -850,119 +949,6 @@ namespace iCSharp.Kernel.Shell
 
 						}
 
-					}
-					if (String.IsNullOrWhiteSpace(line))
-					{
-						Console.WriteLine("We are in the else");
-						foreach (var item in listOfKeywords)
-						{
-							CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-							{
-								Name = item,
-								Documentation = "",
-								Value = "",
-								Glyph = "keyword",
-
-							};
-							matches_.Add(completeReplyMatch);
-						}
-						foreach (var item in classList)
-						{
-							Console.WriteLine("Weselna public classes");
-							if (!(item.Modifiers.ToString().Equals("private")))
-							{
-								if (!(item.Identifier.ToString().Equals(currentclass)))
-								{
-									Console.WriteLine("Weselna public classes");
-									CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-									{
-										Name = item.Identifier.ToString(),
-										Documentation = "",
-										Value = "",
-										Glyph = "class",
-
-									};
-									matches_.Add(completeReplyMatch);
-								}
-							}
-						}
-						foreach (var item in variableNames)
-						{
-							if (!(item.className.Equals("global")))
-							{
-								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-								{
-									Name = item.propertyDeclarationSyntax.DescendantNodes().OfType<VariableDeclaratorSyntax>().ToList().First().Identifier.ToString(),
-									Documentation = "",
-									Value = "",
-									Glyph = "field",
-
-								};
-								matches_.Add(completeReplyMatch);
-							}
-						}
-						foreach (var item in enumNames)
-						{
-							if (!(item.className.Equals("global")))
-							{
-								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-								{
-									Name = item.name,
-									Documentation = "",
-									Value = "",
-									Glyph = "enum",
-
-								};
-								matches_.Add(completeReplyMatch);
-							}
-						}
-						foreach (var item in structNames)
-						{
-							if (!(item.className.Equals("global")))
-							{
-								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-								{
-									Name = item.name,
-									Documentation = "",
-									Value = "",
-									Glyph = "struct",
-
-								};
-								matches_.Add(completeReplyMatch);
-							}
-
-						}
-						matches_.AddRange(interfaceNames);
-						foreach (var item in methodList)
-						{
-							if (item.className.Equals(currentclass))
-							{
-								CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-								{
-									Name = item.mds.Identifier.ToString(),
-									Documentation = "",
-									Value = "",
-									Glyph = "method",
-
-								};
-								matches_.Add(completeReplyMatch);
-							}
-							else
-							{
-								if (!(item.mds.Modifiers.Equals("private")))
-								{
-									CompleteReplyMatch completeReplyMatch = new CompleteReplyMatch()
-									{
-										Name = item.mds.Identifier.ToString(),
-										Documentation = "",
-										Value = "",
-										Glyph = "method",
-
-									};
-									matches_.Add(completeReplyMatch);
-								}
-							}
-						}
 					}
 				}
 			}
