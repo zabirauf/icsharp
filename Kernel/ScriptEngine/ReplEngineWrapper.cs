@@ -71,22 +71,23 @@ namespace iCSharp.Kernel.ScriptEngine
 				return new ExecutionResult() { OutputResultWithColorInformation = this.console.GetAllInBuffer() };
 			}
 
+            // Set console output to printStream which writes to stringbuilder sbPrint
 			Console.SetOut(printStream);
 
+            // Any outputs from running the code are now written into sbPrint
 			var task = (repl == null) ?
 							newScript.RunAsync(catchException: e => false, cancellationToken: cancellationToken) :
 									 newScript.RunFromAsync(repl, catchException: e => false, cancellationToken: cancellationToken);
 
-
+            // Reset the output to the standard Console.WriteLine stream
 			var standardOutput = new StreamWriter(Console.OpenStandardOutput());
 			standardOutput.AutoFlush = true;
 			Console.SetOut(standardOutput);
             
-			Console.WriteLine("Code result: " + sbPrint);
-
 			if (sbPrint.Length > 0)
 			{
 				this.console.WriteLine(sbPrint.ToString());
+                // Empty the output string
 				sbPrint.Clear();
 			}
 
