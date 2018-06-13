@@ -1,5 +1,1 @@
-{
-    "argv": ["C:/Users/Mohamed/source/repos/icsharp/Kernel/bin/Debug/iCSharp.Kernel.exe", "{connection_file}"],
-    "display_name": "C#",
-    "language": "csharp"
-}
+{"argv": ["mono", "/Users/andrebharath/Documents/University/year_3/third_year_project/icsharp-mohamed/Kernel/bin/Release/iCSharp.Kernel.exe", "{connection_file}"], "display_name": "C#", "language": "csharp"}

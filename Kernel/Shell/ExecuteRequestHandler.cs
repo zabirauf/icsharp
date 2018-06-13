@@ -45,7 +45,7 @@ namespace iCSharp.Kernel.Shell
             this.SendMessageToIOPub(message, ioPub, StatusValues.Busy);
 
             // 2: Send execute input on IOPub
-            this.SendInputMessageToIOPub(message, ioPub, executeRequest.Code);
+            this.SendInputMessageToIOPub(message, ioPub, executeRequest.Code);  
 
             // 3: Evaluate the C# code
             string code = executeRequest.Code;
@@ -106,12 +106,16 @@ namespace iCSharp.Kernel.Shell
             foreach (Tuple<string, ConsoleColor> tuple in executionResult.OutputResultWithColorInformation)
             {
                 string encoded = HttpUtility.HtmlEncode(tuple.Item1);
-                sb.Append(string.Format("<font style=\"color:{0}\">{1}</font>", tuple.Item2.ToString(), encoded));
-                if (!flag)
-                {
-                    sb.Append("<br />");
-                }
-                flag = false;
+				sb.Append(string.Format("<font style=\"color{0}\">", tuple.Item2.ToString()));
+
+				foreach (string result in encoded.Split(Environment.NewLine.ToCharArray()))
+				{
+					if (result.Length > 0)
+					{
+						sb.Append(string.Format("{0}<br />", result));
+					}
+				}
+				sb.Append("</font>");
             }
 
             return sb.ToString();

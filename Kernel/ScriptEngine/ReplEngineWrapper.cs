@@ -1,7 +1,9 @@
 ﻿using Common.Logging;
+using System;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Text;
+using System.IO;
 using System.Threading;
 using ILog = Common.Logging.ILog;
 
@@ -13,8 +15,10 @@ namespace iCSharp.Kernel.ScriptEngine
 		private readonly ILog logger;
 		private ScriptState<object> repl = null;
 		private readonly MemoryBufferConsole console;
-		//private 
-		 
+
+		private static StringBuilder sbPrint = new StringBuilder();
+		private static StringWriter printStream = new StringWriter(sbPrint);
+
 
 		public ReplEngineWrapper(ILog logger, ScriptState<object> repl, MemoryBufferConsole console)
 		{
@@ -32,7 +36,7 @@ namespace iCSharp.Kernel.ScriptEngine
 
 			//this.console.WriteLine("Script:");
 			//this.console.WriteLine(script);
-			this.console.WriteLine();
+			//this.console.WriteLine();
 
 			var cancellationToken = new CancellationToken();
 
@@ -53,6 +57,7 @@ namespace iCSharp.Kernel.ScriptEngine
 			var diagnostics = newScript.Compile(cancellationToken);
 
 			//this.console.WriteLine("newscript code " + newScript.Code);
+                     
 
 			ExecutionResult executionResult;
 
@@ -62,19 +67,32 @@ namespace iCSharp.Kernel.ScriptEngine
 				foreach (var error in diagnostics)
 				{
 					this.console.WriteLine(error.ToString());
-					//this.console.WriteLine(error.ToString())
 				}
-
 				return new ExecutionResult() { OutputResultWithColorInformation = this.console.GetAllInBuffer() };
 			}
 
+            // Set console output to printStream which writes to stringbuilder sbPrint
+			Console.SetOut(printStream);
 
+            // Any outputs from running the code are now written into sbPrint
 			var task = (repl == null) ?
 							newScript.RunAsync(catchException: e => false, cancellationToken: cancellationToken) :
 									 newScript.RunFromAsync(repl, catchException: e => false, cancellationToken: cancellationToken);
 
-			repl = task.GetAwaiter().GetResult();
+            // Reset the output to the standard Console.WriteLine stream
+			var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+			standardOutput.AutoFlush = true;
+			Console.SetOut(standardOutput);
+            
+			if (sbPrint.Length > 0)
+			{
+				this.console.WriteLine(sbPrint.ToString());
+                // Empty the output string
+				sbPrint.Clear();
+			}
 
+			repl = task.GetAwaiter().GetResult();
+            
 			// this.console.WriteLine("Result:");
 			//this.console.WriteLine(newScript.);
 
@@ -98,6 +116,7 @@ namespace iCSharp.Kernel.ScriptEngine
 			{
 				OutputResultWithColorInformation = this.console.GetAllInBuffer()
 			};
+
 			return executionResult;
 		}
 
