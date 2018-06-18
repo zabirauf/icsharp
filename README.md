@@ -57,7 +57,7 @@ This is a **context-aware code completion** feature that **speeds up** the proce
 We are eager to receive [feedback](mailto:zabirauf@gmail.com) from anyone who has attempted to use our Kernel. We would love to hear
 your thoughts and are constantly striving to improve our product!
 
-## [Demo](http://nbviewer.jupyter.org/urls/gist.githubusercontent.com/zabirauf/a0d4aa22b383afaa1e23/raw/65e539dc98b2cf3e38cc26faf3575e50f4ac9108/iCSharp%20Sample.ipynb)
+## [Complementary C# Notebook](https://github.com/omerouz/icsharpBuild/blob/master/C%23%20Tutorial/CSharpTutorial.ipynb)
 
 
 
