@@ -17,11 +17,11 @@ Along with the C# Kernel we designed and created complementary [Azure notebooks]
 The kernel is based on the Roslyn REPL engine of [scriptcs.](http://scriptcs.net/) and takes advantage of all of Jupyter's frontend features like **Markdown rendering,
 HTML rendering, saving notebooks for later use and even the ability to view C# Notebooks in [Jupyter's NBViewer](http://nbviewer.jupyter.org/)**.
 
-### Azure Installation
+### For Use over the Cloud
 
-If you wish to **develop C# code in your browser** please use our 4-step guide and [complementary video](https://drive.google.com/open?id=1bufPJQdYsznr3HR637oJy615Ad0btq8C) walkthrough to use the C# Notebook on [Azure Cloud](https://azure.microsoft.com/en-gb/).
+If you wish to **"develop C# code in your browse"r** please use our 4-step guide and [complementary video](https://drive.google.com/open?id=1bufPJQdYsznr3HR637oJy615Ad0btq8C) walkthrough to use the C# Notebook on [Azure Cloud](https://azure.microsoft.com/en-gb/).
 
-### Local Installation
+### For Use locally
 
 If you wish to use the the Kernel locally on your machine, or are a software developer that would like to contribute towards improving this **open-source** project please follow the instructions below:
 
