@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/zabirauf/icsharp.svg)](https://travis-ci.org/zabirauf/icsharp)
-
 # C# Azure Notebook Kernel
 
 ### Project Description 
