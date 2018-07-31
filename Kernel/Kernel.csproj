@@ -68,6 +68,7 @@
     <Compile Include="ScriptEngine\ExecutionResult.cs" />
     <Compile Include="ScriptEngine\IReplEngine.cs" />
     <Compile Include="ScriptEngine\MemoryBufferConsole.cs" />
+    <Compile Include="ScriptEngine\IOPubConsole.cs" />
     <Compile Include="ScriptEngine\ReplEngineWrapper.cs" />
     <Compile Include="Shell\CompleteRequestHandler.cs" />
     <Compile Include="Shell\ExecuteRequestHandler.cs" />
