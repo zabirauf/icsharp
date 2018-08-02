@@ -184,3 +184,4 @@ FakesAssemblies/
 
 # Mono userperfs
 *.userprefs
+.vs/

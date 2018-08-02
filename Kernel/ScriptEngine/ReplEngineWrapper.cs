@@ -38,9 +38,5 @@ namespace iCSharp.Kernel.ScriptEngine
         {
             return scriptResult.ReturnValue != null && !string.IsNullOrEmpty(scriptResult.ReturnValue.ToString());
         }
-
-        
-
-        
     }
 }

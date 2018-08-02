@@ -48,8 +48,12 @@ namespace iCSharp.Kernel.Shell
             this.SendInputMessageToIOPub(message, ioPub, executeRequest.Code);
 
             // 3: Evaluate the C# code
+            IOPubConsole ioPubConsole = new IOPubConsole(message, ioPub, this.messageSender, this.executionCount, this.logger);
+            ioPubConsole.RedirectConsole();
             string code = executeRequest.Code;
             ExecutionResult results = this.replEngine.Execute(code);
+            ioPubConsole.CancelRedirect();
+
             string codeOutput = this.GetCodeOutput(results);
             string codeHtmlOutput = this.GetCodeHtmlOutput(results);
 
@@ -77,7 +81,6 @@ namespace iCSharp.Kernel.Shell
             this.SendMessageToIOPub(message, ioPub, StatusValues.Idle);
 
             this.executionCount += 1;
-
         }
 
         private string GetCodeOutput(ExecutionResult executionResult)
