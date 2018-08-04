@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" 
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -68,7 +69,7 @@
     <Compile Include="ScriptEngine\ExecutionResult.cs" />
     <Compile Include="ScriptEngine\IReplEngine.cs" />
     <Compile Include="ScriptEngine\MemoryBufferConsole.cs" />
-    <Compile Include="ScriptEngine\IOPubConsole.cs" />
+    <Compile Include="ScriptEngine\IoPubConsole.cs" />
     <Compile Include="ScriptEngine\ReplEngineWrapper.cs" />
     <Compile Include="Shell\CompleteRequestHandler.cs" />
     <Compile Include="Shell\ExecuteRequestHandler.cs" />
