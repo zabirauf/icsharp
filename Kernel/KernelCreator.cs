@@ -26,6 +26,7 @@ namespace iCSharp.Kernel
         private IShellMessageHandler _kernelInfoRequestHandler;
         private IShellMessageHandler _completeRequestHandler;
         private IShellMessageHandler _executeRequestHandler;
+        private IShellMessageHandler _kernelShutdownHandler;
         private IReplEngine _replEngine;
 
         private Dictionary<string, IShellMessageHandler> _messageHandlerMap; 
@@ -129,6 +130,19 @@ namespace iCSharp.Kernel
             }
         }
 
+        private IShellMessageHandler KernelShutdownHandler
+        {
+            get
+            {
+                if (this._kernelShutdownHandler == null)
+                {
+                    this._kernelShutdownHandler = new KernelShutdownHandler(this._logger, this.MessageSender);
+                }
+
+                return this._kernelShutdownHandler;
+            }
+        }
+
         private IShellMessageHandler CompleteRequestHandler
         {
             get
@@ -166,6 +180,7 @@ namespace iCSharp.Kernel
                     this._messageHandlerMap.Add(MessageTypeValues.KernelInfoRequest, this.KernelInfoRequestHandler);
                     this._messageHandlerMap.Add(MessageTypeValues.CompleteRequest, this.CompleteRequestHandler);
                     this._messageHandlerMap.Add(MessageTypeValues.ExecuteRequest, this.ExecuteRequestHandler);
+                    this._messageHandlerMap.Add(MessageTypeValues.KernelShutdownRequest, this.KernelShutdownHandler);
                 }
 
                 return this._messageHandlerMap;

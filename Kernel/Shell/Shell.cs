@@ -11,6 +11,7 @@ namespace iCSharp.Kernel.Shell
     using iCSharp.Messages;
     using NetMQ;
 	using NetMQ.Sockets;
+    using Newtonsoft.Json.Linq;
 
     public class Shell : IServer
     {
@@ -101,8 +102,8 @@ namespace iCSharp.Kernel.Shell
             }
 
             // Getting Hmac
-            message.HMac = this.server.ReceiveFrameString();
-            this.logger.Info(message.HMac);
+            message.Signature = this.server.ReceiveFrameString();
+            this.logger.Info(message.Signature);
 
             // Getting Header
             string header = this.server.ReceiveFrameString();
@@ -120,17 +121,16 @@ namespace iCSharp.Kernel.Shell
             string metadata = this.server.ReceiveFrameString();
             this.logger.Info(metadata);
 
-            message.MetaData = JsonSerializer.Deserialize<Dictionary<string, object>>(metadata);
+            message.MetaData = JObject.Parse(metadata);
 
             // Getting content
             string content = this.server.ReceiveFrameString();
             this.logger.Info(content);
 
-            message.Content = content;
+            message.Content = JObject.Parse(content);
 
             return message;
         }
-
 
         public void Stop()
         {

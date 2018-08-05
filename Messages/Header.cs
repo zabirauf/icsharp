@@ -15,6 +15,9 @@ namespace iCSharp.Messages
         [JsonProperty("session")]
         public string Session { get; set; }
 
+        [JsonProperty("date")]
+        public string Date { get; set; }
+
         [JsonProperty("msg_type")]
         public string MessageType { get; set; }
 

@@ -2,10 +2,10 @@
 namespace iCSharp.Kernel.Shell
 {
     using Common.Logging;
-    using Common.Serializer;
     using iCSharp.Messages;
 	using iCSharp.Kernel.Helpers;
     using NetMQ.Sockets;
+    using Newtonsoft.Json.Linq;
 
     public class KernelInfoRequestHandler : IShellMessageHandler
     {
@@ -21,30 +21,42 @@ namespace iCSharp.Kernel.Shell
 
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
-            KernelInfoRequest kernelInfoRequest = JsonSerializer.Deserialize<KernelInfoRequest>(message.Content);
+            this.logger.Debug(string.Format("Message Content {0}", message.Content));
+            KernelInfoRequest kernelInfoRequest = message.Content.ToObject<KernelInfoRequest>();
+
+            // 1: Send Busy status on IOPub
+            this.messageSender.SendStatus(message, ioPub, StatusValues.Busy);
 
             Message replyMessage = new Message()
             {
-                UUID = message.Header.Session,
+                Identifiers = message.Identifiers,
+                Signature = message.Signature,
                 ParentHeader = message.Header,
                 Header = MessageBuilder.CreateHeader(MessageTypeValues.KernelInfoReply, message.Header.Session),
-                Content = JsonSerializer.Serialize(this.CreateKernelInfoReply())
+                Content = JObject.FromObject(this.CreateKernelInfoReply())
             };
-
             this.logger.Info("Sending kernel_info_reply");
-			this.messageSender.Send(replyMessage, serverSocket);
+            this.messageSender.Send(replyMessage, serverSocket);
+
+            // 3: Send IDLE status message to IOPub
+            this.messageSender.SendStatus(message, ioPub, StatusValues.Idle);
         }
 
         private KernelInfoReply CreateKernelInfoReply()
         {
             KernelInfoReply kernelInfoReply = new KernelInfoReply()
             {
-                ProtocolVersion = "4.1",
-                LanguageVersion = "0.0.1",
-                IPythonVersion = "4.0.0",
-                Language = "C#",
+                ProtocolVersion = "5.3",
                 Implementation = "iCsharp",
-                ImplementationVersion = "0.0.2"
+                ImplementationVersion = "0.0.3",
+                LanguageInfo = new JObject()
+                {
+                    { "name",  "C#" },
+                    { "version", typeof(string).Assembly.ImageRuntimeVersion.Substring(1) },
+                    { "mimetype", "text/x-csharp" },
+                    { "file_extension", ".cs"},
+                    { "pygments_lexer", "c#" }
+                }
             };
 
             return kernelInfoReply;

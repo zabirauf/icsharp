@@ -18,7 +18,7 @@ namespace iCSharp.Kernel.Shell
 
         public void HandleMessage(Message message, RouterSocket serverSocket, PublisherSocket ioPub)
         {
-            CompleteRequest completeRequest = JsonSerializer.Deserialize<CompleteRequest>(message.Content);
+            CompleteRequest completeRequest = message.Content.ToObject<CompleteRequest>();
 
             // TODO: Send reply
         }

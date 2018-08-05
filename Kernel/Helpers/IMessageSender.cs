@@ -7,6 +7,8 @@ namespace iCSharp.Kernel.Helpers
 	public interface IMessageSender
 	{
 		bool Send(Message message, NetMQSocket socket);
-	}
+
+        bool SendStatus(Message message, NetMQ.Sockets.PublisherSocket ioPub, string status);
+    }
 }
 

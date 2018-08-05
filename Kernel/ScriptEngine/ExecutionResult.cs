@@ -18,5 +18,11 @@ namespace iCSharp.Kernel.ScriptEngine
         }
 
         public IEnumerable<Tuple<string, ConsoleColor>> OutputResultWithColorInformation { get; set; }
+
+        public Exception CompileError { get; set; }
+
+        public Exception ExecuteError { get; set; }
+
+        public bool IsError { get => !(CompileError == null && ExecuteError == null); }
     }
 }
