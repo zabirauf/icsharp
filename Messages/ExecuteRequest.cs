@@ -19,10 +19,10 @@ namespace iCSharp.Messages
         [JsonProperty("user_expressions")]
         public Dictionary<string,string> UserExpressions { get; set; }
 
-        [JsonProperty("user_variables")]
-        public List<string> UserVariables { get; set; }
-
         [JsonProperty("allow_stdin")]
         public bool AllowStdin { get; set; }
+
+        [JsonProperty("stop_on_error")]
+        public bool StopOnError{ get; set; }
     }
 }

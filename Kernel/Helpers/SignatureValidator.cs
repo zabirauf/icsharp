@@ -55,19 +55,6 @@ namespace iCSharp.Kernel.Helpers
 			return BitConverter.ToString(this._signatureGenerator.Hash).Replace("-","").ToLower();
 		}
 
-		/// <summary>
-		/// Determines whether this instance is valid signature the specified message.
-		/// </summary>
-		/// <returns>true</returns>
-		/// <c>false</c>
-		/// <param name="message">Message.</param>
-		public bool IsValidSignature (Message message)
-		{
-			string calculatedSignature = this.CreateSignature (message);
-			this._logger.Info (string.Format ("Expected Signature: {0}", calculatedSignature));
-			return string.Equals (message.HMac, calculatedSignature, StringComparison.OrdinalIgnoreCase);
-		}
-
 		#endregion
 
 		/// <summary>
@@ -86,7 +73,7 @@ namespace iCSharp.Kernel.Helpers
 				JsonSerializer.Serialize(message.Header),
 				JsonSerializer.Serialize(message.ParentHeader),
 				JsonSerializer.Serialize(message.MetaData),
-				message.Content
+                JsonSerializer.Serialize(message.Content)
 			};
 		}
 	}

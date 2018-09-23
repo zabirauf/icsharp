@@ -4,23 +4,24 @@ namespace iCSharp.Messages
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class DisplayData
     {
         public DisplayData()
         {
             this.Source = string.Empty;
-            this.Data = new Dictionary<string, object>();
-            this.MetaData = new Dictionary<string, string>();
+            this.Data = new JObject();
+            this.MetaData = new JObject();
         }
 
         [JsonProperty("source")]
         public string Source { get; set; }
 
         [JsonProperty("data")]
-        public Dictionary<string,object> Data { get; set; }
+        public JObject Data { get; set; }
 
         [JsonProperty("metadata")]
-        public Dictionary<string,string> MetaData { get; set; }
+        public JObject MetaData { get; set; }
     }
 }

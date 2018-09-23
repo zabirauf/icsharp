@@ -8,6 +8,7 @@ using Common.Serializer;
 using iCSharp.Kernel.Helpers;
 using iCSharp.Messages;
 using NetMQ.Sockets;
+using Newtonsoft.Json.Linq;
 
 namespace iCSharp.Kernel.ScriptEngine
 {
@@ -81,7 +82,7 @@ namespace iCSharp.Kernel.ScriptEngine
 
         private void SendOutputMessageToIOPub(string value)
         {
-            Dictionary<string, object> data = new Dictionary<string, object>()
+            JObject data = new JObject()
             {
                 {"text/plain", value},
                 {"text/html",  HttpUtility.HtmlEncode(value)}
@@ -92,15 +93,14 @@ namespace iCSharp.Kernel.ScriptEngine
                 Data = data,
             };
 
-            Dictionary<string, object> content = new Dictionary<string, object>
+            JObject content = new JObject
             {
                 {"execution_count", this._executionCount},
                 {"data", displayData.Data},
                 {"metadata", displayData.MetaData}
             };
 
-            Message outputMessage = MessageBuilder.CreateMessage(MessageTypeValues.Output,
-                JsonSerializer.Serialize(content), _message.Header);
+            Message outputMessage = MessageBuilder.CreateMessage(MessageTypeValues.DisplayData, content, _message.Header);
 
             this._logger.Info(string.Format("Sending message to IOPub {0}", JsonSerializer.Serialize(outputMessage)));
             this._messageSender.Send(outputMessage, _ioPub);

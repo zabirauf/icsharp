@@ -68,12 +68,13 @@
     <Compile Include="ScriptEngine\ExecutionResult.cs" />
     <Compile Include="ScriptEngine\IReplEngine.cs" />
     <Compile Include="ScriptEngine\MemoryBufferConsole.cs" />
-    <Compile Include="ScriptEngine\IOPubConsole.cs" />
+    <Compile Include="ScriptEngine\IoPubConsole.cs" />
     <Compile Include="ScriptEngine\ReplEngineWrapper.cs" />
     <Compile Include="Shell\CompleteRequestHandler.cs" />
     <Compile Include="Shell\ExecuteRequestHandler.cs" />
     <Compile Include="Shell\IShellMessageHandler.cs" />
     <Compile Include="Shell\KernelInfoRequestHandler.cs" />
+    <Compile Include="Shell\KernelShutdownHandler.cs" />
     <Compile Include="Shell\Shell.cs" />
     <Compile Include="Stdin\Stdin.cs" />
     <Compile Include="Helpers\MessageBuilder.cs" />
@@ -137,7 +138,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

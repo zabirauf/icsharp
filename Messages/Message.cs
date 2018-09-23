@@ -4,26 +4,25 @@ namespace iCSharp.Messages
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+
 
     public class Message
     {
         public Message()
         {
             this.Identifiers = new List<byte[]>();
-            this.UUID = string.Empty;
-            this.HMac = string.Empty;
-            this.MetaData = new Dictionary<string, object>();
-            this.Content = string.Empty;
+            this.Signature = string.Empty;
+            this.MetaData = new JObject();
+            this.Content = new JObject();
+            this.Buffers = new List<byte[]>();
         }
 
-        [JsonProperty("identifiers")]
+        [JsonIgnoreAttribute]
         public List<byte[]> Identifiers { get; set; }
 
-        [JsonProperty("uuid")]
-        public string UUID { get; set; }
-
-        [JsonProperty("hmac")]
-        public string HMac { get; set; }
+        [JsonIgnoreAttribute]
+        public string Signature { get; set; }
 
         [JsonProperty("header")]
         public Header Header { get; set; }
@@ -32,9 +31,12 @@ namespace iCSharp.Messages
         public Header ParentHeader { get; set; }
 
         [JsonProperty("metadata")]
-        public Dictionary<string, object> MetaData { get; set; }
+        public JObject MetaData { get; set; }
 
         [JsonProperty("content")]
-        public string Content { get; set; }
+        public JObject Content { get; set; }
+
+        [JsonProperty("buffers")]
+        public List<byte[]> Buffers { get; set; }
     }
 }

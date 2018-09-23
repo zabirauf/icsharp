@@ -15,13 +15,17 @@ namespace iCSharp.Messages
 
         public const string KernelInfoReply = "kernel_info_reply";
 
+        public const string KernelShutdownRequest = "shutdown_request";
+
+        public const string KernelShutdownReply = "shutdown_reply";
+
         public const string CompleteRequest = "complete_request";
 
         public const string Status = "status";
 
-        public const string Output = "pyout";
+        public const string Error = "error";
 
-        public const string Input = "pyin";
+        public const string DisplayData = "display_data";
 
     }
 }

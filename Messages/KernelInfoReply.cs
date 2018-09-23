@@ -2,6 +2,7 @@
 namespace iCSharp.Messages
 {
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class KernelInfoReply
     {
@@ -14,16 +15,10 @@ namespace iCSharp.Messages
         [JsonProperty("implementation_version")]
         public string ImplementationVersion { get; set; }
 
-        [JsonProperty("language")]
-        public string Language { get; set; }
-
-        [JsonProperty("language_version")]
-        public string LanguageVersion { get; set; }
+        [JsonProperty("language_info")]
+        public JObject LanguageInfo { get; set; }
 
         [JsonProperty("banner")]
         public string Banner { get; set; }
-
-        [JsonProperty("ipython_version")]
-        public string IPythonVersion { get; set; }
     }
 }
